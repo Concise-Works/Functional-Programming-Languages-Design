@@ -11,8 +11,7 @@ Programming Languages (PL) from the perspective of a programmer can be thought o
 
 However \textbf{\underline{This text concerns the design of 
 PLs}}, not the sole use of them. It's the difference between knowing how to fly 
-an aircraft vs. designing one. A pilot may know how to steer, but 
-may not know how to design one or, vise versa for the designer.
+an aircraft vs. designing one.
 We instead \textbf{\underline{think in terms of mathematics}}, describing and defining
 the specifications of our language. Our program some mathematical object,
 a function with strict inputs and outputs.
@@ -24,22 +23,27 @@ a function with strict inputs and outputs.
 \end{Def}
 \begin{Def}[Programming Language]
 
-    A PL is made up of three main components:
+    A \textbf{Programming Language (PL)} consists of three main components:
     \begin{itemize}
-        \item \textbf{Syntax:} Defines well-formed expressions or programs.
-        \item \textbf{Type System:} Delineates the characteristics of possible data.
-        \item \textbf{Semantics:} Directs the evaluation of programs or expressions.
+        \item \textbf{Syntax:} Specifies the rules for constructing well-formed expressions or programs.
+        \item \textbf{Type System:} Defines the properties and constraints of possible data and expressions.
+        \item \textbf{Semantics:} Provides the meaning and behavior of programs or expressions during evaluation.
     \end{itemize}
 \end{Def}
 
 \vspace{-1em}
-\begin{Example}[Syntax:]
+\begin{Example}[Syntax for Addition]
 
     \label{ex:well_formed_expr}
     If $e_1$ is a well-formed expression and $e_2$ is a well-formed expression, 
-    then $e_1+e_2$ is a well-formed expression. Where <expr> is a placeholder for some arbitrary expression we \textbf{Denote:}
-    \[\text{<expr>}\ ::=\ \text{<expr>}+\text{<expr>}\]
+    then $e_1 + e_2$ is also a well-formed expression. We can formalize this using the following rule for expressions, 
+    where $\langle \text{expr} \rangle$ acts as a placeholder for arbitrary expressions:
+
+    \[
+    \langle \text{expr} \rangle \ ::= \ \langle \text{expr} \rangle + \langle \text{expr} \rangle
+    \]
 \end{Example}
+
 
 \newpage
 
@@ -161,3 +165,38 @@ Now we may begin to create a type system for our language, starting with some ba
     is well-typed as a \textbf{bool}, since $f$ is a function that takes an integer and returns a boolean, and $x$ is an integer 
     in the context $\Gamma$.
 \end{Example}
+
+\newpage 
+
+\noindent
+Finally, we can define the semantics of our language, which describes the behavior of programs during evaluation:
+
+\begin{Example}[Evaluation Rule for Integer Addition (Semantics)]
+
+    \label{ex:eval_integer_addition}
+    Consider the evaluation rule for integer addition. This rule specifies how the sum of two expressions is computed. 
+    If $e_1$ evaluates to the integer $v_1$ and $e_2$ evaluates to the integer $v_2$, 
+    then the expression $e_1 + e_2$ evaluates to the integer $v_1 + v_2$. The rule is written as: \LARGE
+
+    \[
+    \frac{e_1 \Downarrow v_1 \quad e_2 \Downarrow v_2}{e_1 + e_2 \Downarrow v_1 + v_2} \ (\text{evalInt})
+    \]
+
+    \vspace{.5em}
+    \normalsize
+    \noindent
+    Read as, ``If $e_1$ evaluates to the integer $v_1$ and $e_2$ evaluates to the integer $v_2$, 
+    then $e_1 + e_2$ evaluates to $v_1 + v_2$.''
+
+    \vspace{1em}
+    \textbf{Example Evaluation:}
+    \begin{itemize}
+        \item $2 \Downarrow 2$
+        \item $3 \Downarrow 3$
+        \item $2 + 3 \Downarrow 5$
+    \end{itemize}
+
+    \noindent
+    Here, the integers $2$ and $3$ evaluate to themselves, and their sum evaluates to $5$ based on the evaluation rule.
+\end{Example}
+

@@ -1,0 +1,120 @@
+This text assumes that the reader has a basic understanding of programming languages and grade-school mathematics along
+with a fundamentals grasp of discrete mathematics. The following definitions are provided to ensure that the reader is familiar with
+the terminology used in this document.
+\begin{Def}[Token]
+
+    A \textbf{token} is a basic, indivisible unit of a programming language or formal grammar, representing 
+    a meaningful sequence of characters. Tokens are the smallest building blocks of syntax and are typically 
+    generated during the lexical analysis phase of a compiler or interpreter.
+
+    \vspace{1em}
+    \noindent
+    Examples of tokens include:
+    \begin{itemize}
+        \item \texttt{keywords}, such as \texttt{if}, \texttt{else}, and \texttt{while}.
+        \item \texttt{identifiers}, such as \texttt{x}, \texttt{y}, and \texttt{myFunction}.
+        \item \texttt{literals}, such as \texttt{42} or \texttt{"hello"}.
+        \item \texttt{operators}, such as \texttt{+}, \texttt{-}, and \texttt{=}.
+        \item \texttt{punctuation}, such as \texttt{(}, \texttt{)}, \texttt{\{}, and \texttt{\}}.
+    \end{itemize}
+
+    \vspace{1em}
+    Tokens are distinct from characters, as they group characters into meaningful units based on the language's syntax.
+\end{Def}
+
+\begin{Def}[Non-terminal and Terminal Symbols]
+    
+    \textbf{Non-terminal symbols} are placeholders used to represent abstract categories or structures in a language. 
+    They are expanded or replaced by other symbols (either terminal or non-terminal) as part of generating valid sentences 
+    in the language.
+    \begin{itemize}
+    \item \textbf{E.g.}, ``Today is $\langle$name$\rangle$'s birthday!!!'', where $\langle$name$\rangle$ is a non-terminal symbol, 
+    expected to be replaced by a terminal symbol (e.g., ``Alice''). 
+    \end{itemize}
+
+    \noindent
+    \textbf{Terminal symbols} are the basic, indivisible symbols in a formal grammar. They represent the actual characters 
+    or tokens that appear in the language and cannot be expanded further. For example:
+    \begin{itemize}
+        \item \texttt{+}, \texttt{1}, and \texttt{x} are terminal symbols in an arithmetic grammar.
+    \end{itemize}
+\end{Def}
+
+\newpage
+
+\begin{Def}[Symbol ``\texttt{::=}'']
+    The symbol \texttt{::=} is used in formal grammar notation, such as Backus-Naur Form (BNF), 
+    to mean ``is defined as'' or ``can be expanded as''. It is used to define the syntactic structure 
+    of a language by specifying how non-terminal symbols can be replaced or expanded into other symbols.
+
+    \vspace{1em}
+    \noindent
+    For example:
+    \[
+    \langle \text{expr} \rangle ::= \langle \text{expr} \rangle + \langle \text{expr} \rangle \ | \ \langle \text{number} \rangle
+    \]
+    This states that the non-terminal symbol $\langle \text{expr} \rangle$ can be defined as either:
+    \begin{itemize}
+        \item An expression followed by a `+` and another expression, or
+        \item A single number.
+    \end{itemize}
+
+    \vspace{1em}
+    The pipe symbol (\texttt{|}) indicates alternatives, while the symbol \(\Rightarrow\) is used to denote derivations, 
+    showing the step-by-step application of the grammar rules to expand non-terminals into terminals.
+
+    \vspace{1em}
+    \noindent
+    \textbf{Correct Derivations:}
+    \begin{itemize}
+        \item $\langle \text{expr} \rangle \Rightarrow \langle \text{expr} \rangle + \langle \text{number} \rangle$
+        \item $\langle \text{expr} \rangle \Rightarrow 5 + \langle \text{number} \rangle$
+        \item $\langle \text{expr} \rangle \Rightarrow 5 + 3$
+        \item $\langle \text{number} \rangle \Rightarrow 8$
+        \item $\langle \text{expr} \rangle \Rightarrow \langle \text{number} \rangle$
+        \item $\langle \text{expr} \rangle \Rightarrow 8$
+    \end{itemize}
+
+    \vspace{1em}
+    \noindent
+    \textbf{Incorrect Derivations:}
+    \begin{itemize}
+        \item $8 \Rightarrow \langle \text{number} \rangle$ 
+        \item $8 \Rightarrow 5 + \langle \text{number} \rangle$
+        \item $8 \Rightarrow 5 + 3$
+    \end{itemize}
+
+    \vspace{1em}
+    Incorrect derivations arise when the direction of derivation is reversed or when terminal symbols are treated as if they 
+    can be expanded further. Terminals, such as $8$, cannot act as non-terminals and do not expand into other symbols.
+\end{Def}
+
+
+
+
+
+\begin{Def}[Symbol ``\texttt{:=}'']
+
+    The symbol \texttt{:=} is used in programming and mathematics to denote ``assignment'' or ``is assigned the value of''. 
+    It represents the operation of giving a value to a variable or symbol.
+
+    \vspace{1em}
+    \noindent
+    For example:
+    \[
+    x := 5
+    \]
+    This means the variable $x$ is assigned the value $5$.
+
+    \vspace{1em}
+    \noindent
+    In some contexts, \texttt{:=} is also used to indicate that a symbol is being defined, such as:
+    \[
+    f(x) := x^2 + 1
+    \]
+    This means the function $f(x)$ is defined as $x^2 + 1$.
+\end{Def}
+
+
+
+
