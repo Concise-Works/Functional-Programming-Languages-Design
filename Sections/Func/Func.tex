@@ -1,0 +1,163 @@
+\section{Introduction}
+
+Programming Languages (PL) from the perspective of a programmer can be thought of as:
+\begin{itemize}
+    \item  A tool for programming
+    \item A text-based way of interacting
+    with hardware/a computer
+    \item A way of organizing and working
+    with data
+\end{itemize}
+
+However \textbf{\underline{This text concerns the design of 
+PLs}}, not the sole use of them. It's the difference between knowing how to fly 
+an aircraft vs. designing one. A pilot may know how to steer, but 
+may not know how to design one or, vise versa for the designer.
+We instead \textbf{\underline{think in terms of mathematics}}, describing and defining
+the specifications of our language. Our program some mathematical object,
+a function with strict inputs and outputs.
+\begin{Def}[Well-formed Expression]
+
+    An expression (sequence of symbols) that is constructed according to established rules (syntax),
+    ensuring clear and unambiguous meaning.
+
+\end{Def}
+\begin{Def}[Programming Language]
+
+    A PL is made up of three main components:
+    \begin{itemize}
+        \item \textbf{Syntax:} Defines well-formed expressions or programs.
+        \item \textbf{Type System:} Delineates the characteristics of possible data.
+        \item \textbf{Semantics:} Directs the evaluation of programs or expressions.
+    \end{itemize}
+\end{Def}
+
+\vspace{-1em}
+\begin{Example}[Syntax:]
+
+    \label{ex:well_formed_expr}
+    If $e_1$ is a well-formed expression and $e_2$ is a well-formed expression, 
+    then $e_1+e_2$ is a well-formed expression. Where <expr> is a placeholder for some arbitrary expression we \textbf{Denote:}
+    \[\text{<expr>}\ ::=\ \text{<expr>}+\text{<expr>}\]
+\end{Example}
+
+\newpage
+
+Programmers may have some intuition about what a \textbf{variable} is, often thinking of it as a container for data.
+However, within this context, variables can represent entire expressions and are, in a sense, immutable.
+\begin{Def}[Meta-variables]
+
+    Meta-variables are placeholders that represent arbitrary expressions in a formal syntax.
+    They are used to generalize the structure of expressions or programs within a language.
+\end{Def}
+
+\vspace{-1em}
+\begin{Example}[Meta-variables:]
+
+    An expression $e$ could be represented as $3$ (a literal) or $3 + 4$ (a compound expression).
+    In this context, variables serve as shorthand for expressions rather than as containers for mutable data.
+\end{Example}
+
+\noindent
+Before talking about types we must understand ``\textbf{context}'' when working with PLs.
+
+
+\begin{Def}[Context and Typing Environment]
+
+    In type theory, a context defines an environment which establishes data types for variables.
+    In particular, an environment $\Gamma$ is a set of ordered list of pairs $\langle x : \tau \rangle$, usually written as $x : \tau$,
+    where $x$ is a variable and $\tau$ is its type. We now write a \textbf{judgment},
+    a formal assertion about an expression or program within a given context. We denote:\LARGE
+
+    \vspace{-1em}
+    \[\Gamma \vdash e: \tau\]
+
+    \normalsize 
+    \noindent
+    which reads ``in the context $\Gamma$, the expression $e$ has type $\tau$''. 
+    We may also write judgments for functions, denoting the type of the function and its arguments.
+    \LARGE
+    \[ f : \tau_1, \tau_2, \ldots, \tau_n \rightarrow \tau \]
+    \normalsize
+    \noindent 
+    where $f$ is a function taking $n$ arguments ($\tau_1, \tau_2, \ldots, \tau_n$), outputting the type $\tau$.
+    
+    \hfill \cite{WikipediaTypingEnvironment}
+\end{Def}
+
+\vspace{-1em}
+\begin{Tip}
+    Symbol names and command in \LaTeX \ used above are as follows:
+    \begin{itemize}
+        \item $\Gamma$ reads as ``Gamma'' (\textbackslash Gamma).
+        \item $\vdash$ reads as ``turnstile'' (\textbackslash vdash).
+        \item $\tau$ reads as ``tau'' (\textbackslash tau).
+    \end{itemize}
+\end{Tip}
+
+\newpage 
+
+\begin{Def}[Rule of Inference]
+
+    In formal logic and type theory, an \textbf{inference rule} provides a formal structure for deriving conclusions from premises. 
+    Rules of inference are usually presented in a \textbf{standard form}: \Large
+
+    \[
+    \frac{\text{Premise}_1, \quad \text{Premise}_2, \quad \ldots, \quad \text{Premise}_n}{\text{Conclusion}} \ (\text{Name})
+    \]
+
+    \normalsize
+    \begin{itemize}
+        \item \textbf{Premises (Numerator):} The conditions that must be met for the rule to apply.
+        \item \textbf{Conclusion (Denominator):} The judgment derived when the premises are satisfied.
+        \item \textbf{Name (Parentheses):} A label for referencing the rule. \hfill \cite{wiki:rule_of_inference}
+    \end{itemize}
+\end{Def}
+
+\noindent
+Now we may begin to create a type system for our language, starting with some basic rules.
+\begin{Example}[Typing Rule for Integer Addition]
+
+    \label{ex:integer_addition}
+    Consider the typing rule for integer addition for which the inference rule is written as: \LARGE
+
+    \[
+    \frac{\Gamma \vdash e_1 : \text{int} \quad \Gamma \vdash e_2 : \text{int}}{\Gamma \vdash e_1 + e_2 : \text{int}} \ (\text{addInt})
+    \]
+
+    \vspace{.5em}
+    \normalsize
+    \noindent
+    This reads as, ``If $e_1$ is an \textbf{int} (in the context $\Gamma$) and $e_2$ is an \textbf{int} 
+    (in the context $\Gamma$), then $e_1 + e_2$ is an \textbf{int} (in the same context $\Gamma$)''.
+
+    \vspace{1em}
+    \noindent
+    \textbf{Therefore}: let $\Gamma = \{x : \text{int}, y : \text{int}\}$. Then the expression $x + y$ is well-typed as an \textbf{int}, 
+    since both $x$ and $y$ are integers in the context $\Gamma$.
+\end{Example}
+
+\vspace{-1em}
+\begin{Example}[Typing Rule for Function Application]
+
+    \label{ex:function_application}
+    
+    If $f$ is a function of type $\tau_1 \rightarrow \tau_2$ and $e$ is of type $\tau_1$, then $f(e)$ is of type $\tau_2$.
+    \LARGE
+
+    \[
+    \frac{\Gamma \vdash f : \tau_1 \rightarrow \tau_2 \quad \Gamma \vdash e : \tau_1}{\Gamma \vdash f(e) : \tau_2} \ (\text{appFunc})
+    \]
+
+    \vspace{.5em}
+    \normalsize
+    \noindent
+    This reads as, ``If $f$ is a function of type $\tau_1 \rightarrow \tau_2$ (in the context $\Gamma$) and $e$ is of type $\tau_1$ 
+    (in the context $\Gamma$), then $f(e)$ is of type $\tau_2$ (in the same context $\Gamma$)''.
+
+    \vspace{1em}
+    \noindent
+    \textbf{Therefore}: let $\Gamma = \{f : \text{int} \rightarrow \text{bool}, x : \text{int}\}$. Then the expression, $f(x)$, 
+    is well-typed as a \textbf{bool}, since $f$ is a function that takes an integer and returns a boolean, and $x$ is an integer 
+    in the context $\Gamma$.
+\end{Example}
