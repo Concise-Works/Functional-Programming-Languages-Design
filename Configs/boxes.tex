@@ -1,0 +1,284 @@
+% \newcounter{theo}[section]\setcounter{theo}{0}
+
+% THEOREM BOXES
+\newcounter{theo}[section]\setcounter{theo}{0}
+\renewcommand{\thetheo}{\arabic{section}.\arabic{theo}}
+
+\newenvironment{theo}[2][]{%
+    \refstepcounter{theo}
+
+    \ifstrempty{#1}%
+    % if condition (without title)
+    {\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=black,text=white]
+                    {\strut Theorem~\thetheo};}
+        }%
+        % else condition (with title)
+    }{\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=black,text=white]
+                    {\strut Theorem~\thetheo:~#1};}%
+        }%
+    }%
+    % Both conditions
+    \mdfsetup{%
+        innertopmargin=6pt,innerbottommargin=12pt,linecolor=black,%
+        linewidth=2pt,topline=true,%
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax%
+    }
+
+    \begin{mdframed}[]\relax}{
+    \end{mdframed}}
+
+% DEFINITION BOXES
+\newcounter{Def}[section]\setcounter{Def}{0}
+\renewcommand{\theDef}{\arabic{section}.\arabic{Def}}
+
+\newenvironment{Def}[2][]{%
+    \refstepcounter{Def}
+
+    \ifstrempty{#1}%
+    % if condition (without title)
+    {\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=black,text=white]
+                    {\strut Definition~\theDef};}
+        }%
+        % else condition (with title)
+    }{\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=black,text=white]
+                    {\strut Definition~\theDef:~#1};}%
+        }%
+    }%
+    % Both conditions
+    \mdfsetup{%
+        innertopmargin=6pt,
+        innerbottommargin=12pt,
+        linecolor=black,%
+        linewidth=2pt,topline=true,%
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax%
+    }
+
+    \begin{mdframed}[]\relax}{%
+    \end{mdframed}}
+
+
+% TIP BOXES
+\newcounter{Tip}[section]\setcounter{Tip}{0}
+\renewcommand{\theTip}{\arabic{section}.\arabic{Tip}}
+
+\newenvironment{Tip}{%
+    \refstepcounter{Tip}
+    \mdfsetup{%
+        backgroundcolor=OliveGreen!10,
+        innertopmargin=12pt,
+        innerbottommargin=12pt,
+        linecolor=black,
+        linewidth=0pt,
+        topline=false,
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+    }
+    \begin{mdframed}[]\relax
+        \textbf{Tip:}
+        }{%
+    \end{mdframed}
+}
+
+% GREEN BOXES
+\newenvironment{greenbox}{%
+    \mdfsetup{%
+        backgroundcolor=OliveGreen!10,
+        innertopmargin=12pt,
+        innerbottommargin=12pt,
+        linecolor=black,
+        linewidth=0pt,
+        topline=false,
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+    }
+    \begin{mdframed}[]\relax
+
+        }{%
+    \end{mdframed}
+}
+
+% GRAY BOXES
+\newenvironment{graybox}{%
+    \mdfsetup{%
+        backgroundcolor=black!10,
+        innertopmargin=12pt,
+        innerbottommargin=12pt,
+        linecolor=black,
+        linewidth=0pt,
+        topline=false,
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+    }
+    \begin{mdframed}[]\relax
+
+        }{%
+    \end{mdframed}
+}
+
+% NOTE BOXES
+\newcounter{Note}[section]\setcounter{Note}{0}
+\renewcommand{\theNote}{\arabic{section}.\arabic{Note}}
+
+\newenvironment{Note}{%
+    \refstepcounter{Note}
+    \mdfsetup{%
+        backgroundcolor=black!10,
+        innertopmargin=10pt,
+        innerbottommargin=8pt,
+        linecolor=black,
+        linewidth=0pt,
+        topline=false,
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+    }
+    \begin{mdframed}[]\relax
+        }{%
+    \end{mdframed}
+}
+
+% GENERIC BOXES
+
+\newenvironment{gbox}{%
+    \mdfsetup{%
+        backgroundcolor=white,
+        innertopmargin=12pt,
+        innerbottommargin=6pt,
+        linecolor=black,
+        linewidth=1pt,
+        topline=true,
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+    }
+    \begin{mdframed}[]\relax
+        % Your content goes here
+        }{%
+    \end{mdframed}
+}
+
+% PROOF BOXES
+
+% \newcounter{theo}[section]\setcounter{theo}{0}
+
+% PROOF BOXES
+
+\newcounter{Proof}[section]\setcounter{Proof}{0}
+\renewcommand{\theProof}{\arabic{section}.\arabic{Proof}}
+
+\newenvironment{Proof}[1][]{%
+    \refstepcounter{Proof}
+
+    \ifstrempty{#1}%
+    % if condition (without title)
+    {\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=white,text=black]
+                    {\strut Proof~\theProof};}
+        }%
+        % else condition (with title)
+    }{\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=white,text=black]
+                    {\strut Proof~\theProof:~#1};}%
+        }%
+    }%
+    % Both conditions
+    \mdfsetup{%
+        innertopmargin=6pt,
+        innerbottommargin=12pt,
+        linecolor=black,%
+        linewidth=1pt,topline=true,%
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax%
+    }
+
+    \begin{mdframed}[]\relax}{
+        \hfill$\blacksquare$
+    \end{mdframed}
+}
+
+% EXAMPLE BOXES
+
+\newcounter{Example}[section]\setcounter{Example}{0}
+\renewcommand{\theExample}{\arabic{section}.\arabic{Example}}
+
+\newenvironment{Example}[1][]{%
+    \refstepcounter{Example}
+
+    \ifstrempty{#1}%
+    % if condition (without title)
+    {\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=white,text=black]
+                    {\strut Example~\theExample};}
+        }%
+        % else condition (with title)
+    }{\mdfsetup{%
+            frametitle={%
+                    \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                    \node[anchor=east,rectangle,fill=white,text=black]
+                    {\strut Example~\theExample:~#1};}%
+        }%
+    }%
+    % Both conditions
+    \mdfsetup{%
+        innertopmargin=6pt,
+        innerbottommargin=12pt,
+        linecolor=black,%
+        linewidth=1pt,topline=true,%
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax%
+    }
+
+    \begin{mdframed}[]\relax}{
+        \hfill$\blacksquare$
+    \end{mdframed}
+}
+
+% Function Counter
+\newcounter{Func}[section]
+\renewcommand{\theFunc}{\arabic{section}.\arabic{Func}}
+
+% Function Environment
+\newenvironment{Func}[1][]{
+    \refstepcounter{Func}
+    \ifstrempty{#1}% 
+    {% If no title is provided
+        \mdfsetup{
+            frametitle={
+                \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                \node[anchor=east,rectangle,fill=black,text=white]
+                {\strut Function~\theFunc};}
+        }
+    }{% If a title is provided
+        \mdfsetup{
+            frametitle={
+                \tikz[baseline=(current bounding box.east),outer sep=0pt]
+                \node[anchor=east,rectangle,fill=black,text=white]
+                {\strut Function~\theFunc:~#1};}
+        }
+    }
+    % Common settings for both cases
+    \mdfsetup{
+        innertopmargin=10pt,
+        innerbottommargin=10pt,
+        skipabove=\baselineskip,
+        skipbelow=\baselineskip,
+        linecolor=black,
+        linewidth=1pt,
+        topline=true,
+        frametitleaboveskip=\dimexpr-\ht\strutbox\relax,
+        frametitlealignment=\raggedright
+    }
+    \begin{mdframed}
+}{
+    \end{mdframed}
+}
+

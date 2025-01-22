@@ -1,0 +1,51 @@
+\documentclass{memoir}
+\input{Configs/configs}
+
+\title{Functional Programming Language Design}
+\author{Christian J. Rudder}
+\date{January 2025}
+
+\chapterstyle{dash} % Chatper style
+\setlength{\beforechapskip}{-1em} % Adjusts space before the chapter heading
+
+
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{2}
+
+\tableofcontents
+
+% Intentionally left blank
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\vfill
+\begin{center}
+    \textit{This page is left intentionally blank.}
+\end{center}
+\vfill
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\vfill
+\begin{center}
+    \Large{Big thanks to \textbf{Professor Nathan Mull}}\\
+    \normalsize 
+    for teaching CS320 (Concepts of PL)\\
+    at Boston University\cite{mull_cs320}.\\
+    
+    
+\end{center}
+\vfill
+
+\chapter{Introduction}
+\input{Sections/Intro.tex}
+
+
+\bibliographystyle{plain} % We choose the "plain" reference style
+\bibliography{refs} % Entries are in the refs.bib file
+
+
+
+\end{document}
