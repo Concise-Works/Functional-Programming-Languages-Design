@@ -194,9 +194,12 @@ Finally, we can define the semantics of our language, which describes the behavi
         \item $2 \Downarrow 2$
         \item $3 \Downarrow 3$
         \item $2 + 3 \Downarrow 5$
+        \item $4 + 5 \Downarrow 9$
+        \item $(2 + 4) + (4 + 5) \Downarrow 15$
     \end{itemize}
 
     \noindent
     Here, the integers $2$ and $3$ evaluate to themselves, and their sum evaluates to $5$ based on the evaluation rule.
+    Additionally $e_1$ could be a compound expression, such as $(2 + 4)$, which evaluates to $6$.
 \end{Example}
 

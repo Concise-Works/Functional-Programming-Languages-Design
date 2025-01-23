@@ -1,0 +1,29 @@
+\usepackage{listings}
+
+% Define OCaml language style
+\lstdefinelanguage{OCaml}{
+  morekeywords={let, rec, if, then, else, print_endline, in, match, with, type},
+  sensitive=true,
+  morecomment=[s]{(*}{*)},
+  morestring=[b]",
+}
+
+% Define Python language style
+\lstdefinelanguage{Python}{
+  morekeywords={def, return, if, else, print},
+  sensitive=true,
+  morecomment=[l]{\#},
+  morestring=[b]",
+}
+
+% Set up general style for listings
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red},
+  frame=single,
+  showstringspaces=false,
+  breaklines=true,
+  backgroundcolor=\color{gray!10},
+}
