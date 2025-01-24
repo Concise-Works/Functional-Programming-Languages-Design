@@ -16,14 +16,34 @@
   morestring=[b]",
 }
 
-% Set up general style for listings
+% Define Ubuntu Terminal style
+\lstdefinelanguage{Bash}{
+  morekeywords={ls, cd, mkdir, rm, mv, cp, touch, echo, sudo, pwd, cat, vim, nano, apt, apt-get, chmod, chown, bash},
+  sensitive=true,
+  morecomment=[l]{\#}, % Single-line comments start with #
+  morestring=[b]",      % Strings are enclosed in double quotes
+}
+
+% Set up general style for the terminal
 \lstset{
-  basicstyle=\ttfamily\small,
-  keywordstyle=\color{blue}\bfseries,
-  commentstyle=\color{green!50!black},
-  stringstyle=\color{red},
+  basicstyle=\ttfamily\small\color{white},  % Text in white for visibility on black
+  keywordstyle=\color{cyan}\bfseries,      % Commands in cyan
+  commentstyle=\color{green},              % Comments in green
+  stringstyle=\color{yellow},              % Strings in yellow
   frame=single,
   showstringspaces=false,
   breaklines=true,
-  backgroundcolor=\color{gray!10},
+  backgroundcolor=\color{black},           % Black background
+  numbers=left,                            % Add line numbers
+  numberstyle=\tiny\color{gray},           % Line numbers in gray
 }
+
+\lstdefinelanguage{PlainText}{
+  morekeywords={},
+  sensitive=false,
+  morecomment=[l]{\#},
+  morestring=[b]"
+}
+
+% Command for dark background (!20)
+\newcommand{\snippet}[1]{\colorbox{OliveGreen!20}{\texttt{#1}}}

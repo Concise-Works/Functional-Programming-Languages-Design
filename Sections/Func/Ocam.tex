@@ -1,4 +1,4 @@
-\section{Functional Programming with OCaml}
+\section{Development Environment with OCaml}
 
 In this section, we introduce \textbf{OCaml} as our programming language of choice for exploring
 the principles of \textbf{functional programming}. Functional programming emphasizes a declarative
@@ -10,3 +10,522 @@ imperative programming in Python. This will give us a practical perspective on h
 paradigms approach problem-solving and help us appreciate the unique features of functional programming.
 
 \newpage
+
+\begin{Def}[OCaml]
+
+	\textbf{OCaml} is a general-purpose programming language from the ML family,
+	known for its strong static type system, type inference, and support for functional,
+	imperative, and object-oriented programming. It is widely used in areas like compilers,
+	financial systems, and formal verification due to its safety, performance,
+	and expressive syntax. \underline{ The \textbf{Ocaml Extension} is \snippet{.ml}}
+\end{Def}
+
+\noindent
+In addition to using Ocaml we will use Dune and Opam.
+\begin{Def}[Dune]
+
+	\textbf{Dune} is a build system for \textbf{OCaml} projects, designed to simplify
+	the compilation and management of code. It automates tasks such as building executables,
+	libraries, and tests, while handling dependencies efficiently. Dune is widely used in the
+	OCaml ecosystem due to its ease of use and minimal configuration.
+
+\end{Def}
+
+\begin{Def}[OPAM]
+
+	\textbf{OPAM} (OCaml Package Manager) is the standard package manager for the OCaml programming
+	language. It simplifies the installation, management, and sharing of OCaml libraries and tools,
+	providing developers with a convenient way to manage dependencies and project environments.
+\end{Def}
+
+\noindent
+If you are familiar with \textbf{npm} or \textbf{yarn}, \textbf{OPAM} serves a similar purpose but is specifically designed for the \textbf{OCaml} ecosystem. Like npm and yarn, OPAM is a package manager that simplifies the installation and management of libraries and dependencies. Additionally, it offers features tailored to OCaml development, such as managing multiple compiler versions and isolating project environments.
+
+
+
+\begin{Note}
+	\underline{\textbf{Window Users:}} It may be easier to use WSL or a Linux VM to run OCaml and Dune rather than a native install.
+	This text will use \textbf{Ubuntu} distro. If using WSL, make sure the terminal is running the distro, it will give you a fresh
+	file system to work with. If you are a Mac user, you may use \textbf{Homebrew} to install OCaml and Dune.
+
+	\noindent
+	\textbf{WSL Installation:} \href{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}
+\end{Note}
+
+\begin{Tip}
+	If you plan to use github as your repository manager, you may have to create a personal access token to connect your account to your local machine.\\
+	\textbf{Creating a Personal Access Token:} \href{https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic}{https://docs.github.com/en/authentication/kee...}
+\end{Tip}
+
+\newpage
+
+\noindent
+We use the terminal in this text, but an IDE could be used with additional setup.
+
+\begin{Def}[Basic Terminal Commands]
+	
+	\begin{itemize}
+		\item \textbf{Navigation:}
+		      \begin{itemize}
+			      \item \snippet{cd <directory>}: Change to a specified directory.
+			      \item \snippet{cd ~}: Navigate to the home directory.
+			      \item \snippet{cd ../}: Move up one level in the directory hierarchy.
+			      \item \snippet{pwd}: Print the current working directory.
+		      \end{itemize}
+
+		\item \textbf{Viewing and Listing:}
+		      \begin{itemize}
+			      \item \snippet{ls}: List the contents of the current directory.
+			      \item \snippet{ls -l}: Display detailed information about files and directories.
+			      \item \snippet{cat <file>}: Display the contents of a file.
+			      \item \colorbox{OliveGreen!20}{\snippet{tree} <directory>}:
+				  Prettier \snippet{ls -l}, install: \colorbox{OliveGreen!20}{\snippet{sudo apt install tree}}.
+		      \end{itemize}
+
+		\item \textbf{Creating:}
+		      \begin{itemize}
+			      \item \snippet{mkdir <directory>}: Create a new directory.
+			      \item \snippet{touch <file>}: Create an empty file.
+		      \end{itemize}
+
+		\item \textbf{Deleting:}
+		      \begin{itemize}
+			      \item \snippet{rm <file>}: Delete a file.
+			      \item \snippet{rm -r <directory>}: Delete a directory and its contents recursively.
+		      \end{itemize}
+
+		\item \textbf{Renaming and Moving:}
+		      \begin{itemize}
+				  \item \snippet{mv file.txt /path/to/new/directory/}
+			      \item \snippet{mv <oldname> <newname>}: Rename or move a file.
+		      \end{itemize}
+		\item \textbf{File Properties:}
+			  \begin{itemize}
+			  \item \snippet{chmod <permissions> <file>}: Change the permissions of a file.
+			  \item \snippet{chmod u+rwx file.txt}: Gives \snippet{u} (owner) \textbf{r}ead, \textbf{w}rite, and e\textbf{x}ecute permissions. 
+			  \item \snippet{chmod g-w file.txt}: Removes \snippet{g} (group) \textbf{w}rite permission.
+			  \item \snippet{file <file>}: Determine the type of a file.
+			  \end{itemize}
+		
+	\end{itemize}
+	\vspace{1em}
+\end{Def}
+
+\newpage 
+\noindent
+\textbf{Vim} will be our text-editor of choice. We will write code, and edit files using Vim.
+
+\begin{Def}[Vim Common Commands]
+
+\begin{itemize}
+    \item \textbf{Starting and Exiting:}
+        \begin{itemize}
+            \item \snippet{vim <file>}: Open or a create a file in Vim.
+            \item \snippet{:w}: Save (write) changes to the file.
+            \item \snippet{:q}: Quit Vim.
+            \item \snippet{:wq}: Save changes and quit Vim.
+            \item \snippet{:q!}: Quit without saving changes.
+        \end{itemize}
+    
+    \item \textbf{Modes:}
+        \begin{itemize}
+            \item \snippet{i}: Switch to \textbf{\textit{Insert Mode}} to start editing text.
+            \item \snippet{Esc}: Return to \textbf{\textit{Normal Mode}}, read-only mode for \textbf{navigation} and \textbf{commands}.
+        \end{itemize}
+    
+    \item \textbf{Navigation:}
+        \begin{itemize}
+            \item \snippet{h} (left), \snippet{j} (down), \snippet{k} (up), \snippet{l} (right): Moves the cursor.
+            \item \snippet{:<line number>}: Jump to a specific line in the file.
+            \item \snippet{G}: Jump to the end of the file.
+            \item \snippet{gg}: Jump to the beginning of the file.
+        \end{itemize}
+    
+    \item \textbf{Editing:}
+        \begin{itemize}
+            \item \snippet{x}: Delete the character under the cursor.
+            \item \snippet{dd}: Delete the current line.
+            \item \snippet{yy}: Copy (yank) the current line.
+            \item \snippet{p}: Paste copied or deleted text.
+            \item \snippet{u}: Undo the last change.
+            \item \snippet{Ctrl+r}: Redo the undone change.
+        \end{itemize}
+    
+    \item \textbf{Searching:}
+        \begin{itemize}
+            \item \snippet{/text}: Search for \texttt{text} in the file.
+            \item \snippet{n}: Jump to the next occurrence of the search term.
+            \item \snippet{N}: Jump to the previous occurrence of the search term.
+        \end{itemize}
+\end{itemize}
+
+\vspace{1em}
+\snippet{:help}: for more Vim commands and options.
+\end{Def}
+
+
+
+
+
+
+\newpage
+
+
+\vspace{-1em}
+\subsection{Preparing the Environment}
+\noindent
+Next we enable our machine to compile and run OCaml code. Choose a line below that
+corresponds to your operating system, and run it in the terminal.
+\begin{lstlisting}[language=Bash, caption={Installing OPAM on Various Systems}, numbers=left]
+    # Homebrew (macOS)
+    brew install opam
+    
+    # MacPort (macOS)
+    port install opam
+    
+    # Ubuntu
+    apt install opam
+    
+    # Debian
+    apt-get install opam
+    
+    # Arch Linux
+    pacman -S opam
+\end{lstlisting}
+
+\noindent
+Before we can use OPAM to manage OCaml libraries and tools, we need to prepare the system by running the \snippet{opam init} command. This sets up OPAM by:
+
+\begin{lstlisting}[language=Bash, caption={Initializing OPAM}]
+    # Initialize OPAM
+    opam init
+    
+    # Configure your shell environment
+    eval $(opam env)
+    
+    # Verify OPAM is ready to use
+    opam --version
+\end{lstlisting}
+
+\noindent
+After these steps, OPAM will be ready to manage OCaml dependencies, compilers, and project environments.
+\begin{Note}
+	\underline{\textbf{Important:}} With every new terminal, \snippet{eval \$(opam env)} must be ran for OCaml use.
+	Without it, the terminal might not recognize OPAM-installed tools or compilers.
+\end{Note}
+
+\subsection{Creating and Using an OPAM Switch}
+
+To manage different versions of OCaml and keep project dependencies isolated, OPAM provides a feature called a \textbf{switch}.
+A switch is an environment tied to a specific OCaml compiler version and a unique set of installed packages. This is especially
+useful for working on multiple projects with different requirements.
+
+\newpage
+\noindent
+For this setup, we will create a new switch to ensure a clean environment with the required version of OCaml.
+Follow these steps:
+
+\begin{lstlisting}[language=Bash, caption={Creating and Activating an OPAM Switch}]
+    # Step 1: Create a new switch named "my_switch" with OCaml version 5.2.1
+    opam switch create my_switch 5.2.1
+    
+    # Step 2: Activate the newly created switch
+    opam switch my_switch
+    
+    # Step 3: Update your terminal environment to reflect the switch
+    eval $(opam env)
+    
+    # Step 4: Verify the switch is active
+    opam switch
+    
+    # (Or / Optionally) Check the OCaml version
+    ocaml -version
+\end{lstlisting}
+
+\noindent
+Once these commands are executed, your terminal will be configured to use the OCaml version and environment
+defined by the switch \snippet{my\_switch}.
+
+\subsection{Updating OPAM and Installing Essential Packages}
+After initializing OPAM and creating a switch, the next step is to update OPAM's package repository and install
+the tools we’ll need for development. These packages provide essential utilities for OCaml programming and project management.
+Run the following commands:
+
+\begin{lstlisting}[language=Bash, caption={Updating OPAM and Installing Packages}]
+# Step 1: Update OPAM to fetch the latest package information
+opam update
+
+# Step 2: Install essential development tools
+opam install dune utop ounit2 menhir ocaml-lsp-server
+
+# Step 3: Install the custom library for this course
+opam install stdlib320/.
+\end{lstlisting}
+
+\noindent
+Here's what each package does:
+\begin{itemize}
+	\item \snippet{dune}: A modern build system for OCaml projects. It automates the compilation and management of OCaml code.
+	\item \snippet{utop}: A user-friendly OCaml REPL (Read-Eval-Print Loop) for testing and experimenting with OCaml code interactively.
+	\item \snippet{ounit2}: A testing framework for OCaml, similar to JUnit for Java, used for writing and running unit tests.
+	\item \snippet{menhir}: A parser generator for OCaml, often used for developing compilers and interpreters.
+	\item \snippet{ocaml-lsp-server}: A Language Server Protocol (LSP) implementation for OCaml, enabling features like autocompletion, type inference, and error checking in editors.
+	\item \snippet{stdlib320/}: A custom library created for the CS320 course at Boston University by Nathan Mull. It provides
+	      It's a very small subset of the OCaml Standard Library with a bit more documentation. Documentation: \href{https://nmmull.github.io/CS320/landing/Spring-2025/Specifications/Stdlib320/index.html}{https://nmmull.github.io/CS320/...}.
+\end{itemize}
+
+\noindent
+These will be the main tools used throughout this text.
+
+\subsection{Creating a Dune Project: Hello, World!}
+
+To understand how \snippet{dune} structures projects and facilitates OCaml development, we'll create a simple project called \snippet{hello\_dune}. This hands-on example will demonstrate the purpose of each folder and guide you through building, running, and testing an OCaml project.
+
+\subsubsection{Step 1: Prepare Your Environment}
+
+Before starting, ensure OPAM and your environment are set up. Run the following command to prepare the shell:
+
+\begin{lstlisting}[language=Bash, caption={Preparing Your OPAM Environment}]
+    eval $(opam env)
+\end{lstlisting}
+
+\noindent
+This ensures that your terminal is configured correctly to work with OCaml and \snippet{dune}.
+
+\subsubsection{Step 2: Create the Project}
+
+\noindent
+Run the following commands to create a new \snippet{dune} project called \snippet{hello\_dune}:
+
+\begin{lstlisting}[language=Bash, caption={Creating the Project}]
+    mkdir demo # Create a new folder named hello_dune for our project
+    cd demo    # Move into the project directory
+    dune init project hello_dune # Initialize a new dune project
+\end{lstlisting}
+
+\noindent
+This will generate the following project structure inside the \snippet{demo} folder:
+\begin{lstlisting}[language=Bash, caption={Generated Project Structure}]
+    hello_dune/
+    |-- bin/         # Contains the main executable code
+    |-- lib/         # Contains reusable library code
+    |-- test/        # Contains test code
+    |-- dune-project         # Defines the project
+    |-- hello_dune.opam      # OPAM package definition
+\end{lstlisting}
+
+\noindent
+For now, we will focus on the \snippet{bin/} and \snippet{lib/} folders.
+
+\subsubsection{Step 3: Build and Verify the Project}
+
+To ensure everything is set up correctly, use the following command to build the project:
+
+\begin{lstlisting}[language=Bash, caption={Building the Project}]
+    dune build
+\end{lstlisting}
+
+\noindent
+\textbf{This command:}
+\begin{itemize}
+    \item Compiles the OCaml source files in your project.
+    \item Resolves dependencies and ensures libraries and executables are built in the correct order.
+    \item Creates a build cache to speed up future builds.
+    \item Verifies that your project is configured correctly.
+\end{itemize}
+
+\noindent
+\textbf{Important Notes:}
+\begin{itemize}
+    \item You must run \snippet{dune build} every time you make changes to your code to ensure the build reflects your edits.
+    \item Running \snippet{dune build} from any subdirectory within redirect to the project root and build.
+    \item If there are any issues (e.g., syntax errors, missing files, or incorrect configurations), \snippet{dune} will report them.
+\end{itemize}
+
+\subsubsection{Step 4: Modify and Run the Program}
+
+\noindent
+To modify the program, first open the file \snippet{bin/main.ml} using Vim:
+
+\begin{lstlisting}[language=Bash, caption={Opening the File in Vim}]
+    vim bin/main.ml
+\end{lstlisting}
+
+\noindent
+This opens the \underline{\textbf{main executable file}} in the Vim editor. Once the file is open, press \snippet{i} to switch to \textit{Insert Mode} and replace its contents with the following code:
+
+\begin{lstlisting}[language=OCaml, caption={Hello, Dune Program}]
+    let () = print_endline "Hello, Dune!"
+\end{lstlisting}
+
+\noindent
+After editing, press \snippet{Esc} to return to \textit{Normal Mode}, then type \snippet{:wq} to save the changes and exit Vim.
+Now, run the program using the following command:
+
+\begin{lstlisting}[language=Bash, caption={Running the Program}]
+    dune exec ./bin/main.exe
+\end{lstlisting}
+
+\noindent
+You should see the output:
+\begin{lstlisting}[language=Bash]
+    Hello, Dune!
+\end{lstlisting}
+
+
+\subsubsection{Step 5: Add a Library and Explore Its Use}
+
+The \snippet{lib/} folder is reserved for reusable code that can be shared across different parts of a project. 
+In object-oriented programming languages like Java, this is analogous to creating static utility classes 
+(e.g., a \texttt{Math} class for reusable mathematical functions).\\
+
+\noindent
+\textbf{Steps to Add and Use the Library:}\\
+
+\noindent
+1. Create a new file in the \snippet{lib/} folder. \underline{\textbf{Important:}} The name of the file must match the project name. 
+   If your project is named \snippet{hello\_dune}, the file should be named:
+   \begin{lstlisting}[language=Bash]
+   vim lib/hello_dune.ml
+   \end{lstlisting}
+
+\vspace{.5em}
+\noindent
+2. Add a reusable function to \snippet{lib/hello\_dune.ml} (\snippet{ \^} concats strings, \snippet{+} is strictly for integers):
+   \begin{lstlisting}[language=OCaml]
+   let greet name = "Hello, " ^ name ^ "!"
+   \end{lstlisting}
+
+\vspace{.5em}
+\noindent
+3. Verify or update the \snippet{lib/dune} file to expose the library. \underline{The \snippet{name} in the \snippet{dune} file}\\
+   \underline{should also match the project name:}
+   \begin{lstlisting}[language=PlainText]
+   (library
+    (name hello_dune))
+   \end{lstlisting}
+
+   \noindent If this file is already configured with the above content, no changes are needed.\\
+
+\vspace{.5em}
+\noindent
+4. Interactively use the library in \snippet{utop}:
+   \begin{lstlisting}[language=Bash]
+   dune utop
+   \end{lstlisting}
+
+   \noindent Once inside \snippet{utop}, you can interact with the library:
+   \begin{lstlisting}[language=OCaml, caption={Using the Library in Utop}]
+   Hello_dune.greet "Testing123";;
+   \end{lstlisting}
+
+   \noindent
+   You should see the output: 
+
+    \begin{lstlisting}[language=OCaml]
+    - : string = "Hello, Testing123!".
+    \end{lstlisting}
+   \vspace{.5em}
+   \noindent
+   \underline{\textbf{Important}}: Despite \snippet{lib/hello\_dune.ml} being lowercase, it's referenced as \snippet{Hello\_dune} in utop (capitalized).
+   More on \snippet{utop} will be discussed later. But you may think of it as a calculator where we can access our functions and libraries.\\
+
+\noindent
+5. To quit \snippet{utop}, type \snippet{\#quit;;} or press \snippet{Ctrl+d}.
+   \begin{lstlisting}[language=OCaml, caption={Quitting utop}]
+   #quit;;
+   \end{lstlisting}
+
+\newpage
+\noindent
+6. We may also modify \snippet{bin/main.ml} to use the library:
+   \begin{lstlisting}[language=OCaml, caption={Using the Library in Main}]
+   let () = print_endline (Hello_dune.greet "Library")
+   \end{lstlisting}
+
+\noindent
+7. Build and run the program:
+   \begin{lstlisting}[language=Bash]
+   dune build
+   dune exec ./bin/main.exe
+   \end{lstlisting}
+
+   \noindent The output should now be:
+   \begin{lstlisting}[language=Bash]
+   Hello, Library!
+   \end{lstlisting}
+
+\vspace{1em}
+\noindent
+\textbf{What Are Dune Files?}\\
+As you explore the project, you’ll notice \snippet{dune} files in various folders such as \snippet{bin/} and \snippet{lib/}. These files 
+are configuration files used by the \textit{Dune build system} to manage how your project is compiled and linked.\\
+
+\noindent
+1. \textbf{Dune File in \snippet{lib/}:}
+   \begin{lstlisting}[language=PlainText, caption={Library Dune File}]
+   (library
+    (name hello_dune))
+   \end{lstlisting}
+
+   \noindent This file defines the \snippet{hello\_dune} library. Dune compiles the code in \snippet{lib/hello\_dune.ml} into a reusable 
+   module named \snippet{Hello\_dune}, which can be used in other parts of the project.\\
+
+\noindent
+2. \textbf{Dune File in \snippet{bin/}:}
+   \begin{lstlisting}[language=PlainText, caption={Executable Dune File}]
+   (executable
+    (public_name hello_dune)
+    (name main)
+    (libraries hello_dune))
+   \end{lstlisting}
+
+   \noindent This file specifies the executable program:
+   \begin{itemize}
+       \item \snippet{public\_name hello\_dune}: Defines the name of the program, which you can run with \snippet{dune exec hello\_dune}.
+       \item \snippet{name main}: Points to \snippet{bin/main.ml}, which serves as the entry point.
+       \item \snippet{libraries hello\_dune}: Links the \snippet{hello\_dune} library to the executable.
+   \end{itemize}
+
+\noindent
+
+\newpage
+
+\subsubsection{Step 6: Add Tests}
+
+To test the library, we use the \snippet{test/} folder:
+
+1. Create a new test file:
+\begin{lstlisting}[language=Bash]
+   touch test/test_hello.ml
+   \end{lstlisting}
+
+2. Add the following code to \snippet{test/test\_hello.ml}:
+\begin{lstlisting}[language=OCaml, caption={Test Code}]
+   let () =
+     let open Alcotest in
+     check string "same message" "Hello from the library!" Hello.message
+   \end{lstlisting}
+
+3. Update the \snippet{test/dune} file to include the test:
+\begin{lstlisting}[language=PlainText, caption={Test Dune File}]
+   (test
+    (name test_hello)
+    (libraries hello alcotest))
+\end{lstlisting}
+
+4. Run the tests:
+\begin{lstlisting}[language=Bash]
+   dune runtest
+\end{lstlisting}
+
+If everything is set up correctly, the test will pass.
+
+\subsubsection{Summary of Roles}
+- \textbf{\snippet{bin/}:} Contains the main executable code (e.g., \snippet{main.ml}).
+- \textbf{\snippet{lib/}:} Contains reusable library code.
+- \textbf{\snippet{test/}:} Contains tests to verify the project works as expected.
+
+This step-by-step guide demonstrates how \snippet{dune} organizes projects and how each folder contributes to OCaml development. By creating and running your own project, you'll gain a deeper understanding of the tools and structure used in OCaml programming.
+
+
