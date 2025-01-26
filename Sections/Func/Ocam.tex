@@ -279,7 +279,7 @@ In OCaml, functions are \textbf{curried} by default. This means that a function 
 \vspace{1em}
 \noindent
 We let \snippet{add} stand for \snippet{fun x -> fun y -> x + y}. Therefore in reality we are doing:
-\begin{lstlisting}[language=OCaml, numbers=none]
+\begin{lstlisting}[language=OCaml]
     (fun x -> fun y -> x + y) 3 5
 \end{lstlisting}
 
@@ -322,7 +322,6 @@ This is know as \textbf{Application}, as we are \textit{applying} arguments to a
 \end{Def}
 
 \noindent
-
 
 \newpage
 \subsection{If-Expressions}
@@ -368,9 +367,500 @@ In OCaml, \textbf{if-expressions} are used to conditionally evaluate expressions
     \end{lstlisting}
 \end{Def}
 
-\begin{Q
+\begin{Exercise}
+    Write an OCaml function that takes an integer $x$ and evaluates \snippet{"positive"} if $x$ is positive, \snippet{"negative"} if $x$ is negative, and \snippet{"zero"} if $x$ is zero.
+    \end{Exercise}
+    
+    
+    \vspace{1em}
+    \begin{Exercise}
+    Write an OCaml function that takes an integer $x$ and evaluates to the first digit of $x$ using only integer arithmetic operations.
+    \end{Exercise}\\
+
+\begin{Exercise}
+    Write an OCaml function that fixes the previous \textbf{Else If} function to evaluate to \snippet{"divisible by 3 and 5"} if $x$ is divisible by both 3 and 5.
+\end{Exercise}
+
+\newpage 
 
 
+\subsection{Type Hinting in OCaml}
+\noindent
+Type hinting is a way to explicitly specify the types of variables or function parameters in OCaml. This can be useful for documentation, readability, and debugging purposes.\\
+
+\begin{Def}[Type Hinting in OCaml]
+
+    In OCaml, \textbf{type hinting} allows programmers to explicitly specify the types of variables or function parameters. While type hints are not necessary due to OCaml's strong and static type system, 
+    they can help clarify intent and make code easier to understand, especially for larger projects.\\
+
+    \noindent
+    \rule{\textwidth}{0.4pt}
+
+    \noindent
+    \textbf{Function Type Hinting:}
+    \begin{lstlisting}[language=OCaml, caption={Adding Type Annotations to Functions}, numbers=none]
+    let add (x : int) (y : int) : int = x + y
+    (* Explicitly states that x and y are integers, which results as an integer. *)
+    \end{lstlisting}
+    \noindent
+    \rule{\textwidth}{0.4pt}
+
+    \noindent
+    \textbf{Variable Type Hinting:}
+    \begin{lstlisting}[language=OCaml, caption={Adding Type Annotations to Variables}, numbers=none]
+    let name : string = "OCaml"
+    (* Explicitly states that name is a string. *)
+    \end{lstlisting}
 
 
-        
+    \noindent
+    \rule{\textwidth}{0.4pt}
+    
+    \noindent
+    \textbf{Type Hinting for Anonymous Functions:}
+    \begin{lstlisting}[language=OCaml, caption={Type Hinting in Anonymous Functions}, numbers=none]
+    (fun (x : float) (y : float) -> x *. y) 3.0 4.2;;
+    (* Multiplies two floats stating explicitly typing arguments as floats. *)
+    \end{lstlisting}
+
+    \noindent
+    \rule{\textwidth}{0.4pt}
+    \textbf{Typing General Expressions:}\\
+    Though possibly adding redundancy, theoretically we may type any expression in OCaml.
+\begin{lstlisting}[language=OCaml, caption={Type Hinting in Conditional Expressions}, numbers=none]
+    ((fun (x : int) -> 
+            if x mod 2 = 0 then "even" 
+            else "odd"
+     ) : int -> string) 5 
+    (* Evaluates to "odd" *)
+\end{lstlisting}
+\end{Def}
+
+\newpage
+
+\subsection{OCaml Data Structures: Arrays, Lists, and Tuples}
+
+There are arrays, lists, and tuples in OCaml. While OCaml is not a purely functional language, we will treat it as such in this text, adhering to the principles of immutability and functional purity.
+Arrays and Lists may be treated as immutable objects as long is they aren't mutated; However, we won't use them very much in this text, we discuss only such for completeness and clarity.
+
+\begin{Def}[Lists in OCaml]
+
+    A \textbf{list} in OCaml is an ordered, immutable collection of elements of the same type, 
+    implemented as a \textbf{linked list}. Lists are created using square brackets \snippet{[ ]} 
+    with elements separated by semicolons:
+    \begin{lstlisting}[language=OCaml, caption={Defining a List}, numbers=none]
+    [1; 2; 3; 4]
+    (*Syntax: [e1;e2;e3;...;en] *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={List of Lists}, numbers=none]
+    [[1; 2]; [3; 4]; [5; 6]]
+    (*Syntax: [[e1;e2];[e3;e4];[e5;e6]] *)    
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Indexing a List}, numbers=none]
+    List.nth [1; 2; 3; 4] 2
+    (*Evaluates to 3; 
+      Syntax: List.nth <list> <index> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Finding Length}, numbers=none]
+    List.length [1; 2; 3; 4]
+    (*Evaluates to 4; 
+      Syntax: List.length <list> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Joining Lists}, numbers=none]
+    [1; 2] @ [3; 4]
+    (*Evaluates to [1; 2; 3; 4]; 
+      Syntax: <list1> @ <list2> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Cons Operator (::) Appending One Head Element}, numbers=none]
+    1 :: [2; 3; 4]
+    (*Evaluates to [1; 2; 3; 4]; 
+      Syntax: <element> :: <list> *)
+    \end{lstlisting}
+\end{Def}
+
+\newpage
+
+\vfill
+
+\begin{Def}[Arrays in OCaml]
+
+    \textbf{Arrays} are a fixed-length random access (indexable) mutable collection of elements with the same type.
+    They are created with brackets and vertical bars \snippet{[| |]}:
+    \begin{lstlisting}[language=OCaml, caption={Defining and Modifying an Array}, numbers=none]
+    [|1; 2; 3; 4|]
+    (* Creates an array of integers: [|1; 2; 3; 4|] *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={2D Array}, numbers=none]
+    [|[|1; 2|]; [|3; 4|]|]
+    (* Creates a 2D array of type: int array array *)    
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Arrays.make: Prefill Length Array}, numbers=none]
+    Array.make 3 0
+    (*Evaluates to [|0; 0; 0|]; 
+      Syntax: Array.make <length> <initial_value> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Accessing Array Elements}, numbers=none]
+    let arr = [|1; 2; 3; 4|] in arr.(2)
+    (*Evaluates to 3; 
+      Syntax: <array>.(<index>) *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Arrays.init: Creating Array with Function}, numbers=none]
+    Array.init 5 (fun i -> i * 2)
+    (*Evaluates to [|0; 2; 4; 6; 8|] where i is the index; 
+      Syntax: Array.init <length> <function> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Mutating Array Elements}, numbers=none]
+    let arr = [|1; 2; 3; 4|] in arr.(2) <- 5
+    (*Evaluates [|1; 2; 5; 4|]; 
+      Syntax: <array>.(<index>) <- <new_value> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Length of Array}, numbers=none]
+    Array.length [|1; 2; 3; 4|]
+    (*Evaluates to 4; 
+      Syntax: Array.length <array> *)
+    \end{lstlisting}
+\end{Def}
+
+\vfill
+
+\newpage
+
+
+\begin{Def}[Tuples in OCaml]
+
+    A \textbf{tuple} in OCaml is an ordered collection of elements, where each element can have a different type. Tuples are immutable and their size is fixed. They are created using parentheses with elements separated by commas:
+    \begin{lstlisting}[language=OCaml, caption={Defining a Tuple}, numbers=none]
+    (3, 4)
+    (*Syntax: (e1, e2, ..., en) *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={2D Tuple}, numbers=none]
+    ((1, 2), (3, 4))
+    (* 
+    2D tuple of type: (int * int) * (int * int) 
+    *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Mixed Type Tuple}, numbers=none]
+    (3, "hello", true, 4.2)
+    (*
+    Mixed type tuple (3, "hello", true, 4.2): int * string * bool * float 
+    *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Accessing Tuple via Pattern Matching}, numbers=none]
+    match (3, 4) with (x, y) -> x + y
+    (*Evaluates to 7; 
+      Syntax: match <tuple> with (<pattern>) -> <expr> *)
+    \end{lstlisting}
+    \noindent
+    More on \snippet{match} (Pattern Matching) in the next section.
+
+    \begin{lstlisting}[language=OCaml, caption={Accessing Tuple via Decomposition}, numbers=none]
+    let (x, y) = (3, 4)
+    (*Evaluates to x = 3, y = 4; 
+      Syntax: let (<pattern>) = <tuple> *)
+    \end{lstlisting}
+
+    \noindent
+    \textbf{Note:} There is no built-in functions to index or retrieve a length of a tuple in OCaml. Tuples 
+    are seen as a single entity, where pattern matching is typically utilized to access elements.
+\end{Def}
+
+\newpage 
+\subsection{Pattern Matching \& Switch-Case}
+
+\textbf{Pattern matching} is a powerful feature in OCaml that allows for conditional evaluation based on the structure of data. It is similar to \textbf{switch-case} statements in other languages, but more flexible and expressive.\\
+
+\begin{Def}[OCaml Pattern Matching (match ... with ...)]
+
+    \textbf{Pattern matching} in OCaml is a mechanism for inspecting and deconstructing data based on its structure. 
+    The \snippet{match ... with} expression evaluates a value and compares it against a series of patterns, executing the first matching case. Its syntax is as follows:
+    
+    \begin{lstlisting}[language=OCaml, caption={Pattern Matching Syntax}, numbers=none]
+    match <expression> with
+    | <pattern1> -> <result1>
+    | <pattern2> -> <result2>
+    | ...
+    | <patternN> -> <resultN>
+    \end{lstlisting}
+    
+    \noindent
+    Here, \snippet{<expression>} is the value being evaluated, and each \snippet{<pattern>} represents a condition or structure to match.
+    
+    \begin{lstlisting}[language=OCaml, caption={Matching an Integer}, numbers=none]
+    fun x ->
+      match x with
+      | 0 -> "zero"
+      | 1 -> "one"
+      | _ -> "other";;
+    
+    describe_number 0;; (* Evaluates to "zero" *)
+    describe_number 5;; (* Evaluates to "other" *)
+    \end{lstlisting}
+    
+    \begin{itemize}
+        \item \textbf{Underscore (\_):} A wildcard pattern that matches anything not explicitly listed.
+        \item \textbf{Multiple Patterns:} Separate patterns with \snippet{|} to match multiple cases.
+        \item \textbf{Deconstruction:} Use pattern matching to extract values from compound data structures such as tuples, lists, or variants.
+    \end{itemize}
+\end{Def}
+
+\begin{Def}[OCaml Switch-Case Absence]
+
+    In OCaml, \underline{\textbf{There is no switch-case statement}}. Pattern matching is used instead.
+\end{Def}
+
+\newpage 
+    
+\subsection{Looping: Recursion, Tail-End Recursion, and Loops}
+
+In functional programming, looping is typically achieved through \textbf{recursion}. Unlike imperative programming, where loops rely on mutable state, 
+recursion allows us to iterate by repeatedly calling a function while unravelling our expressions. While OCaml is not a purely functional language and does provide \snippet{for} and \snippet{while} loops, 
+in the context of this text, we will only use recursion for looping.
+
+\vspace{2em}
+\begin{Def}[Ocaml Recursion]
+
+Recursion is the process of a function calling itself. Any and all recursive functions need the keyword
+\snippet{rec} to be used in OCaml:
+
+\noindent
+
+\begin{lstlisting}[language=OCaml, caption={Summing to $n$ Using Recursion}, numbers=none]
+    let rec sum_to_n n =
+        if n = 0 then 0
+        else n + sum_to_n (n - 1)
+    in 
+    sum_to_n 5
+    (* Evaluates to 15 as 5 + 4 + 3 + 2 + 1 + 0 *)
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={Fibonacci Sequence Using Recursion}, numbers=none]
+    let rec fibonacci n =
+        if n <= 1 then n
+        else fibonacci (n - 1) + fibonacci (n - 2)
+    in 
+    fibonacci 6
+    (* Evaluates to 8 as 0, 1, 1, 2, 3, 5, 8 *)
+    
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={Sum an Array of Integers Using Recursion}, numbers=none]
+    let rec sum_arr arr i =
+        if i <= 0 then 0
+        else arr.(i - 1) + sum_arr arr (i - 1)
+    in
+    let my_array = [|1; 2; 3; 4; 5|] in
+    sum_arr my_array (Array.length my_array)
+    (* Evaluates to 15 as 1 + 2 + 3 + 4 + 5 *)
+\end{lstlisting}
+
+\end{Def}
+
+\newpage
+
+\begin{Def}[Tail-End Recursion]
+
+    Tail-end recursion refers to a type of recursion where the recursive call is the \emph{last operation} performed in the function. 
+    This allows the OCaml compiler to reuse the same stack frame through \textbf{tail call optimization (TCO)}, helping avoid stack overflow errors.
+    
+    \begin{lstlisting}[language=OCaml, caption={Non-Tail-Recursive Factorial Function}, numbers=none]
+    let rec factorial n =
+        if n <= 1 then 1
+        else n * factorial (n - 1)
+    (* The multiplication (n * ...) occurs after the recursive call. *)
+    \end{lstlisting}
+    
+    \noindent The above function \textbf{is not tail-recursive} as for \snippet{n} to be multiplied by the result of\\
+    \snippet{factorial (n - 1)}. The recursive call must be evaluated first to get an answer, forcing us to track of intermediate stacks possibly leading to a stack overflow.
+    Instead, we can pass an accumulated result as an argument to the function known as the \textbf{accumulator}:
+    
+    \begin{lstlisting}[language=OCaml, caption={Tail-Recursive Factorial Function}, numbers=none]
+    let rec factorial n acc =
+        if n <= 1 then acc
+        else factorial (n - 1) (n * acc)
+    (* The recursive call is the last operation performed. *)
+    \end{lstlisting}
+
+    \noindent To use the above we can call \snippet{... in factorial n 1} to start the recursion with an initial accumulator of 1.
+    To abstract this, we can define a auxiliary helper function to hide the accumulator from the user:
+
+    \begin{lstlisting}[language=OCaml, caption={Tail-Recursive Factorial Function with Helper}, numbers=none]
+    let factorial n =
+        let rec aux n acc =
+            if n <= 1 then acc
+            else aux (n - 1) (n * acc)
+        in aux n 1
+    in factorial 5
+    (* Evaluates to 120 as 5! = 5 * 4 * 3 * 2 * 1 *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Tail-Recursive Array Summation}, numbers=none]
+    let rec sum_arr arr i acc =
+        if i <= 0 then acc
+        else sum_arr arr (i - 1) (arr.(i - 1) + acc)
+    in
+    let my_array = [|1; 2; 3; 4; 5|] in
+    sum_arr my_array (Array.length my_array) 0
+    (* Evaluates to 15 as 1 + 2 + 3 + 4 + 5 *)
+    \end{lstlisting}
+\end{Def}
+
+\newpage
+
+\subsection{Strings, Characters, and Printing in OCaml}
+
+As you may have seen with \snippet{Array.length <array>}, in OCaml strings must be explicitly manipulated using functions from the 
+\texttt{String} module. Such is the same with characters, which are represented as strings of length 1.
+
+\begin{Def}[Strings in OCaml]
+
+Strings in OCaml are immutable and allow for various operations, such as concatenation, slicing, and transformation. Here are some common ways to work with strings:
+
+    \begin{lstlisting}[language=OCaml, caption={Creating and Concatenating Strings}, numbers=none]
+    let greeting = "Hello" ^ " " ^ "World!"
+    (* Evaluates to "Hello World!"; 
+    Syntax: <string1> ^ <string2> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Getting the Length of a String}, numbers=none]
+    String.length "Hello"
+    (* Evaluates to 5; 
+    Syntax: String.length <string> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Accessing a Character in a String}, numbers=none]
+    "Hello".[1]
+    (* Evaluates to 'e'; 
+    Syntax: <string>.[<index>] *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Slicing a String}, numbers=none]
+    String.sub "Hello World" 0 5
+    (* Evaluates to "Hello"; 
+    Syntax: String.sub <string> <start> <length> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Converting to Uppercase}, numbers=none]
+    String.uppercase_ascii "hello"
+    (* Evaluates to "HELLO"; 
+    Syntax: String.uppercase_ascii <string> *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Splitting a String by a Delimiter}, numbers=none]
+    String.split_on_char ' ' "Hello World"
+    (* Evaluates to ["Hello"; "World"]; 
+    Syntax: String.split_on_char <delimiter> <string> *)
+    \end{lstlisting}
+\end{Def}
+
+\newpage 
+
+\begin{Def}[Characters in OCaml]
+
+    Characters in OCaml are individual elements of strings and are represented using single quotes (e.g., `a'). 
+    Unlike strings, characters are immutable single units that cannot be directly concatenated or manipulated as strings:
+    
+    \begin{lstlisting}[language=OCaml, caption={Defining Characters}, numbers=none]
+    let char_a = 'a'
+    (* A character is represented with single quotes. *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Comparing Characters}, numbers=none]
+    'a' < 'b'
+    (* Evaluates to true; 
+       Syntax: <char1> < <char2> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Converting Characters to Strings}, numbers=none]
+    Char.escaped 'a'
+    (* Evaluates to "a"; 
+       Syntax: Char.escaped <char> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Converting Characters to Integers}, numbers=none]
+    Char.code 'a'
+    (* Evaluates to 97 (ASCII code of 'a'); 
+       Syntax: Char.code <char> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Converting Integers to Characters}, numbers=none]
+    Char.chr 97
+    (* Evaluates to 'a' (ASCII character for 97); 
+       Syntax: Char.chr <int> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Checking if a Character is Uppercase}, numbers=none]
+    Char.uppercase_ascii 'a'
+    (* Evaluates to 'A'; 
+       Syntax: Char.uppercase_ascii <char> *)
+    \end{lstlisting}
+    
+    \end{Def}
+
+\newpage 
+
+\begin{Def}[Printing in OCaml]
+
+    Printing in OCaml is used to display information on the terminal, typically for debugging or interacting with users:
+    
+    \begin{lstlisting}[language=OCaml, caption={Printing a String}, numbers=none]
+    print_endline "Hello, World!"
+    (* Prints "Hello, World!" followed by a newline;
+       Syntax: print_endline <string> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Printing Integers, Floats, and Characters}, numbers=none]
+    print_int 42; print_newline ()
+    (* Prints "42" followed by a newline;
+       Syntax: print_int <int>; print_newline () *)
+    
+    print_float 3.14159; print_newline ()
+    (* Prints "3.14159" followed by a newline;
+        Syntax: print_float <float>; print_newline () *)
+
+    print_char 'A'; print_newline ()
+    (* Prints "A" followed by a newline;
+        Syntax: print_char <char>; print_newline () *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Formatted Printing with Printf}, numbers=none]
+    Printf.printf "The number is: %d\n" 42
+    (* Prints "The number is: 42" with formatted output;
+       Syntax: Printf.printf <format> <value> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Formatted Printing for Floats}, numbers=none]
+    Printf.printf "Pi is approximately: %.2f\n" 3.14159
+    (* Prints "Pi is approximately: 3.14" with 2 decimal places;
+       Syntax: Printf.printf <format> <float> *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Printing Multiple Values}, numbers=none]
+    Printf.printf "Name: %s, Age: %d\n" "Alice" 30
+    (* Prints "Name: Alice, Age: 30" with formatted output;
+       Syntax: Printf.printf <format> <value1> <value2> *)
+    \end{lstlisting}
+
+    
+    \begin{lstlisting}[language=OCaml, caption={Using Printf.eprintf for Error Messages}, numbers=none]
+    Printf.eprintf "Error: %s\n" "File not found"
+    (* Prints "Error: File not found" to the standard error output. *)
+    \end{lstlisting}
+    
+    \end{Def}
+    
+    \newpage 
+
