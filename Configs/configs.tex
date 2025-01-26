@@ -6,6 +6,7 @@
 \usepackage[framemethod=TikZ]{mdframed} % Required for creating the theorem, definition, exercise and corollary boxes
 \input{Configs/boxes} % This file contains the code for the boxes
 \input{Configs/code.tex} % This file contains the code for the code listings
+\usepackage{adjustbox} % Required for fitting tables into the page width
 
 
 % Packages for math symbols and images
@@ -135,3 +136,41 @@
 
 \newcommand*{\carry}[1][1]{\overset{#1}}
 \newcolumntype{B}[1]{r*{#1}{@{\,}r}}
+
+% EXERCISE BOXES (BOLDED AND UNDERLINED)
+
+\newcounter{Exercise}[section]\setcounter{Exercise}{0}
+\renewcommand{\theExercise}{\arabic{section}.\arabic{Exercise}}
+
+\newenvironment{Exercise}[1][]{%
+    \refstepcounter{Exercise}
+
+    \ifstrempty{#1}% 
+    % if condition (without title)
+    {\noindent\textbf{\underline{Exercise~\theExercise:} }}% 
+    % else condition (with title)
+    {\noindent\textbf{\underline{Exercise~\theExercise:~#1}}}% 
+    % Both conditions
+    \ignorespaces
+}{%
+    \par\noindent
+}
+
+% ANSWER BOXES
+
+\newcounter{Answer}[section]\setcounter{Answer}{0}
+\renewcommand{\theAnswer}{\arabic{section}.\arabic{Answer}}
+
+\newenvironment{Answer}[1][]{%
+    \refstepcounter{Answer}
+
+    \ifstrempty{#1}% 
+    % if condition (without title)
+    {\noindent\textbf{\underline{Answer~\theAnswer:} }}% 
+    % else condition (with title)
+    {\noindent\textbf{\underline{Answer~\theAnswer:~#1} }}% 
+    % Both conditions
+    \ignorespaces
+}{%
+    \par\noindent
+}

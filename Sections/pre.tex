@@ -60,7 +60,7 @@ the terminology used in this document.
     \end{itemize}
 
     \vspace{1em}
-    The pipe symbol (\texttt{|}) indicates alternatives, while the symbol \(\Rightarrow\) is used to denote derivations, 
+    The pipe symbol (\texttt{|}) indicates alternatives, while the symbol $\Rightarrow$ is used to denote derivations, 
     showing the step-by-step application of the grammar rules to expand non-terminals into terminals.
 
     \vspace{1em}
@@ -115,6 +115,16 @@ the terminology used in this document.
     This means the function $f(x)$ is defined as $x^2 + 1$.
 \end{Def}
 
+\begin{Def}[Substitution:\ \text{$[v/x]e$}]
+    
+    \label{def:substitution}
+    Formally, $[v/x]e$ denotes the substitution of $v$ for $x$ in the expression $e$.
+    For example:
+    \[
+    [3/x](x + x) = 3 + 3
+    \]
+    This means that every occurrence of $x$ in $e$ is replaced with $v$.
+\end{Def}
 
 
 

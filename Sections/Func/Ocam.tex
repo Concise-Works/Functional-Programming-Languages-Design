@@ -1,531 +1,376 @@
-\section{Development Environment with OCaml}
+\section{Ocaml Basics: Syntax, Types, and Semantics}
 
-In this section, we introduce \textbf{OCaml} as our programming language of choice for exploring
-the principles of \textbf{functional programming}. Functional programming emphasizes a declarative
-style, where programs describe \textit{what to do} rather than \textit{how to do it},
-in contrast to the imperative programming paradigm, which many programmers are familiar with.
+\subsection*{Strong Typing}
 
-To better understand these differences, we will compare functional programming in OCaml with
-imperative programming in Python. This will give us a practical perspective on how the two
-paradigms approach problem-solving and help us appreciate the unique features of functional programming.
+OCaml is a strongly typed language, meaning that operations between incompatible types are not allowed. Additionally, the underscore (\texttt{\_}) is used as a throwaway variable for values that are not intended to be used.
 
-\newpage
-
-\begin{Def}[OCaml]
-
-	\textbf{OCaml} is a general-purpose programming language from the ML family,
-	known for its strong static type system, type inference, and support for functional,
-	imperative, and object-oriented programming. It is widely used in areas like compilers,
-	financial systems, and formal verification due to its safety, performance,
-	and expressive syntax. \underline{ The \textbf{Ocaml Extension} is \snippet{.ml}}
-\end{Def}
+\begin{lstlisting}[language=OCaml, caption={Example of Strong Typing}]
+    let x : int = 2
+    let y : string = "two"
+    let _ = x + y (* THIS IS NOT POSSIBLE *)
+\end{lstlisting}
 
 \noindent
-In addition to using Ocaml we will use Dune and Opam.
-\begin{Def}[Dune]
-
-	\textbf{Dune} is a build system for \textbf{OCaml} projects, designed to simplify
-	the compilation and management of code. It automates tasks such as building executables,
-	libraries, and tests, while handling dependencies efficiently. Dune is widely used in the
-	OCaml ecosystem due to its ease of use and minimal configuration.
-
-\end{Def}
-
-\begin{Def}[OPAM]
-
-	\textbf{OPAM} (OCaml Package Manager) is the standard package manager for the OCaml programming
-	language. It simplifies the installation, management, and sharing of OCaml libraries and tools,
-	providing developers with a convenient way to manage dependencies and project environments.
-\end{Def}
+This will result in the following error:
+\begin{lstlisting}[language=Bash, caption={Error Message}]
+    3 | let _ = x + y (* THIS IS NOT POSSIBLE *)
+        ^ 
+    Error: This expression has type string but an expression was expected of type int
+\end{lstlisting}
 
 \noindent
-If you are familiar with \textbf{npm} or \textbf{yarn}, \textbf{OPAM} serves a similar purpose but is specifically designed for the \textbf{OCaml} ecosystem. Like npm and yarn, OPAM is a package manager that simplifies the installation and management of libraries and dependencies. Additionally, it offers features tailored to OCaml development, such as managing multiple compiler versions and isolating project environments.
-
-
-
-\begin{Note}
-	\underline{\textbf{Window Users:}} It may be easier to use WSL or a Linux VM to run OCaml and Dune rather than a native install.
-	This text will use \textbf{Ubuntu} distro. If using WSL, make sure the terminal is running the distro, it will give you a fresh
-	file system to work with. If you are a Mac user, you may use \textbf{Homebrew} to install OCaml and Dune.
-
-	\noindent
-	\textbf{WSL Installation:} \href{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}
-\end{Note}
-
-\begin{Tip}
-	If you plan to use github as your repository manager, you may have to create a personal access token to connect your account to your local machine.\\
-	\textbf{Creating a Personal Access Token:} \href{https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic}{https://docs.github.com/en/authentication/kee...}
-\end{Tip}
-
-\newpage
+Demonstrating that, in OCaml, unlike other languages, operator overloading and implicit type conversions are not allowed.
+This means, no adding strings and integers, floats and integers, etc. There are separate operators for each type.\\
 
 \noindent
-We use the terminal in this text, but an IDE could be used with additional setup.
+\textbf{Basic Ocaml Operators:}\\
+Operators in OCaml behave just like other languages, with a few exceptions. Here are the basic operators at a quick
+glance:
 
-\begin{Def}[Basic Terminal Commands]
-	
-	\begin{itemize}
-		\item \textbf{Navigation:}
-		      \begin{itemize}
-			      \item \snippet{cd <directory>}: Change to a specified directory.
-			      \item \snippet{cd ~}: Navigate to the home directory.
-			      \item \snippet{cd ../}: Move up one level in the directory hierarchy.
-			      \item \snippet{pwd}: Print the current working directory.
-		      \end{itemize}
-
-		\item \textbf{Viewing and Listing:}
-		      \begin{itemize}
-			      \item \snippet{ls}: List the contents of the current directory.
-			      \item \snippet{ls -l}: Display detailed information about files and directories.
-			      \item \snippet{cat <file>}: Display the contents of a file.
-			      \item \colorbox{OliveGreen!20}{\snippet{tree} <directory>}:
-				  Prettier \snippet{ls -l}, install: \colorbox{OliveGreen!20}{\snippet{sudo apt install tree}}.
-		      \end{itemize}
-
-		\item \textbf{Creating:}
-		      \begin{itemize}
-			      \item \snippet{mkdir <directory>}: Create a new directory.
-			      \item \snippet{touch <file>}: Create an empty file.
-		      \end{itemize}
-
-		\item \textbf{Deleting:}
-		      \begin{itemize}
-			      \item \snippet{rm <file>}: Delete a file.
-			      \item \snippet{rm -r <directory>}: Delete a directory and its contents recursively.
-		      \end{itemize}
-
-		\item \textbf{Renaming and Moving:}
-		      \begin{itemize}
-				  \item \snippet{mv file.txt /path/to/new/directory/}
-			      \item \snippet{mv <oldname> <newname>}: Rename or move a file.
-		      \end{itemize}
-		\item \textbf{File Properties:}
-			  \begin{itemize}
-			  \item \snippet{chmod <permissions> <file>}: Change the permissions of a file.
-			  \item \snippet{chmod u+rwx file.txt}: Gives \snippet{u} (owner) \textbf{r}ead, \textbf{w}rite, and e\textbf{x}ecute permissions. 
-			  \item \snippet{chmod g-w file.txt}: Removes \snippet{g} (group) \textbf{w}rite permission.
-			  \item \snippet{file <file>}: Determine the type of a file.
-			  \end{itemize}
-		
-	\end{itemize}
-	\vspace{1em}
-\end{Def}
+\vspace{.5em}
+\begin{table}[h!]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|c|c|c|}
+    \hline
+    \rowcolor{OliveGreen!10}\textbf{Type}   & \textbf{Literals Examples}             & \textbf{Operators}           \\ \hline
+    \texttt{int}    & \texttt{0, -2, 13, -023}      & \texttt{\textcolor{Wine}{+}, \textcolor{Wine}{-}, \textcolor{Wine}{*}, \textcolor{Wine}{/}, \textcolor{Wine}{mod}}      \\ \hline
+    \texttt{float}  & \texttt{3., -1.01}            & \texttt{\textcolor{Wine}{+.}, \textcolor{Wine}{-.}, \textcolor{Wine}{*.}, \textcolor{Wine}{/.}}       \\ \hline
+    \texttt{bool}   & \texttt{true, false}          & \texttt{\textcolor{Wine}{\&\&}, \textcolor{Wine}{||}, \textcolor{Wine}{not}}        \\ \hline
+    \texttt{char}   & \texttt{'b', 'c'}             &                               \\ \hline
+    \texttt{string} & \texttt{"word", "@*\&\#"}     & \textcolor{Wine}{$^\wedge$}                  \\ \hline
+    \end{tabular}%
+    }
+    \caption{Basic OCaml Types, Literals, and Operators}
+    \label{tab:ocaml-types}
+\end{table}
 
 \newpage 
+
 \noindent
-\textbf{Vim} will be our text-editor of choice. We will write code, and edit files using Vim.
+For emphasis:
+\begin{Def}[OCaml Operators]
 
-\begin{Def}[Vim Common Commands]
+    \noindent
+    \textbf{Operator Distinctions:}\\
+    Operators for \snippet{int} and \snippet{float} are \textit{different}. For example:
+    \begin{itemize}
+        \item \snippet{+} (integer addition)
+        \item \snippet{+.} (float addition)
+        \item \snippet{$^\wedge$} (string concatenation)
+    \end{itemize}
+    
+    \noindent
+    Moreover, the \snippet{mod} operator is used for integer division. This is to 
+    say that there is no implicit type conversion in OCaml.\\
+    \rule{\textwidth}{0.4pt}
 
-\begin{itemize}
-    \item \textbf{Starting and Exiting:}
-        \begin{itemize}
-            \item \snippet{vim <file>}: Open or a create a file in Vim.
-            \item \snippet{:w}: Save (write) changes to the file.
-            \item \snippet{:q}: Quit Vim.
-            \item \snippet{:wq}: Save changes and quit Vim.
-            \item \snippet{:q!}: Quit without saving changes.
-        \end{itemize}
-    
-    \item \textbf{Modes:}
-        \begin{itemize}
-            \item \snippet{i}: Switch to \textbf{\textit{Insert Mode}} to start editing text.
-            \item \snippet{Esc}: Return to \textbf{\textit{Normal Mode}}, read-only mode for \textbf{navigation} and \textbf{commands}.
-        \end{itemize}
-    
-    \item \textbf{Navigation:}
-        \begin{itemize}
-            \item \snippet{h} (left), \snippet{j} (down), \snippet{k} (up), \snippet{l} (right): Moves the cursor.
-            \item \snippet{:<line number>}: Jump to a specific line in the file.
-            \item \snippet{G}: Jump to the end of the file.
-            \item \snippet{gg}: Jump to the beginning of the file.
-        \end{itemize}
-    
-    \item \textbf{Editing:}
-        \begin{itemize}
-            \item \snippet{x}: Delete the character under the cursor.
-            \item \snippet{dd}: Delete the current line.
-            \item \snippet{yy}: Copy (yank) the current line.
-            \item \snippet{p}: Paste copied or deleted text.
-            \item \snippet{u}: Undo the last change.
-            \item \snippet{Ctrl+r}: Redo the undone change.
-        \end{itemize}
-    
-    \item \textbf{Searching:}
-        \begin{itemize}
-            \item \snippet{/text}: Search for \texttt{text} in the file.
-            \item \snippet{n}: Jump to the next occurrence of the search term.
-            \item \snippet{N}: Jump to the previous occurrence of the search term.
-        \end{itemize}
-\end{itemize}
+    \vspace{.3em}
+    \noindent
+    \textbf{No Operator Overloading:}\\
+    OCaml has \underline{\textbf{no operator overloading}}, meaning operators are strictly tied to specific types.
 
-\vspace{1em}
-\snippet{:help}: for more Vim commands and options.
+    \vspace{.3em}
+    \noindent
+    \rule{\textwidth}{0.4pt}
+
+    \vspace{.3em}
+    \noindent
+    \textbf{Comparison Operators:}\\
+    Comparison operators are standard and can be used to compare expressions of the same type:
+    \begin{itemize}
+        \item \snippet{<}, \snippet{<=}, \snippet{>}, \snippet{>=}
+    \end{itemize}
+
+    \vspace{-.3em}
+    \noindent
+    \rule{\textwidth}{0.4pt}
+    
+    \noindent
+    \textbf{Equality and Inequality:}
+
+    \vspace{-.5em}
+    \begin{itemize}
+        \item Equality check: \snippet{=}
+        \item Inequality check: is \snippet{<>} \textbf{and not}, \snippet{!=}
+    \end{itemize}
+
+    \vspace{-1em}
+    
 \end{Def}
 
+\vspace{-1em}
+\noindent
+\begin{Def}[OCaml (in) Keyword]
+    
+Consider the expression below:
+\begin{lstlisting}[language=OCaml, numbers=none]
+    let x = 2 in x + x 
+\end{lstlisting}
 
+\noindent
+The \snippet{in} keyword is used to bind the value of \snippet{x} to the expression \snippet{x + x}. This is a common pattern in OCaml.
+In a sense we are saying, `` let $x$ stand for 2 in the expression $x + x$.''\\
 
+This is similar to the prerequisite definition of the substitution operation (\ref{def:substitution}). Mathematically, we can think of this as:
+\[
+    [2/x](x + x) = 2 + 2
+\]
 
+\noindent
+Where the value of 2 is substituted for $x$ in the expression $x + x$.
 
+\end{Def}
+\newpage 
 
-\newpage
+\noindent
+To illustrate this, Observe the diagram below:\\
+
+\vspace{-1em}
+
+\begin{figure}[h]
+    {
+    \setlength{\fboxsep}{10pt}
+    \centering
+    \fbox{\hspace{2em}\includegraphics[width=0.8\textwidth]{Sections/Func/ocam/indef.png}\hspace{3em}}
+    }
+    \caption{The \snippet{in} Keyword in OCaml}
+    
+    \label{fig:ocaml-in}
+\end{figure}
+
 
 
 \vspace{-1em}
-\subsection{Preparing the Environment}
 \noindent
-Next we enable our machine to compile and run OCaml code. Choose a line below that
-corresponds to your operating system, and run it in the terminal.
-\begin{lstlisting}[language=Bash, caption={Installing OPAM on Various Systems}, numbers=left]
-    # Homebrew (macOS)
-    brew install opam
-    
-    # MacPort (macOS)
-    port install opam
-    
-    # Ubuntu
-    apt install opam
-    
-    # Debian
-    apt-get install opam
-    
-    # Arch Linux
-    pacman -S opam
-\end{lstlisting}
+To disect the roles of \textbf{syntax}, \textbf{semantics}, and \textbf{types} in the expression \snippet{let x = 2 in x + x}:
 
+\begin{figure}[h]
+    {
+        \setlength{\fboxsep}{10pt}
+    \centering
+    \fbox{\hspace{4em} \includegraphics[width=.7\textwidth]{Sections/Func/ocam/sst.png}\hspace{5em}}
+    }
+    \caption{Syntax, Semantics, and Types in OCaml}
+    \label{fig:ocaml-in2}
+\end{figure}
+
+\vspace{-1em}
 \noindent
-Before we can use OPAM to manage OCaml libraries and tools, we need to prepare the system by running the \snippet{opam init} command. This sets up OPAM by:
-
-\begin{lstlisting}[language=Bash, caption={Initializing OPAM}]
-    # Initialize OPAM
-    opam init
-    
-    # Configure your shell environment
-    eval $(opam env)
-    
-    # Verify OPAM is ready to use
-    opam --version
-\end{lstlisting}
-
-\noindent
-After these steps, OPAM will be ready to manage OCaml dependencies, compilers, and project environments.
-\begin{Note}
-	\underline{\textbf{Important:}} With every new terminal, \snippet{eval \$(opam env)} must be ran for OCaml use.
-	Without it, the terminal might not recognize OPAM-installed tools or compilers.
-\end{Note}
-
-\subsection{Creating and Using an OPAM Switch}
-
-To manage different versions of OCaml and keep project dependencies isolated, OPAM provides a feature called a \textbf{switch}.
-A switch is an environment tied to a specific OCaml compiler version and a unique set of installed packages. This is especially
-useful for working on multiple projects with different requirements.
-
-\newpage
-\noindent
-For this setup, we will create a new switch to ensure a clean environment with the required version of OCaml.
-Follow these steps:
-
-\begin{lstlisting}[language=Bash, caption={Creating and Activating an OPAM Switch}]
-    # Step 1: Create a new switch named "my_switch" with OCaml version 5.2.1
-    opam switch create my_switch 5.2.1
-    
-    # Step 2: Activate the newly created switch
-    opam switch my_switch
-    
-    # Step 3: Update your terminal environment to reflect the switch
-    eval $(opam env)
-    
-    # Step 4: Verify the switch is active
-    opam switch
-    
-    # (Or / Optionally) Check the OCaml version
-    ocaml -version
-\end{lstlisting}
-
-\noindent
-Once these commands are executed, your terminal will be configured to use the OCaml version and environment
-defined by the switch \snippet{my\_switch}.
-
-\subsection{Updating OPAM and Installing Essential Packages}
-After initializing OPAM and creating a switch, the next step is to update OPAM's package repository and install
-the tools we’ll need for development. These packages provide essential utilities for OCaml programming and project management.
-Run the following commands:
-
-\begin{lstlisting}[language=Bash, caption={Updating OPAM and Installing Packages}]
-# Step 1: Update OPAM to fetch the latest package information
-opam update
-
-# Step 2: Install essential development tools
-opam install dune utop ounit2 menhir ocaml-lsp-server
-
-# Step 3: Install the custom library for this course
-opam install stdlib320/.
-\end{lstlisting}
-
-\noindent
-Here's what each package does:
 \begin{itemize}
-	\item \snippet{dune}: A modern build system for OCaml projects. It automates the compilation and management of OCaml code.
-	\item \snippet{utop}: A user-friendly OCaml REPL (Read-Eval-Print Loop) for testing and experimenting with OCaml code interactively.
-	\item \snippet{ounit2}: A testing framework for OCaml, similar to JUnit for Java, used for writing and running unit tests.
-	\item \snippet{menhir}: A parser generator for OCaml, often used for developing compilers and interpreters.
-	\item \snippet{ocaml-lsp-server}: A Language Server Protocol (LSP) implementation for OCaml, enabling features like autocompletion, type inference, and error checking in editors.
-	\item \snippet{stdlib320/}: A custom library created for the CS320 course at Boston University by Nathan Mull. It provides
-	      It's a very small subset of the OCaml Standard Library with a bit more documentation. Documentation: \href{https://nmmull.github.io/CS320/landing/Spring-2025/Specifications/Stdlib320/index.html}{https://nmmull.github.io/CS320/...}.
+    \item \textbf{Syntax}: The expression \snippet{let x = 2 in x + x} is a valid OCaml expression.
+    \item \textbf{Typing}: Well-typed, as $x$ is an \snippet{int} and $x + x$ is an \snippet{int}.
+    \item \textbf{Semantics}: After substitution, the expression evaluates to $2 + 2$.
 \end{itemize}
 
-\noindent
-These will be the main tools used throughout this text.
+\newpage 
 
-\subsection{Creating a Dune Project: Hello, World!}
-
-To understand how \snippet{dune} structures projects and facilitates OCaml development, we'll create a simple project called \snippet{hello\_dune}. This hands-on example will demonstrate the purpose of each folder and guide you through building, running, and testing an OCaml project.
-
-\subsubsection{Step 1: Prepare Your Environment}
-
-Before starting, ensure OPAM and your environment are set up. Run the following command to prepare the shell:
-
-\begin{lstlisting}[language=Bash, caption={Preparing Your OPAM Environment}]
-    eval $(opam env)
-\end{lstlisting}
-
-\noindent
-This ensures that your terminal is configured correctly to work with OCaml and \snippet{dune}.
-
-\subsubsection{Step 2: Create the Project}
-
-\noindent
-Run the following commands to create a new \snippet{dune} project called \snippet{hello\_dune}:
-
-\begin{lstlisting}[language=Bash, caption={Creating the Project}]
-    mkdir demo # Create a new folder named hello_dune for our project
-    cd demo    # Move into the project directory
-    dune init project hello_dune # Initialize a new dune project
-\end{lstlisting}
-
-\noindent
-This will generate the following project structure inside the \snippet{demo} folder:
-\begin{lstlisting}[language=Bash, caption={Generated Project Structure}]
-    hello_dune/
-    |-- bin/         # Contains the main executable code
-    |-- lib/         # Contains reusable library code
-    |-- test/        # Contains test code
-    |-- dune-project         # Defines the project
-    |-- hello_dune.opam      # OPAM package definition
-\end{lstlisting}
-
-\noindent
-For now, we will focus on the \snippet{bin/} and \snippet{lib/} folders.
-
-\subsubsection{Step 3: Build and Verify the Project}
-
-To ensure everything is set up correctly, use the following command to build the project:
-
-\begin{lstlisting}[language=Bash, caption={Building the Project}]
-    dune build
-\end{lstlisting}
-
-\noindent
-\textbf{This command:}
-\begin{itemize}
-    \item Compiles the OCaml source files in your project.
-    \item Resolves dependencies and ensures libraries and executables are built in the correct order.
-    \item Creates a build cache to speed up future builds.
-    \item Verifies that your project is configured correctly.
-\end{itemize}
-
-\noindent
-\textbf{Important Notes:}
-\begin{itemize}
-    \item You must run \snippet{dune build} every time you make changes to your code to ensure the build reflects your edits.
-    \item Running \snippet{dune build} from any subdirectory within redirect to the project root and build.
-    \item If there are any issues (e.g., syntax errors, missing files, or incorrect configurations), \snippet{dune} will report them.
-\end{itemize}
-
-\subsubsection{Step 4: Modify and Run the Program}
-
-\noindent
-To modify the program, first open the file \snippet{bin/main.ml} using Vim:
-
-\begin{lstlisting}[language=Bash, caption={Opening the File in Vim}]
-    vim bin/main.ml
-\end{lstlisting}
-
-\noindent
-This opens the \underline{\textbf{main executable file}} in the Vim editor. Once the file is open, press \snippet{i} to switch to \textit{Insert Mode} and replace its contents with the following code:
-
-\begin{lstlisting}[language=OCaml, caption={Hello, Dune Program}]
-    let () = print_endline "Hello, Dune!"
-\end{lstlisting}
-
-\noindent
-After editing, press \snippet{Esc} to return to \textit{Normal Mode}, then type \snippet{:wq} to save the changes and exit Vim.
-Now, run the program using the following command:
-
-\begin{lstlisting}[language=Bash, caption={Running the Program}]
-    dune exec ./bin/main.exe
-\end{lstlisting}
-
-\noindent
-You should see the output:
-\begin{lstlisting}[language=Bash]
-    Hello, Dune!
-\end{lstlisting}
-
-
-\subsubsection{Step 5: Add a Library and Explore Its Use}
-
-The \snippet{lib/} folder is reserved for reusable code that can be shared across different parts of a project. 
-In object-oriented programming languages like Java, this is analogous to creating static utility classes 
-(e.g., a \texttt{Math} class for reusable mathematical functions).\\
-
-\noindent
-\textbf{Steps to Add and Use the Library:}\\
-
-\noindent
-1. Create a new file in the \snippet{lib/} folder. \underline{\textbf{Important:}} The name of the file must match the project name. 
-   If your project is named \snippet{hello\_dune}, the file should be named:
-   \begin{lstlisting}[language=Bash]
-   vim lib/hello_dune.ml
-   \end{lstlisting}
-
-\vspace{.5em}
-\noindent
-2. Add a reusable function to \snippet{lib/hello\_dune.ml} (\snippet{ \^} concats strings, \snippet{+} is strictly for integers):
-   \begin{lstlisting}[language=OCaml]
-   let greet name = "Hello, " ^ name ^ "!"
-   \end{lstlisting}
-
-\vspace{.5em}
-\noindent
-3. Verify or update the \snippet{lib/dune} file to expose the library. \underline{The \snippet{name} in the \snippet{dune} file}\\
-   \underline{should also match the project name:}
-   \begin{lstlisting}[language=PlainText]
-   (library
-    (name hello_dune))
-   \end{lstlisting}
-
-   \noindent If this file is already configured with the above content, no changes are needed.\\
-
-\vspace{.5em}
-\noindent
-4. Interactively use the library in \snippet{utop}:
-   \begin{lstlisting}[language=Bash]
-   dune utop
-   \end{lstlisting}
-
-   \noindent Once inside \snippet{utop}, you can interact with the library:
-   \begin{lstlisting}[language=OCaml, caption={Using the Library in Utop}]
-   Hello_dune.greet "Testing123";;
-   \end{lstlisting}
-
-   \noindent
-   You should see the output: 
-
-    \begin{lstlisting}[language=OCaml]
-    - : string = "Hello, Testing123!".
+\begin{Def}[Whitespace Agnostic]
+    OCaml is \textbf{whitespace agnostic}, meaning that the interpreter does not rely on the presence or absence of whitespace to determine the structure of the code. Whitespace can be used freely for readability without affecting the semantics of the program. For example, the following expressions are equivalent:
+    \begin{lstlisting}[language=OCaml, numbers=none, caption={Whitespace Agnostic Example}]
+    let x = 1 + 2
     \end{lstlisting}
-   \vspace{.5em}
-   \noindent
-   \underline{\textbf{Important}}: Despite \snippet{lib/hello\_dune.ml} being lowercase, it's referenced as \snippet{Hello\_dune} in utop (capitalized).
-   More on \snippet{utop} will be discussed later. But you may think of it as a calculator where we can access our functions and libraries.\\
+
+    and
+
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    let x 
+    = 1
+      +
+      2
+    \end{lstlisting}
+
+    \noindent
+    Both produce the same result, as whitespace does not alter the meaning of the expression.
+\end{Def}
+
+\subsection{Understanding Functions in OCaml}
+In OCaml, functions do not require parentheses, arguments directly follow the function name. 
+For example:
+\begin{lstlisting}[language=OCaml]
+    let add x y z= x + y + z in 
+    let result = add 3 5 5
+    (* semantically evaluates to 3 + 5 + 5 *)
+\end{lstlisting}
 
 \noindent
-5. To quit \snippet{utop}, type \snippet{\#quit;;} or press \snippet{Ctrl+d}.
-   \begin{lstlisting}[language=OCaml, caption={Quitting utop}]
-   #quit;;
-   \end{lstlisting}
+Here, the \snippet{add} function takes two arguments, \snippet{x} and \snippet{y}, which is substituted into \snippet{result} with arguments 3,5, and 5.\\
+
+\begin{Def}[Anonymous Functions]
+
+An \textbf{anonymous function} is a one-time-use function that is not bound to a name. In OCaml, anonymous functions are created using the \snippet{fun} keyword.
+They are useful for passing functions as arguments to other functions or for defining functions locally. For example:
+
+\begin{lstlisting}[language=OCaml, numbers=none]
+    let add x y z = x + y z
+\end{lstlisting}
+\noindent is equivalent to:
+\begin{lstlisting}[language=OCaml, numbers=none]
+    let add = fun x -> fun y -> fun z -> x + y + z
+\end{lstlisting}
+
+\noindent
+These are formally known as \textbf{lambda expressions}, where in \textbf{lambda calculus} \snippet{fun x -> e} is written 
+as ``$\lambda x.e$'', s.t., $\lambda$ denotes the anonymous function, $x$ the argument, and $e$ the expression.
+The add function is equivalent to, $\lambda x.\lambda y.\lambda z.x + y + z$, in lambda calculus.
+
+\end{Def}
 
 \newpage
-\noindent
-6. We may also modify \snippet{bin/main.ml} to use the library:
-   \begin{lstlisting}[language=OCaml, caption={Using the Library in Main}]
-   let () = print_endline (Hello_dune.greet "Library")
-   \end{lstlisting}
 
 \noindent
-7. Build and run the program:
-   \begin{lstlisting}[language=Bash]
-   dune build
-   dune exec ./bin/main.exe
-   \end{lstlisting}
+Functions with multiple arguments can be thought of as nested anonymous functions, where variables are passed 
+down the chain of functions. To illustrate:
 
-   \noindent The output should now be:
-   \begin{lstlisting}[language=Bash]
-   Hello, Library!
-   \end{lstlisting}
+\begin{figure}[h]
+    {
+    \setlength{\fboxsep}{16pt}
+    \centering
+    \fbox{\hspace{2em}\includegraphics[width=0.8\textwidth]{Sections/Func/ocam/curry.png}\hspace{3em}}
+    }
+    \caption{Anonymous Functions in OCaml}
+    
+    \label{fig:ocaml-anon}
+\end{figure}
+
+\vspace{-1em}
+\noindent
+Alternatively, we may illustrate an analogous example with scoped functions in a pseudo syntax:
+
+\begin{figure}[h]
+    {
+    \setlength{\fboxsep}{0pt}
+    \centering
+    \fbox{\hspace{8.7em}\includegraphics[width=0.6\textwidth]{Sections/Func/ocam/curry2.png}\hspace{8em}}
+    }
+    \caption{Anonymous Functions in OCaml}
+    
+    \label{fig:ocaml-anon2}
+\end{figure}
+
+\vspace{-.5em}
+\noindent
+Where $x$ is a local variable of the outer-most function within scope of the inner functions, and so on with $y$ and $z$.
+This is the concept known as \textbf{currying}.
+
+\begin{Tip}
+    Lambda calculus was developed by \textbf{Alonzo Church} in the 1930s at Princeton University. Church was the doctoral advisor of \textbf{Alan Turing}, the creator of the Turing Machine (1936), a theoretical model that laid the groundwork for modern computation.
+    
+    Curry functions were introduced by \textbf{Haskell Curry} around the 1940-1950s as he worked in the U.S. He expanded upon combinatory logic, emphasizing breaking down functions into a sequence of single-argument functions.
+\end{Tip}
+    
+
+\newpage
+
+\begin{Def}[Curried Functions]
+
+A \textbf{curried function} is a function that, when applied to some arguments, returns another function that takes the remaining arguments. For example:
+\[
+\texttt{add x y = x + y}
+\]
+is internally equivalent to:
+\[
+\texttt{add = fun x -> (fun y -> x + y)}
+\]
+
+In OCaml, functions are \textbf{curried} by default. This means that a function of multiple arguments is treated as a sequence of single-argument functions.
+\end{Def}
 
 \vspace{1em}
 \noindent
-\textbf{What Are Dune Files?}\\
-As you explore the project, you’ll notice \snippet{dune} files in various folders such as \snippet{bin/} and \snippet{lib/}. These files 
-are configuration files used by the \textit{Dune build system} to manage how your project is compiled and linked.\\
+We let \snippet{add} stand for \snippet{fun x -> fun y -> x + y}. Therefore in reality we are doing:
+\begin{lstlisting}[language=OCaml, numbers=none]
+    (fun x -> fun y -> x + y) 3 5
+\end{lstlisting}
 
 \noindent
-1. \textbf{Dune File in \snippet{lib/}:}
-   \begin{lstlisting}[language=PlainText, caption={Library Dune File}]
-   (library
-    (name hello_dune))
-   \end{lstlisting}
+This is know as \textbf{Application}, as we are \textit{applying} arguments to a function.
 
-   \noindent This file defines the \snippet{hello\_dune} library. Dune compiles the code in \snippet{lib/hello\_dune.ml} into a reusable 
-   module named \snippet{Hello\_dune}, which can be used in other parts of the project.\\
+\vspace{1em}
+\begin{Def}[Application]
+
+    \textbf{Application} is the process of applying arguments to a function. \textbf{Full application} is when all 
+    arguments are applied to a function. For example:
+
+    \begin{lstlisting}[language=OCaml, numbers=none]
+        (fun x -> fun y -> x + y) 3 5
+    \end{lstlisting}
+
+    \noindent
+    Here, the function \snippet{fun x -> fun y -> x + y} is fully applied to the arguments 3 and 5.\\
+
+    \noindent
+    \textbf{Partial application} is when only some arguments are applied to a function, which evaluates to another function 
+    accepting the remaining arguments. For example:
+
+    \begin{lstlisting}[language=OCaml, numbers=none]
+        (fun x -> fun y -> x + y) 3
+    \end{lstlisting}
+
+    \noindent
+    Here, the function \snippet{fun x -> fun y -> x + y} is partially applied to the argument 3, resulting in a new function
+    \snippet{fun y -> 3 + y}.\\
+
+    \noindent
+    \textbf{In Lambda Calculus} we may represent this as:
+    \begin{align*}
+        (\lambda x. \lambda y. (x + y))&\ 3\ 5 \rightarrow\\
+        (\lambda y. (3 + y))&\ 5 \rightarrow\\
+        (3 + 5) \hspace{.4em} &
+    \end{align*}
+    In this process, arguments are sequentially applied to the corresponding variables.
+\end{Def}
 
 \noindent
-2. \textbf{Dune File in \snippet{bin/}:}
-   \begin{lstlisting}[language=PlainText, caption={Executable Dune File}]
-   (executable
-    (public_name hello_dune)
-    (name main)
-    (libraries hello_dune))
-   \end{lstlisting}
 
-   \noindent This file specifies the executable program:
-   \begin{itemize}
-       \item \snippet{public\_name hello\_dune}: Defines the name of the program, which you can run with \snippet{dune exec hello\_dune}.
-       \item \snippet{name main}: Points to \snippet{bin/main.ml}, which serves as the entry point.
-       \item \snippet{libraries hello\_dune}: Links the \snippet{hello\_dune} library to the executable.
-   \end{itemize}
-
-\noindent
 
 \newpage
+\subsection{If-Expressions}
+In OCaml, \textbf{if-expressions} are used to conditionally evaluate expressions. This behaves similarly to other PLs with a few distinctions.
 
-\subsubsection{Step 6: Add Tests}
+\begin{Def}[Ocaml if-then-else]
 
-To test the library, we use the \snippet{test/} folder:
+    In OCaml, if statements follow the form: \snippet{if <condition> then <expr1> else <expr2>}, i.e., 
+    if the condition is true, then \snippet{expr1} is evaluated, else \snippet{expr2} is evaluated. For example:
+    \begin{lstlisting}[language=OCaml, caption={If-Expression: Divisible by 2}, numbers=none]
+        fun x -> if x mod 2 = 0 then "even" else "odd"
+    \end{lstlisting}
 
-1. Create a new test file:
-\begin{lstlisting}[language=Bash]
-   touch test/test_hello.ml
-   \end{lstlisting}
+    \noindent
+    Here, the anonymous function finds if $x$ is divisible by 2, evaluating to \snippet{"even"} if true, or otherwise \snippet{"odd"}.
 
-2. Add the following code to \snippet{test/test\_hello.ml}:
-\begin{lstlisting}[language=OCaml, caption={Test Code}]
-   let () =
-     let open Alcotest in
-     check string "same message" "Hello from the library!" Hello.message
-   \end{lstlisting}
+    \noindent
+    \rule{\textwidth}{0.4pt}
 
-3. Update the \snippet{test/dune} file to include the test:
-\begin{lstlisting}[language=PlainText, caption={Test Dune File}]
-   (test
-    (name test_hello)
-    (libraries hello alcotest))
-\end{lstlisting}
+    \vspace{.3em}
+    \noindent
+    \textbf{Typing}: The \snippet{then} and \snippet{else} expressions must evaluate to the same type. 
+    So the following expression is \textbf{invalid}:
 
-4. Run the tests:
-\begin{lstlisting}[language=Bash]
-   dune runtest
-\end{lstlisting}
+    \begin{lstlisting}[language=OCaml, caption={Invalid If-Expression}, numbers=none]
+        fun x -> if x mod 2 = 0 then "even" else 0 (* INVALID *)
+    \end{lstlisting}
 
-If everything is set up correctly, the test will pass.
+    \noindent
+    \rule{\textwidth}{0.4pt}
 
-\subsubsection{Summary of Roles}
-- \textbf{\snippet{bin/}:} Contains the main executable code (e.g., \snippet{main.ml}).
-- \textbf{\snippet{lib/}:} Contains reusable library code.
-- \textbf{\snippet{test/}:} Contains tests to verify the project works as expected.
+    \vspace{.3em}
+    \noindent
+    \textbf{Else If}: In OCaml, there is no \snippet{else if} keyword. Instead, nested if-expressions are used to achieve the same effect.
 
-This step-by-step guide demonstrates how \snippet{dune} organizes projects and how each folder contributes to OCaml development. By creating and running your own project, you'll gain a deeper understanding of the tools and structure used in OCaml programming.
+    \begin{lstlisting}[language=OCaml, caption={Else If Example}, numbers=none]
+        fun x -> 
+            if x mod 3 = 0 then 
+                "divisible by 3"
+            else if x mod 5 = 0 then
+                "divisible by 5" 
+            else "not divisible by 2 or 3"
+    \end{lstlisting}
+\end{Def}
+
+\begin{Q
 
 
+
+
+        
