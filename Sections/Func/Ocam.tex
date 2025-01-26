@@ -329,8 +329,8 @@ In OCaml, \textbf{if-expressions} are used to conditionally evaluate expressions
 
 \begin{Def}[Ocaml if-then-else]
 
-    In OCaml, if statements follow the form: \snippet{if <condition> then <expr1> else <expr2>}, i.e., 
-    if the condition is true, then \snippet{expr1} is evaluated, else \snippet{expr2} is evaluated. For example:
+    In OCaml, \textbf{if-statements} follow the form: \snippet{if <condition> then <expr1> else <expr2>}, i.e., 
+    if the condition is true, then \snippet{expr1} is evaluated, else \snippet{expr2} is evaluated:
     \begin{lstlisting}[language=OCaml, caption={If-Expression: Divisible by 2}, numbers=none]
         fun x -> if x mod 2 = 0 then "even" else "odd"
     \end{lstlisting}
@@ -393,39 +393,24 @@ Type hinting is a way to explicitly specify the types of variables or function p
     In OCaml, \textbf{type hinting} allows programmers to explicitly specify the types of variables or function parameters. While type hints are not necessary due to OCaml's strong and static type system, 
     they can help clarify intent and make code easier to understand, especially for larger projects.\\
 
-    \noindent
-    \rule{\textwidth}{0.4pt}
-
-    \noindent
-    \textbf{Function Type Hinting:}
+   
     \begin{lstlisting}[language=OCaml, caption={Adding Type Annotations to Functions}, numbers=none]
     let add (x : int) (y : int) : int = x + y
     (* Explicitly states that x and y are integers, which results as an integer. *)
     \end{lstlisting}
     \noindent
-    \rule{\textwidth}{0.4pt}
-
-    \noindent
-    \textbf{Variable Type Hinting:}
+   
     \begin{lstlisting}[language=OCaml, caption={Adding Type Annotations to Variables}, numbers=none]
     let name : string = "OCaml"
     (* Explicitly states that name is a string. *)
     \end{lstlisting}
 
 
-    \noindent
-    \rule{\textwidth}{0.4pt}
-    
-    \noindent
-    \textbf{Type Hinting for Anonymous Functions:}
     \begin{lstlisting}[language=OCaml, caption={Type Hinting in Anonymous Functions}, numbers=none]
     (fun (x : float) (y : float) -> x *. y) 3.0 4.2;;
     (* Multiplies two floats stating explicitly typing arguments as floats. *)
     \end{lstlisting}
 
-    \noindent
-    \rule{\textwidth}{0.4pt}
-    \textbf{Typing General Expressions:}\\
     Though possibly adding redundancy, theoretically we may type any expression in OCaml.
 \begin{lstlisting}[language=OCaml, caption={Type Hinting in Conditional Expressions}, numbers=none]
     ((fun (x : int) -> 
