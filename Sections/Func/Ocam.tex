@@ -722,10 +722,11 @@ Strings in OCaml are immutable and allow for various operations, such as concate
     \end{lstlisting}
 
     \begin{lstlisting}[language=OCaml, caption={Slicing a String}, numbers=none]
-    String.sub "Hello World" 0 5
-    (* Evaluates to "Hello"; 
+    String.sub "Hello World" 6 3
+    (* Evaluates to "Wor"; 
     Syntax: String.sub <string> <start> <length> *)
     \end{lstlisting}
+
 
     \begin{lstlisting}[language=OCaml, caption={Converting to Uppercase}, numbers=none]
     String.uppercase_ascii "hello"
