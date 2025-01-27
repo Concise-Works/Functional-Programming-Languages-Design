@@ -697,12 +697,11 @@ Recursion is the process of a function calling itself. Any and all recursive fun
 
 \subsection{Strings, Characters, and Printing in OCaml}
 
-As you may have seen with \snippet{Array.length <array>}, in OCaml strings must be explicitly manipulated using functions from the 
-\texttt{String} module. Such is the same with characters, which are represented as strings of length 1.
+Strings, characters, and printing behave much the same as in other languages, with some unique functions and syntax in OCaml.
 
 \begin{Def}[Strings in OCaml]
 
-Strings in OCaml are immutable and allow for various operations, such as concatenation, slicing, and transformation. Here are some common ways to work with strings:
+Strings in OCaml are immutable and allow for various operations, such as concatenation, slicing, and transformation:
 
     \begin{lstlisting}[language=OCaml, caption={Creating and Concatenating Strings}, numbers=none]
     let greeting = "Hello" ^ " " ^ "World!"
@@ -734,10 +733,9 @@ Strings in OCaml are immutable and allow for various operations, such as concate
     Syntax: String.uppercase_ascii <string> *)
     \end{lstlisting}
 
-    \begin{lstlisting}[language=OCaml, caption={Splitting a String by a Delimiter}, numbers=none]
-    String.split_on_char ' ' "Hello World"
-    (* Evaluates to ["Hello"; "World"]; 
-    Syntax: String.split_on_char <delimiter> <string> *)
+    \begin{lstlisting}[language=OCaml, caption={String Equality}, numbers=none]
+    "hello" = "world" (* Evaluates to false*)
+    "hello" = "hello" (* Evaluates to true*)
     \end{lstlisting}
 \end{Def}
 
