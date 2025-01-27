@@ -681,15 +681,16 @@ Recursion is the process of a function calling itself. Any and all recursive fun
     (* Evaluates to 120 as 5! = 5 * 4 * 3 * 2 * 1 *)
     \end{lstlisting}
 
-    \begin{lstlisting}[language=OCaml, caption={Tail-Recursive Array Summation}, numbers=none]
-    let rec sum_arr arr i acc =
-        if i <= 0 then acc
-        else sum_arr arr (i - 1) (arr.(i - 1) + acc)
-    in
-    let my_array = [|1; 2; 3; 4; 5|] in
-    sum_arr my_array (Array.length my_array) 0
-    (* Evaluates to 15 as 1 + 2 + 3 + 4 + 5 *)
+    \begin{lstlisting}[language=OCaml, caption={Tail-Recursive Summation of Positive Even Numbers}, numbers=none]
+    let rec sum_even n acc =
+        if n <= 0 then acc
+        else if n mod 2 = 0 then sum_even (n - 1) (acc + n)
+        else sum_even (n - 1) acc
+    in sum_even 5 0
+    (* Evaluates to 6 as 4 + 2 + 0 = 6. *)
+    (* Despite two recursive calls they are independent of each other. *)
     \end{lstlisting}
+        
 \end{Def}
 
 \newpage
