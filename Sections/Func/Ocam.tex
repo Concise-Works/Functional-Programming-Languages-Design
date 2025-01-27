@@ -811,6 +811,7 @@ Strings in OCaml are immutable and allow for various operations, such as concate
         Syntax: print_char <char>; print_newline () *)
     \end{lstlisting}
     
+    \textbf{Note:} If strictly using \snippet{stdlib320} then \snippet{Printf} is not available.
     \begin{lstlisting}[language=OCaml, caption={Formatted Printing with Printf}, numbers=none]
     Printf.printf "The number is: %d\n" 42
     (* Prints "The number is: 42" with formatted output;
@@ -903,11 +904,101 @@ Void functions are often seen in the main entry point of an OCaml program:
 \end{lstlisting}
 \end{Def}
 
+
+
+\newpage 
+
+\subsection{Conversions in OCaml}
+
+In OCaml implicit type conversions are not allowed, so we must explicitly convert between types when needed:
+
+\begin{Def}[Common Conversions in OCaml]
+
+\begin{lstlisting}[language=OCaml, caption={Integer and Float Conversions}, numbers=none]
+float_of_int : int -> float
+
+int_of_float : float -> int
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={Character and Integer Conversions}, numbers=none]
+int_of_char : char -> int
+
+char_of_int : int -> char
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={Boolean and String Conversions}, numbers=none]
+string_of_bool : bool -> string
+
+bool_of_string : string -> bool
+
+bool_of_string_opt : string -> bool option
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={String and Integer Conversions}, numbers=none]
+string_of_int : int -> string
+
+int_of_string : string -> int
+
+int_of_string_opt : string -> int option
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={String and Float Conversions}, numbers=none]
+string_of_float : float -> string
+
+float_of_string : string -> float
+
+float_of_string_opt : string -> float option
+\end{lstlisting}
+
+\end{Def}
+
+\newpage
+
+\newpage 
+
+\subsection{Print Debugging}
+
+To debug our functions we can use the print statements. For example:
+
+\begin{lstlisting}[language=OCaml, caption={Print Debugging}]
+    let rec factorial n acc =
+        if n <= 1 then acc
+        else 
+            let _ = Printf.printf "n: %d, acc: %d\n" n acc in
+            factorial (n - 1) (n * acc)
+    in factorial 5 1
+\end{lstlisting}
+
+\noindent
+Without the \snippet{stdlib} we can do the following:
+
+\begin{lstlisting}[language=OCaml, caption={Print Debugging Without Printf}]
+    let rec factorial n acc =
+        if n <= 1 then acc
+        else 
+            let _ = print_endline ("n: " ^ string_of_int n ^ ", acc: " ^ string_of_int acc) in
+            factorial (n - 1) (n * acc)
+    in factorial 5 1
+\end{lstlisting}
+
+\noindent
+Perhaps a quick print without care of formatting:
+
+\begin{lstlisting}[language=OCaml, caption={Dirty Print Debugging}]
+    let rec factorial n acc =
+        if n <= 1 then acc
+        else 
+            let _ = print_int n in
+            let _ = print_string ", " in
+            let _ = print_int acc in
+            factorial (n - 1) (n * acc)
+    in factorial 5 1
+\end{lstlisting}
+
 \vspace{1em}
 \noindent
-\rule{\textwidth}{0.4pt}
-
-\vspace{2em}
+\rule{\textwidth}{0.4pt}\\
+\textbf{Section Exercises:}\\
 
 \begin{Exercise}
 Write an OCaml function that takes an integer $x$ and evaluates \snippet{"positive"} if $x$ is positive, \snippet{"negative"} if $x$ is negative, and \snippet{"zero"} if $x$ is zero.
@@ -928,5 +1019,7 @@ Write an OCaml function that fixes the previous \textbf{Else If} function to eva
 \begin{Exercise}
 Write an OCaml function implementation of the Fibonacci sequence using tail-end recursion.
 \end{Exercise}
+
+
 
 
