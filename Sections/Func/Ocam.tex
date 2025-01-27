@@ -327,7 +327,6 @@ This is know as \textbf{Application}, as we are \textit{applying} arguments to a
 \subsection{If-Expressions}
 In OCaml, \textbf{if-expressions} are used to conditionally evaluate expressions. This behaves similarly to other PLs with a few distinctions.
 
-\vspace{2em}
 \begin{Def}[Ocaml if-then-else]
 
     In OCaml, \textbf{if-statements} follow the form: \snippet{if <condition> then <expr1> else <expr2>}, i.e., 
@@ -367,7 +366,15 @@ In OCaml, \textbf{if-expressions} are used to conditionally evaluate expressions
             else "not divisible by 2 or 3"
     \end{lstlisting}
 \end{Def}
+\begin{Def}[Conditional Assignment]
 
+    A \textbf{conditional assignment} is a variable is assignment based off a condition:
+    \begin{lstlisting}[language=OCaml, caption={Conditional Assignment}, numbers=none]
+        fun x -> let result = if x mod 2 = 0 then "even" else "odd" 
+        in result
+        (* Evaluates result as "even" or "odd" depending on x *)
+    \end{lstlisting}
+\end{Def}
 
 
 \newpage 
@@ -782,13 +789,12 @@ Strings in OCaml are immutable and allow for various operations, such as concate
        Syntax: Char.uppercase_ascii <char> *)
     \end{lstlisting}
     
-    \end{Def}
+\end{Def}
 
-\newpage 
-
+\newpage
 \begin{Def}[Printing in OCaml]
 
-    Printing in OCaml is used to display information on the terminal, typically for debugging or interacting with users:
+    Displays information on the terminal, typically for debugging or interacting with users:
     
     \begin{lstlisting}[language=OCaml, caption={Printing a String}, numbers=none]
     print_endline "Hello, World!"
