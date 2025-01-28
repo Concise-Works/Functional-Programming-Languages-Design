@@ -321,7 +321,98 @@ This is know as \textbf{Application}, as we are \textit{applying} arguments to a
     In this process, arguments are sequentially applied to the corresponding variables.
 \end{Def}
 
+\newpage 
+
+
+\begin{Def}[Side Effects in OCaml]
+
+    A \textbf{side effect} refers to any change in the state of the program or its environment caused by a function or expression. 
+    This includes modifying variables, printing to the console, writing to a file, or interacting with external systems:
+    
+    \begin{lstlisting}[language=OCaml, caption={Function Without a Side Effect}, numbers=none]
+    let square x = x * x
+    (* This function computes the square of a number.
+       It has no side effects as it doesn't change 
+       state or interact with the outside world. *)
+    \end{lstlisting}
+    
+    \begin{lstlisting}[language=OCaml, caption={Function With a Side Effect}, numbers=none]
+    let print_square x =
+      let result = x * x in
+      Printf.printf "The square of %d is %d\n" x result
+    (* This function prints the square of a number.
+       It has a side effect: printing to the console. *)
+    \end{lstlisting}
+    \end{Def}
+    
+
+\begin{Def}[The (unit) Type in OCaml]
+
+The \snippet{unit} type represents a value that carries no information. It is denoted by \snippet{()}, which is both the type and the sole value of \snippet{unit}. Functions returning \snippet{unit} are typically used for side effects.
+
+\begin{lstlisting}[language=OCaml, caption={Unit Type and Value}, numbers=none]
+    let x = ()
+    (* x has the type unit and the value (). *)
+\end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={Function Returning Unit}, numbers=none]
+    let print_hello () = print_endline "Hello"
+    (* This function takes unit as an argument and returns unit. *)
+\end{lstlisting}
+
+The \snippet{unit} type ensures that functions used for their effects are explicit in their intent, making it clear they do not return meaningful data.
+\end{Def}
+
+\newpage
+
+\begin{Def}[Void Functions in OCaml]
+
+\label{def:void}
+\textbf{Void functions} are functions that perform actions but do not return meaningful values. 
+These functions take \snippet{unit} as an argument and return \snippet{unit}, making their purpose explicit.
+
+\begin{lstlisting}[language=OCaml, caption={Void Function Example}, numbers=none]
+    let log_message () = print_endline "Logging message" 
+    in log_message ()
+    (*Evaluates to "Logging message", which takes and returns a unit.*)
+\end{lstlisting}
+
 \noindent
+Void functions are often seen in the main entry point of an OCaml program:
+\begin{lstlisting}[language=OCaml, caption={Using \snippet{let ()} in the Main Function}, numbers=none]
+    let () =
+    print_endline "Program starting...";
+    (* Additional program logic here. *)
+\end{lstlisting}
+\end{Def}
+
+\begin{Def}[Skeleton Code]
+    
+    To write skeleton code one can use the \snippet{assert} keyword, though of course running this function will result in an error.
+
+    \begin{lstlisting}[language=OCaml, caption={Skeleton Code Example}, numbers=none]
+        let skeleton () = assert false
+        (* This function is a placeholder for unwritten code. *)
+    \end{lstlisting}
+
+\noindent
+\end{Def}
+
+\begin{Def}[Multiple Function Arguments]
+
+    Applying expressions without parentheses may lead to unexpected results. For example:
+
+    \begin{lstlisting}[language=OCaml, caption={Incorrect Function Application}, numbers=none]
+        (fun x y -> x + y) 3 5 * 2
+        (* Evaluates: 16 as ((fun x y -> x + y) 3 5) * 2 *)
+    \end{lstlisting}
+    \noindent
+    As it takes the immediate arguments that are available, to avoid this, use parentheses to group expressions correctly:
+    \begin{lstlisting}[language=OCaml, caption={Correct Function Application}, numbers=none]
+        (fun x y -> x + y) 3 (5 * 2)
+        (* Evaluates: 13 *)
+    \end{lstlisting}
+\end{Def}
 
 \newpage
 \subsection{If-Expressions}
@@ -842,74 +933,6 @@ Strings in OCaml are immutable and allow for various operations, such as concate
     \end{lstlisting}
     
     \end{Def}
-    
-\newpage 
-
-\subsection{Void Functions and Side Effects in OCaml}
-
-Finally we discuss the \snippet{unit} type, \textbf{void functions}, and \textbf{side effects} in OCaml:
-
-\begin{Def}[Side Effects in OCaml]
-
-    A \textbf{side effect} refers to any change in the state of the program or its environment caused by a function or expression. 
-    This includes modifying variables, printing to the console, writing to a file, or interacting with external systems:
-    
-    \begin{lstlisting}[language=OCaml, caption={Function Without a Side Effect}, numbers=none]
-    let square x = x * x
-    (* This function computes the square of a number.
-       It has no side effects as it doesn't change 
-       state or interact with the outside world. *)
-    \end{lstlisting}
-    
-    \begin{lstlisting}[language=OCaml, caption={Function With a Side Effect}, numbers=none]
-    let print_square x =
-      let result = x * x in
-      Printf.printf "The square of %d is %d\n" x result
-    (* This function prints the square of a number.
-       It has a side effect: printing to the console. *)
-    \end{lstlisting}
-    \end{Def}
-    
-
-\begin{Def}[The (unit) Type in OCaml]
-
-The \snippet{unit} type represents a value that carries no information. It is denoted by \snippet{()}, which is both the type and the sole value of \snippet{unit}. Functions returning \snippet{unit} are typically used for side effects.
-
-\begin{lstlisting}[language=OCaml, caption={Unit Type and Value}, numbers=none]
-    let x = ()
-    (* x has the type unit and the value (). *)
-\end{lstlisting}
-
-\begin{lstlisting}[language=OCaml, caption={Function Returning Unit}, numbers=none]
-    let print_hello () = print_endline "Hello"
-    (* This function takes unit as an argument and returns unit. *)
-\end{lstlisting}
-
-The \snippet{unit} type ensures that functions used for their effects are explicit in their intent, making it clear they do not return meaningful data.
-\end{Def}
-
-\begin{Def}[Void Functions in OCaml]
-
-\label{def:void}
-\textbf{Void functions} are functions that perform actions but do not return meaningful values. 
-These functions take \snippet{unit} as an argument and return \snippet{unit}, making their purpose explicit.
-
-\begin{lstlisting}[language=OCaml, caption={Void Function Example}, numbers=none]
-    let log_message () = print_endline "Logging message" 
-    in log_message ()
-    (*Evaluates to "Logging message", which takes and returns a unit.*)
-\end{lstlisting}
-
-\noindent
-Void functions are often seen in the main entry point of an OCaml program:
-\begin{lstlisting}[language=OCaml, caption={Using \snippet{let ()} in the Main Function}, numbers=none]
-    let () =
-    print_endline "Program starting...";
-    (* Additional program logic here. *)
-\end{lstlisting}
-\end{Def}
-
-
 
 \newpage 
 
