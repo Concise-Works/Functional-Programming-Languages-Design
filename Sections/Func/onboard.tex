@@ -1,17 +1,15 @@
+
+\newpage 
 \section{Development Environment with OCaml}
 
 In this section, we introduce \textbf{OCaml} as our programming language of choice for exploring
 the principles of \textbf{functional programming}. Functional programming emphasizes a declarative
-style, where programs describe \textit{what to do} rather than \textit{how to do it},
-in contrast to the imperative programming paradigm, which many programmers are familiar with.
+style, where programs describe \textit{what to do} rather than imperatively, \textit{how to do it}.
 
-When we begin programming in OCaml, we will skip all features which are not necessary in a 
-functional programming context. Though this text does cover some imperative features for curiosity sake, it is excludes 
+When we begin programming in OCaml, we will skip features which are not necessary for 
+functional programming. Though this text does cover some imperative features for curiosity sake, it is excludes 
 many others. For full OCaml documentation visit: \href{https://ocaml.org/docs/values-and-functions}{https://ocaml.org/docs/values-and-functions}.
 
-
-
-\newpage
 
 \begin{Def}[OCaml]
 
@@ -40,11 +38,6 @@ In addition to using Ocaml we will use Dune and Opam.
 	providing developers with a convenient way to manage dependencies and project environments.
 \end{Def}
 
-\noindent
-If you are familiar with \textbf{npm} or \textbf{yarn}, \textbf{OPAM} serves a similar purpose but is specifically designed for the \textbf{OCaml} ecosystem. Like npm and yarn, OPAM is a package manager that simplifies the installation and management of libraries and dependencies. Additionally, it offers features tailored to OCaml development, such as managing multiple compiler versions and isolating project environments.
-
-
-
 \begin{Note}
 	\underline{\textbf{Window Users:}} It may be easier to use WSL or a Linux VM to run OCaml and Dune rather than a native install.
 	This text will use \textbf{Ubuntu} distro. If using WSL, make sure the terminal is running the distro, it will give you a fresh
@@ -53,11 +46,6 @@ If you are familiar with \textbf{npm} or \textbf{yarn}, \textbf{OPAM} serves a s
 	\noindent
 	\textbf{WSL Installation:} \href{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}
 \end{Note}
-
-\begin{Tip}
-	If you plan to use github as your repository manager, you may have to create a personal access token to connect your account to your local machine.\\
-	\textbf{Creating a Personal Access Token:} \href{https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic}{https://docs.github.com/en/authentication/kee...}
-\end{Tip}
 
 \newpage
 
@@ -670,5 +658,3 @@ This concludes the onboarding process for OCaml and Dune. We have:
 
 \noindent
 In the next section, we dive deeper into OCaml's syntax, features, and functional programming concepts.
-
-\newpage

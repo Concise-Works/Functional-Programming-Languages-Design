@@ -42,52 +42,7 @@ the terminology used in this document.
 
 \newpage
 
-\begin{Def}[Symbol ``\texttt{::=}'']
-    The symbol \texttt{::=} is used in formal grammar notation, such as Backus-Naur Form (BNF), 
-    to mean ``is defined as'' or ``can be expanded as''. It is used to define the syntactic structure 
-    of a language by specifying how non-terminal symbols can be replaced or expanded into other symbols.
 
-    \vspace{1em}
-    \noindent
-    For example:
-    \[
-    \langle \text{expr} \rangle ::= \langle \text{expr} \rangle + \langle \text{expr} \rangle \ | \ \langle \text{number} \rangle
-    \]
-    This states that the non-terminal symbol $\langle \text{expr} \rangle$ can be defined as either:
-    \begin{itemize}
-        \item An expression followed by a `+` and another expression, or
-        \item A single number.
-    \end{itemize}
-
-    \vspace{1em}
-    The pipe symbol (\texttt{|}) indicates alternatives, while the symbol $\Rightarrow$ is used to denote derivations, 
-    showing the step-by-step application of the grammar rules to expand non-terminals into terminals.
-
-    \vspace{1em}
-    \noindent
-    \textbf{Correct Derivations:}
-    \begin{itemize}
-        \item $\langle \text{expr} \rangle \Rightarrow \langle \text{expr} \rangle + \langle \text{number} \rangle$
-        \item $\langle \text{expr} \rangle \Rightarrow 5 + \langle \text{number} \rangle$
-        \item $\langle \text{expr} \rangle \Rightarrow 5 + 3$
-        \item $\langle \text{number} \rangle \Rightarrow 8$
-        \item $\langle \text{expr} \rangle \Rightarrow \langle \text{number} \rangle$
-        \item $\langle \text{expr} \rangle \Rightarrow 8$
-    \end{itemize}
-
-    \vspace{1em}
-    \noindent
-    \textbf{Incorrect Derivations:}
-    \begin{itemize}
-        \item $8 \Rightarrow \langle \text{number} \rangle$ 
-        \item $8 \Rightarrow 5 + \langle \text{number} \rangle$
-        \item $8 \Rightarrow 5 + 3$
-    \end{itemize}
-
-    \vspace{1em}
-    Incorrect derivations arise when the direction of derivation is reversed or when terminal symbols are treated as if they 
-    can be expanded further. Terminals, such as $8$, cannot act as non-terminals and do not expand into other symbols.
-\end{Def}
 
 
 

@@ -15,12 +15,15 @@ an aircraft vs. designing one.
 We instead \textbf{\underline{think in terms of mathematics}}, describing and defining
 the specifications of our language. Our program some mathematical object,
 a function with strict inputs and outputs.
+
+\vspace{1em}
 \begin{Def}[Well-formed Expression]
 
     An expression (sequence of symbols) that is constructed according to established rules (syntax),
     ensuring clear and unambiguous meaning.
 
 \end{Def}
+
 \begin{Def}[Programming Language]
 
     A \textbf{Programming Language (PL)} consists of three main components:
@@ -31,20 +34,83 @@ a function with strict inputs and outputs.
     \end{itemize}
 \end{Def}
 
-\vspace{-1em}
+\noindent
+I.e., Syntax gives us meaning, Types tell us how it is used, and Semantics tell us what it does. 
+Here is an example of defining the operator ($+$) for addition in a language:
 \begin{Example}[Syntax for Addition]
 
     \label{ex:well_formed_expr}
     If $e_1$ is a well-formed expression and $e_2$ is a well-formed expression, 
-    then $e_1 + e_2$ is also a well-formed expression. We can formalize this using the following rule for expressions, 
-    where $\langle \text{expr} \rangle$ acts as a placeholder for arbitrary expressions:
-
-    \[
-    \langle \text{expr} \rangle \ ::= \ \langle \text{expr} \rangle + \langle \text{expr} \rangle
-    \]
+    then $e_1 + e_2$ is also a well-formed expression. 
 \end{Example}
 
+\newpage
 
+However, we can be a bit more concise using mathematic notation:
+
+\begin{Def}[Production Rule (\texttt{::=})]
+    
+    A \textbf{Production Rule} defines the syntax of a language by specifying how non-terminal symbols can be expanded into
+    sequences of terminal and non-terminal symbols. It is denoted by the symbol \texttt{::=}:
+    \[
+    \langle \text{non-terminal symbol} \rangle ::= \langle \text{definition} \rangle
+    \]
+    Where the left-hand side non-terminal symbol can be expanded/represented by the right-hand side definition.
+    We may also define multiple rules for a single non-terminal symbol, separated by the pipe symbol (\texttt{|}):
+
+    \[
+    \langle e_1 \rangle ::= \langle e_2 \rangle | \langle e_3 \rangle | \dots | \langle e_n \rangle
+    \]
+
+    Where $\langle e_1 \rangle$ can be expanded into $\langle e_2 \rangle$, $\langle e_3 \rangle$, $\dots$, or $\langle e_n \rangle$. 
+\end{Def}
+
+\begin{Example}[Production Rule]
+
+    Here are some possible production rules:
+    \begin{itemize}
+        
+        \item $\langle \text{date} \rangle ::= \langle \text{month} \rangle / \langle \text{year} \rangle$
+        \item $\langle \text{year} \rangle ::=  \ 2020 \ | \ 2021 \ | \ 2022 \ | \ 2023 \ | \ 2024 \ | \ 2025$
+        \item $\langle \text{month} \rangle ::= 1 \ | \ 2 \ | \ 3 \ | \ 4 \ | \ 5 \ | \ 6 \ | \ 7 \ | \ 8 \ | \ 9 \ | \ 10 \ | \ 11 \ | \ 12$
+        
+        \item $\langle \text{OS} \rangle ::= \langle \text{Linux} \rangle \ | \ \langle \text{Windows} \rangle \ | \ \langle \text{MacOS} \rangle$
+    \end{itemize}
+
+    \noindent
+    \textbf{Incorrect Derivations}: we cannot take a terminal symbol and expand it further:
+    \begin{itemize}
+        \item $8 \Rightarrow \langle \text{number} \rangle$ 
+        \item $8 \Rightarrow 5 + \langle \text{number} \rangle$
+        \item $8 \Rightarrow 5 + 3$
+    \end{itemize}
+
+    \noindent
+    Here $8$ means the token $8$, it cannot be expanded any further.
+\end{Example}
+
+\noindent
+Now we can clean up our previous syntax for defining addition:
+
+\begin{Example}[Production Rule for Addition]
+
+    \label{ex:production_rule_addition}
+    Let $\langle \text{expr} \rangle$ be a non-terminal symbol representing a well-formed expression. Then,
+    \vspace{-.5em}
+    \[\langle \text{expr} \rangle ::= \langle \text{expr} \rangle + \langle \text{expr} \rangle\]
+
+    \vspace{-.5em}
+    \noindent
+    I.e., ``$\langle \text{expr} \rangle + \langle \text{expr} \rangle$'' (right-hand side) 
+    is a valid ``$\langle \text{expr} \rangle$'' (left-hand side).
+\end{Example}
+
+% We can formalize this using the following rule for expressions, 
+%     where $\langle \text{expr} \rangle$ acts as a placeholder for arbitrary expressions:
+
+%     \[
+%     \langle \text{expr} \rangle \ ::= \ \langle \text{expr} \rangle + \langle \text{expr} \rangle
+%     \]
 \newpage
 
 \noindent
