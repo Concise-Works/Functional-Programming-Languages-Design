@@ -551,8 +551,10 @@ Arrays and Lists may be treated as immutable objects as long is they aren't muta
 
     \begin{lstlisting}[language=OCaml, caption={Cons Operator (::) Appending One Head Element}, numbers=none]
     1 :: [2; 3; 4]
-    (*Evaluates to [1; 2; 3; 4]; 
-      Syntax: <element> :: <list> *)
+    (*Evaluates to [1; 2; 3; 4]; Syntax: <element> :: <list> 
+      Equiv. to: 1 :: 2 :: 3 :: 4 :: []
+      I.e.:      1 :: (2 :: (3 :: (4 :: [])))
+      *)
     \end{lstlisting}
 \end{Def}
 
@@ -982,6 +984,131 @@ float_of_string_opt : string -> float option
 \end{Def}
 
 \newpage
+
+\subsection{Defining Custom Types: Variants and Records}
+
+In OCaml, we can define new types and structures to better organize our data and improve readability. This is especially useful when working with complex data structures. In particular, \textbf{records} provide a more user-friendly alternative to tuples by allowing named fields, while \textbf{variants} let us define custom types that can hold different kinds of values.
+
+\vspace{2em}
+
+\begin{Def}[Variants in OCaml]
+
+A \textbf{variant} is a custom type that can take multiple forms. This is similar to an \textbf{enumeration} or a \textbf{sum type} in other languages. Variants are defined using the \snippet{type} keyword, followed by multiple constructors.
+
+\begin{lstlisting}[language=OCaml, caption={Defining and Using Variants Correctly}, numbers=none]
+(* Define a variant type for operating systems *)
+type os =
+  | Windows
+  | MacOS
+  | Linux
+  | BSD
+
+(* Function to describe the OS with explicit typing *)
+let describe_os (system : os) : string =
+  match system with
+  | Windows -> "A proprietary OS developed by Microsoft."
+  | MacOS -> "A Unix-based OS developed by Apple."
+  | Linux -> "An open-source OS based on the Linux kernel."
+  | BSD -> "A Unix-like OS known for its security and stability."
+
+(* Correct Usage *)
+let my_os : os = Linux
+let description = describe_os my_os
+(* Evaluates to: "An open-source OS based on the Linux kernel." *)
+
+(* Incorrect Usage *)
+let unknown_os = Solaris
+(* Error: Unbound constructor Solaris *)
+\end{lstlisting}
+\end{Def}
+
+\newpage
+
+\begin{Def}[Records in OCaml]
+
+A \textbf{record} is a immutable data structure that groups multiple values together. Each value is associated with a field name and accessors.
+
+    \begin{lstlisting}[language=OCaml, caption={Defining and Using Records}, numbers=none]
+    (* Define a record type for a person *)
+    type person = {
+    name : string;
+    age : int;
+    }
+
+    (* Function to greet a person with explicit typing *)
+    let greeting =
+        let greet (p : person) : string =
+            "Hello, " ^ p.name ^ "! You are " ^ string_of_int p.age ^ " years old."
+        in
+        let alice : person = { name = "Alice"; age = 30 } in
+        greet alice
+    (* Evaluates to: "Hello, Alice! You are 30 years old." *)
+    \end{lstlisting}
+
+\begin{lstlisting}[language=OCaml, caption={Incorrect Usage Example}, numbers=none]
+...
+(* Attempting to create a record with a missing field *)
+let bob = { name = "Bob" }
+(* Error: Some record fields are undefined (age is missing). *)
+
+(* Using an incorrect type for a field *)
+let carol = { name = "Carol"; age = "twenty-five" }
+(* Error: This expression has type string but an expression was expected of type int. *)
+\end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Updating Records}, numbers=none]
+    ...
+    (fun name ->
+        let alice = { name = "Alice"; age = 30 } in
+        let _ = print_endline ("Original: " ^ alice.name) in
+        let alice = { alice with name = name } in
+        let _ = print_endline ("Updated: " ^ alice.name)
+    ) "Bob"
+    (* Prints:
+    Original: Alice
+    Updated: Bob
+    *)
+\end{lstlisting}
+\end{Def}
+
+\newpage 
+
+% field punning
+
+\begin{Def}[Variant (of) Keyword]
+
+    We can define variant types to refer to a specific record type:
+
+    \begin{lstlisting}[language=OCaml, caption={Variants Carrying Record Fields}, numbers=none]
+    
+    (* Defining a Record *)
+    type sep_Rect = { base: float; height: float }
+
+    (* Defining a Variant *)
+    type shape = 
+      | Circle of float
+      | Rect of sep_Rect
+      | Triangle of { sides: float * float; angle: float }
+    
+    (* Triangle is of record type with two fields: sides and angle *)
+
+    (* Function to calculate the area of a shape *)
+    
+
+    let area (s : shape) =
+        match s with
+        | Rect r -> r.base *. r.height
+        | Triangle { sides = (a, b) ; angle } -> Float.sin angle *. a *. b
+        | Circle r -> r *. r *. Float.pi
+    in 
+    let my_shape : shape = Triangle { sides = (3.0, 4.0); angle = 2.0 }
+    in
+    area my_shape
+    (* short handing ``angle=angle'' to ``angle'' (field punning) *)
+    (* Evaluates to 10.9115691219081796 *)
+    
+    \end{lstlisting}
+\end{Def}
 
 \newpage 
 

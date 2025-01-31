@@ -114,8 +114,8 @@ Now we can clean up our previous syntax for defining addition:
 \newpage
 
 \noindent
-Programmers may have some intuition about what a \textbf{variable} is, often thinking of it as a container for data.
-However, within this context, variables can represent entire expressions and are, in a sense, immutable.
+Now that we have defined syntax, we have to define its usage using types. We first cover variables, which have 
+a slightly different meaning in this context than what most programmers are used to.
 \begin{Def}[Meta-variables]
 
     Meta-variables are placeholders that represent arbitrary expressions in a formal syntax.
@@ -130,15 +130,22 @@ However, within this context, variables can represent entire expressions and are
 \end{Example}
 
 \noindent
-Before talking about types we must understand ``\textbf{context}'' when working with PLs.
+Now we must understand ``\textbf{context}'' and ``\textbf{judgments}'' in the context of type theory:
 
+\begin{Def}[Judgments]
+
+    In type theory, a \textbf{judgment} is a formal assertion about an expression. This does not 
+    have to be a true assertion, but just a statement about the expression. For example: ``Pigs can fly''
+    is a judgment, regardless of its validity.
+\end{Def}
 
 \begin{Def}[Context and Typing Environment]
 
-    In type theory, a context defines an environment which establishes data types for variables.
-    In particular, an environment $\Gamma$ is a set of ordered list of pairs $\langle x : \tau \rangle$, usually written as $x : \tau$,
-    where $x$ is a variable and $\tau$ is its type. We now write a \textbf{judgment},
-    a formal assertion about an expression or program within a given context. We denote:\LARGE
+    In type theory, a \textbf{context} defines an environment which establishes data types for variables.
+    Say we have an environment $\Gamma$ (Gamma) for which defines the context. This context $\Gamma$ holds 
+    an ordered list of pairs. Say, $\langle x : \tau \rangle$, typically written as $x : \tau$,
+    where $x$ is a variable and $\tau$ (tau) is its type. We denote our judgment as such:
+    \LARGE
 
     \vspace{-1em}
     \[\Gamma \vdash e: \tau\]
@@ -155,16 +162,6 @@ Before talking about types we must understand ``\textbf{context}'' when working 
     
     \hfill \cite{WikipediaTypingEnvironment}
 \end{Def}
-
-\vspace{-1em}
-\begin{Tip}
-    Symbol names and command in \LaTeX \ used above are as follows:
-    \begin{itemize}
-        \item $\Gamma$ reads as ``Gamma'' (\textbackslash Gamma).
-        \item $\vdash$ reads as ``turnstile'' (\textbackslash vdash).
-        \item $\tau$ reads as ``tau'' (\textbackslash tau).
-    \end{itemize}
-\end{Tip}
 
 \newpage 
 
