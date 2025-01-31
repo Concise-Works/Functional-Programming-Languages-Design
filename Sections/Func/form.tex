@@ -16,20 +16,82 @@ in our language, given that we have some \textit{context} now.
     I.e., what are our types, how are they used, what type of data do they represent, and how does it evaluate?
 \end{Def}
 
+\noindent
 Now we begin to formalize, though we will abstract the context to $\Gamma$, assuming 
 all the types we've defined before (\ref{tab:ocaml-types}).
 \begin{Def}[Formalizing Let-Expressions]
 
-    Let $\Gamma$ be the OCaml context, then:
+    Let $\Gamma$ be the OCaml context, and $=$ be mathematical equality, and $\texttr{=}$ be an OCaml token:
     \begin{itemize}
-        \item \textbf{Syntax:} \LARGE $\langle$\text{expr}$\rangle::=$ \texttt{let} $\langle$\text{var}$\rangle$ \texttt{=} $\langle$\text{expr}$\rangle$ \texttt{in} $\langle$\text{expr}$\rangle$ \normalsize\\
+        \item \textbf{Syntax:} \LARGE $\langle$\text{expr}$\rangle::=$ \texttr{let} $\langle$\text{var}$\rangle$ \texttr{=} $\langle$\text{expr}$\rangle$ \texttr{in} $\langle$\text{expr}$\rangle$ \normalsize\\
+        
+        \vspace{-.5em}
+        \noindent
+        If $x$ is a valid variable name, and $e_1$ is a well-formed expression and $e_2$ is a well-formed expression. Then $\texttr{let }x\texttr{ = }e_1\texttr{ in }e_2$ is also a well-formed expression.
+        \item \textbf{Typing-Rule:} \LARGE $\dfrac{\Gamma\vdash e_1:\tau_1 \quad \Gamma,x:\tau_1\vdash e_2:\tau}{\Gamma\vdash\texttr{let }x\texttr{ = }e_1\texttr{ in }e_2:\tau}$ \normalsize\\
         
         \noindent
-        If $x$ is a valid variable name, and $e_1$ is a well-formed expression and $e_2$ is a well-formed expression. Then $\texttt{let }x=e_1\texttt{ in }e_2$ is also a well-formed expression.
-        \item \textbf{Typing-Rule:} \LARGE $\dfrac{\Gamma\vdash e_1:\tau_1 \quad \Gamma,x:\tau_1\vdash e_2:\tau}{\Gamma\vdash\texttt{let }x=e_1\texttt{ in }e_2:\tau}$ \normalsize\\
+        Given context $\Gamma$, if there's some well-formed expression $e_1$ of type $\tau_1$ and some well-formed expression $e_2$ of type $\tau$, given a variable declaration of $x$ of type $\tau_1$, 
+        then within this context, the expression $\texttr{let }x\texttr{  = }e_1\texttr{ in }e_2$ is of type $\tau$.
+        
+        \item \textbf{Semantics:} \LARGE $\dfrac{e_1\Downarrow v_1 \quad [v_1/x]e_2\Downarrow v}{\texttr{let }x\texttr{ = }e_1\texttr{ in }e_2\Downarrow v}$ \normalsize\\
         
         \noindent
-        If 
+        Following our context $\Gamma$, if a well-formed expression $e_1$ evaluates to $v_1$ and the substitution of $v_1$ for variable $x$ in another 
+        well-formed expression $e_2$ evaluates to $v$, then the expression $\texttr{let }x\texttr{ = }e_1\texttr{ in }e_2$ evaluates to $v$.
     \end{itemize}
 
+    \noindent
+    Thus, we have formalized the \texttt{let} expression in OCaml.
 \end{Def}
+
+\newpage 
+
+\noindent
+Before we continue, we introduce the concept of $\top$ and $\bot$.
+
+\begin{Def}[Top and Bottom ($\top$, $\bot$)]
+    
+    In logic and computer science:
+    \begin{itemize}
+        \item $\top$ is used to represent \textit{true}, \textit{valid}.
+        \item $\bot$ is used to represent \textit{false} or \textit{invalid}.
+    \end{itemize}
+
+    \noindent
+    Specifically, they are the greatest and least element of a lattice/boolean algebra (hence top and bottom), which when it comes to logic means truthhood and falsehood.
+\end{Def}
+
+\noindent
+We continue with the formalization of the \texttt{if} expression in OCaml.
+\begin{Def}[Formalizing If-Expressions]
+    
+    Let $\Gamma$ be the OCaml context, then:
+    \begin{itemize}
+        \item \textbf{Syntax:} \LARGE $\langle$\text{expr}$\rangle::=$ \texttr{if} $\langle$\text{expr}$\rangle$ \texttr{then} $\langle$\text{expr}$\rangle$ \texttr{else} $\langle$\text{expr}$\rangle$ \normalsize\\
+     
+        \vspace{-.5em}
+        \noindent
+        If $e_1$ is a well-formed expression, $e_2$ is a well-formed expression, and $e_3$ is a well-formed expression, then $\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3$ is also a well-formed expression.
+
+        \item \textbf{Typing-Rule:} \LARGE $\dfrac{\Gamma\vdash e_1:\texttt{bool} \quad \Gamma\vdash e_2:\tau \quad \Gamma\vdash e_3:\tau}{\Gamma\vdash\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3:\tau}$ \normalsize\\
+
+        \noindent
+        Given context $\Gamma$, let there be well-formed expressions, $e_1$ of type \texttt{bool}, $e_2$ of type $\tau$, and $e_3$ of type $\tau$. Then the expression $\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3$ is of type $\tau$.
+
+        \item \textbf{Semantics:} \LARGE $\dfrac{e_1\Downarrow \top \quad e_2\Downarrow v}{\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3\Downarrow v}$ (trueCond.) \normalsize\\
+        
+        \noindent
+        Following our context $\Gamma$, if a well-formed expression $e_1$ evaluates $\top$ and another well-formed expression $e_2$ evaluates to $v$, then 
+        the expression $\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3$ evaluates to $v$ ($e_3$ a well-formed expression).
+        \item \textbf{Semantics:} \LARGE $\dfrac{e_1\Downarrow \bot \quad e_3\Downarrow v}{\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3\Downarrow v}$ (falseCond.) \normalsize\\
+        
+        \noindent
+        Following our context $\Gamma$, if a well-formed expression $e_1$ evaluates $\bot$ and another well-formed expression $e_3$ evaluates to $v$, then
+        the expression $\texttr{if }e_1\texttr{ then }e_2\texttr{ else }e_3$ evaluates to $v$ ($e_2$ a well-formed expression).
+    \end{itemize}
+
+    \noindent
+    Take note that we must write two semantics rules for the \texttt{if} expression, one for when the condition evaluates to $\top$ and one for when it evaluates to $\bot$.
+\end{Def}
+

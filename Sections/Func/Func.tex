@@ -139,6 +139,7 @@ Now we must understand ``\textbf{context}'' and ``\textbf{judgments}'' in the co
     is a judgment, regardless of its validity.
 \end{Def}
 
+\vspace{-.5em}
 \begin{Def}[Context and Typing Environment]
 
     In type theory, a \textbf{context} defines an environment which establishes data types for variables.
@@ -154,13 +155,17 @@ Now we must understand ``\textbf{context}'' and ``\textbf{judgments}'' in the co
     \noindent
     which reads ``in the context $\Gamma$, the expression $e$ has type $\tau$''. 
     We may also write judgments for functions, denoting the type of the function and its arguments.
-    \LARGE
+    
+    \vspace{-1em}
+    \Large
     \[ f : \tau_1, \tau_2, \ldots, \tau_n \rightarrow \tau \]
     \normalsize
     \noindent 
-    where $f$ is a function taking $n$ arguments ($\tau_1, \tau_2, \ldots, \tau_n$), outputting the type $\tau$.
-    
-    \hfill \cite{WikipediaTypingEnvironment}
+    where $f$ is a function taking $n$ arguments ($\tau_1, \tau_2, \ldots, \tau_n$), outputting type $\tau$. We may add 
+    temporary variables to the context. For example: 
+    \[\Gamma, x : \text{int}\vdash e : \text{bool}\] 
+    Reads,
+    Given the context $\Gamma$ with variable declaration ($x:$int) added, the expression $e$ has type \textbf{bool}. \hfill \cite{WikipediaTypingEnvironment}
 \end{Def}
 
 \newpage 
@@ -240,17 +245,17 @@ Finally, we can define the semantics of our language, which describes the behavi
     \label{ex:eval_integer_addition}
     Consider the evaluation rule for integer addition. This rule specifies how the sum of two expressions is computed. 
     If $e_1$ evaluates to the integer $v_1$ and $e_2$ evaluates to the integer $v_2$, 
-    then the expression $e_1 + e_2$ evaluates to the integer $v_1 + v_2$. The rule is written as: \LARGE
+    then the expression $e_1 \texttr{ + } e_2$ evaluates to the integer $v_1 + v_2$. The rule is written as: \LARGE
 
     \[
-    \frac{e_1 \Downarrow v_1 \quad e_2 \Downarrow v_2}{e_1 + e_2 \Downarrow v_1 + v_2} \ (\text{evalInt})
+    \frac{e_1 \Downarrow v_1 \quad e_2 \Downarrow v_2}{e_1 \texttr{ + } e_2 \Downarrow v_1 + v_2} \ (\text{evalInt})
     \]
 
     \vspace{.5em}
     \normalsize
     \noindent
     Read as, ``If $e_1$ evaluates to the integer $v_1$ and $e_2$ evaluates to the integer $v_2$, 
-    then $e_1 + e_2$ evaluates to $v_1 + v_2$.''
+    then the expressions, $e_1 \texttr{ + } e_2$, evaluates to $v_1 + v_2$.''
 
     \vspace{1em}
     \textbf{Example Evaluation:}
