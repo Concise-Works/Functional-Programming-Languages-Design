@@ -1079,7 +1079,6 @@ let carol = { name = "Carol"; age = "twenty-five" }
     We can define variant types to refer to a specific record type:
 
     \begin{lstlisting}[language=OCaml, caption={Variants Carrying Record Fields}, numbers=none]
-    
     (* Defining a Record *)
     type sep_Rect = { base: float; height: float }
 
@@ -1088,12 +1087,9 @@ let carol = { name = "Carol"; age = "twenty-five" }
       | Circle of float
       | Rect of sep_Rect
       | Triangle of { sides: float * float; angle: float }
-    
     (* Triangle is of record type with two fields: sides and angle *)
 
     (* Function to calculate the area of a shape *)
-    
-
     let area (s : shape) =
         match s with
         | Rect r -> r.base *. r.height
@@ -1101,13 +1097,33 @@ let carol = { name = "Carol"; age = "twenty-five" }
         | Circle r -> r *. r *. Float.pi
     in 
     let my_shape : shape = Triangle { sides = (3.0, 4.0); angle = 2.0 }
-    in
-    area my_shape
+    in area my_shape
     (* short handing ``angle=angle'' to ``angle'' (field punning) *)
     (* Evaluates to 10.9115691219081796 *)
     
     \end{lstlisting}
 \end{Def}
+
+\begin{Def}[Type Checking in OCaml]
+
+    In OCaml, \textbf{type checking} is performed at \textbf{compile-time}, meaning we can't check types at runtime. Therefore we 
+    must use variants and pattern matching to conditionally check types:
+
+    \begin{lstlisting}[language=OCaml, caption={Using Variants for Type Checking}, numbers=none]
+    type int_or_string =
+        | Int of int
+        | String of string
+
+    let typeof t =
+        match t with
+        | Int x -> print_endline (string_of_int x ^ ": is Integer")
+        | String x -> print_endline (x ^ ": is String")
+
+    let _ = typeof (Int 42)    (* Output: 42: is Integer *)
+    let _ = typeof (String "hi") (* Output: hi: is String *)
+    \end{lstlisting}
+\end{Def}
+
 
 \newpage 
 
