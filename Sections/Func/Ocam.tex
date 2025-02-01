@@ -513,48 +513,47 @@ Type hinting is a way to explicitly specify the types of variables or function p
 
 \subsection{OCaml Data Structures: Arrays, Lists, and Tuples}
 
-There are arrays, lists, and tuples in OCaml. While OCaml is not a purely functional language, we will treat it as such in this text, adhering to the principles of immutability and functional purity.
-Arrays and Lists may be treated as immutable objects as long is they aren't mutated; However, we won't use them very much in this text, we discuss only such for completeness and clarity.
+There are arrays, lists, and tuples in OCaml. While OCaml is not a purely functional language, we will treat it as such in this text.
 
 \begin{Def}[Lists in OCaml]
 
     A \textbf{list} in OCaml is an ordered, immutable collection of elements of the same type, 
-    implemented as a \textbf{linked list}. Lists are created using square brackets \snippet{[ ]} 
-    with elements separated by semicolons:
+    created via square brackets \snippet{[ ]} semicolon separated:
     \begin{lstlisting}[language=OCaml, caption={Defining a List}, numbers=none]
     [1; 2; 3; 4]
     (*Syntax: [e1;e2;e3;...;en] *)
-    \end{lstlisting}
 
-    \begin{lstlisting}[language=OCaml, caption={List of Lists}, numbers=none]
     [[1; 2]; [3; 4]; [5; 6]]
     (* 2D list of type: int list list *)   
     \end{lstlisting}
 
-    \begin{lstlisting}[language=OCaml, caption={Indexing a List}, numbers=none]
+    \begin{lstlisting}[language=OCaml, caption={Indexing a List \& Finding Length}, numbers=none]
     List.nth [1; 2; 3; 4] 2
-    (*Evaluates to 3; 
-      Syntax: List.nth <list> <index> *)
-    \end{lstlisting}
-
-    \begin{lstlisting}[language=OCaml, caption={Finding Length}, numbers=none]
+    (*Evaluates to 3; Syntax: List.nth <list> <index> *)
+    
     List.length [1; 2; 3; 4]
-    (*Evaluates to 4; 
-      Syntax: List.length <list> *)
+    (*Evaluates to 4; Syntax: List.length <list> *)
     \end{lstlisting}
 
     \begin{lstlisting}[language=OCaml, caption={Joining Lists}, numbers=none]
     [1; 2] @ [3; 4]
     (*Evaluates to [1; 2; 3; 4]; 
       Syntax: <list1> @ <list2> *)
-    \end{lstlisting}
 
-    \begin{lstlisting}[language=OCaml, caption={Cons Operator (::) Appending One Head Element}, numbers=none]
     1 :: [2; 3; 4]
-    (*Evaluates to [1; 2; 3; 4]; Syntax: <element> :: <list> 
-      Equiv. to: 1 :: 2 :: 3 :: 4 :: []
-      I.e.:      1 :: (2 :: (3 :: (4 :: [])))
-      *)
+    (* ``::'' is the cons operator;
+      Evaluates to [1; 2; 3; 4]; Syntax: <element> :: <list>
+      Equiv. to: 1 :: 2 :: 3 :: 4 :: [] I.e., 1 :: (2 :: (3 :: (4 :: [])))
+    *)
+    \end{lstlisting}
+    \begin{lstlisting}[language=OCaml, caption={Pattern Matching on Lists}, numbers=none]
+    let rec sum_list l =
+        match l with
+        | [] -> 0
+        | x :: xs -> x + sum_list xs
+    in 
+    sum_list [1; 2; 3; 4]
+    (* Evaluates to 10 as 1 + 2 + 3 + 4 *)
     \end{lstlisting}
 \end{Def}
 
