@@ -655,7 +655,7 @@ There are arrays, lists, and tuples in OCaml. While OCaml is not a purely functi
 \newpage 
 \subsection{Pattern Matching \& Switch-Case Absence}
 
-\textbf{Pattern matching} is a powerful feature in OCaml that allows for conditional evaluation based on the structure of data. It is similar to \textbf{switch-case} statements in other languages, but more flexible and expressive.\\
+\textbf{Pattern matching} allows for conditional evaluation based on the structure of data.\\
 
 \begin{Def}[OCaml Pattern Matching (match ... with ...)]
 
@@ -682,6 +682,16 @@ There are arrays, lists, and tuples in OCaml. While OCaml is not a purely functi
     
     describe_number 0;; (* Evaluates to "zero" *)
     describe_number 5;; (* Evaluates to "other" *)
+    \end{lstlisting}
+
+    \begin{lstlisting}[language=OCaml, caption={Matching Multiple Arguments}, numbers=none]
+    fun x y ->
+      match (x, y) with
+      | (0, 0) -> "origin"
+      | (0, _) -> "x-axis"
+      | (_, 0) -> "y-axis"
+      | _ -> "other"
+    (* Utilizing a tuple to match multiple arguments *)
     \end{lstlisting}
     
     \begin{itemize}
