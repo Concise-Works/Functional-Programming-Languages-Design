@@ -95,3 +95,221 @@ We continue with the formalization of the \texttt{if} expression in OCaml.
     Take note that we must write two semantics rules for the \texttt{if} expression, one for when the condition evaluates to $\top$ and one for when it evaluates to $\bot$.
 \end{Def}
 
+\newpage 
+
+\noindent
+We continue with the formalization of the \texttt{function} expression in OCaml.
+\begin{Def}[Formalizing Functions]
+
+    \label{def:func}
+    
+    Let $\Gamma$ be the OCaml context, then:
+    \begin{itemize}
+        \item \textbf{Syntax:} \LARGE $\langle$expr$\rangle::=$\texttr{ fun }$\langle$var$\rangle$\texttr{ -> }$\langle$expr$\rangle$\normalsize\\
+
+        \vspace{-.5em}
+        \noindent
+        If $x$ is a valid variable name and $e$ is a well-formed expression, then $\texttr{fun }x\texttr{ -> }e$ is also a well-formed expression.
+        
+        \item \textbf{Typing-Rule:} \LARGE $\dfrac{\Gamma,x:\tau_1\vdash e:\tau_2}{\Gamma\vdash\texttr{fun }x\texttr{ -> }e:\tau_1\rightarrow\tau_2}$ \normalsize
+        
+        \noindent
+        Given context $\Gamma$ with a variable declaration of $(x:\tau_1)$ added, if there's a well-formed expression $e$ of type $\tau_2$ and, then the expression $\texttr{fun }x\texttr{ -> }e$ is of type $\tau_1\rightarrow\tau_2$.
+
+        \item \textbf{Semantics:} \LARGE $\dfrac{}{\texttr{fun }x\texttr{ -> }e\Downarrow\lambda x.e}$ \normalsize\\
+        
+        \noindent
+        Under no premises, the expression $\texttr{fun }x\texttr{ -> }e$ evaluates to the lambda function $\lambda x.e$.
+    \end{itemize}
+\end{Def}
+
+\begin{Def}[Formalizing Application] 
+
+    Let $\Gamma$ be the OCaml context, then:
+    \begin{itemize}
+        \item \textbf{Syntax:} \LARGE $\langle$expr$\rangle::=$\texttr{ }$\langle$expr$\rangle$\texttr{ }$\langle$expr$\rangle$\normalsize\\
+        
+        \vspace{-.5em}
+        \noindent
+        If $e_1$ is a well-formed expression and $e_2$ is a well-formed expression, then $e_1\ e_2$ is also a well-formed expression.
+
+        \item \textbf{Typing-Rule:} \LARGE $\dfrac{\Gamma\vdash e_1:\tau_1\texttr{ -> }\tau_2 \quad \Gamma\vdash e_2:\tau_1}{\Gamma\vdash e_1\ e_2:\tau_2}$ \normalsize\\
+        
+        \noindent
+        Given context $\Gamma$, if there's a well-formed expression $e_1$ of type $\tau_1$\texttr{ -> }$\tau_2$ (Functions.\ref{def:func}) and a well-formed expression $e_2$ of type $\tau_1$, then the expression $e_1\ e_2$ is of type $\tau_2$.
+
+        \item \textbf{Semantics:} \LARGE $\dfrac{e_1\Downarrow\lambda x.e \quad e_2\Downarrow v \quad [v/x]e\Downarrow v'}{e_1\ e_2\Downarrow v'}$ \normalsize\\
+        
+        \noindent
+        Following our context $\Gamma$, if a well-formed expression $e_1$ evaluates to a lambda function $\lambda x.e$, another well-formed expression $e_2$ evaluates to $v$, and the substitution of $v$ for $x$ in $e$ evaluates to $v'$, then the expression $e_1\ e_2$ evaluates to $v'$.
+    \end{itemize}
+\end{Def}
+
+\newpage 
+
+\noindent
+Onto tuples and matching:
+
+\begin{Def}[Formalizing Tuples]
+
+    Let $\Gamma$ be the OCaml context, then:
+    \begin{itemize}
+        \item \textbf{Syntax:} \LARGE $\langle$expr$\rangle::=$\texttr{ (}$\langle$expr$\rangle$\texttr{,}$\dots$\texttr{,}$\langle$expr$\rangle$\texttr{)\normalsize}\normalsize\\
+        
+        \vspace{-.5em}
+        \noindent
+        If $e_1$ is a well-formed expression and $e_2$ is a well-formed expression, then $(e_1,e_2)$ is also a well-formed expression.
+
+        \item \textbf{Typing-Rule:} \LARGE $\dfrac{\Gamma\vdash e_1:\tau_1 \quad \Gamma\vdash e_2:\tau_2 \quad \dots \quad \Gamma\vdash e_n:\tau_n}{\Gamma\vdash(e_1,e_2,\dots,e_n):\tau_1*\tau_2*\dots*\tau_n}$ \normalsize\\
+        
+        \noindent
+        Given context $\Gamma$, if there are well-formed expressions $e_1$ of type $\tau_1$, $e_2$ of type $\tau_2$, and $e_n$ of type $\tau_n$, then the expression $(e_1,e_2,\dots,e_n)$ is of type $\tau_1*\tau_2*\dots*\tau_n$.
+
+        \item \textbf{Semantics:} \LARGE $\dfrac{e_1\Downarrow v_1 \quad e_2\Downarrow v_2 \quad \dots \quad e_n\Downarrow v_n}{(e_1,e_2,\dots,e_n)\Downarrow(v_1,v_2,\dots,v_n)}$ \normalsize\\
+        
+        \noindent
+        Following our context $\Gamma$, if well-formed expressions $e_1$ evaluates to $v_1$, $e_2$ evaluates to $v_2$, and $e_n$ evaluates to $v_n$, then the expression $(e_1,e_2,\dots,e_n)$ evaluates to $(v_1,v_2,\dots,v_n)$.
+    \end{itemize}
+\end{Def}
+
+\begin{Def}[Formalizing Lists]
+
+    Let $\Gamma$ be the OCaml context, then:
+    \begin{itemize}
+        \item \textbf{Syntax:} \LARGE 
+        $\langle$expr$\rangle::=$ \texttr{[]} $\mid$ $\langle$expr$\rangle\ \texttr{::}\ \langle$expr$\rangle$ \normalsize\\
+        
+        \vspace{-.5em}
+        \noindent
+        The empty list \texttr{[]} is a well-formed expression. If $e_1$ is a well-formed expression and $e_2$ is a well-formed list, then $e_1\ \texttr{::}\ e_2$ is also a well-formed expression.
+
+        \item \textbf{Typing-Rule:} \large \quad 
+            $\dfrac{}{\Gamma\vdash []:\tau\ \texttr{list}}$ (nil)
+            \quad
+             $\dfrac{\Gamma\vdash e_1:\tau \quad \Gamma\vdash e_2:\tau\ \texttr{list}}{\Gamma\vdash e_1\ \texttr{::}\ e_2:\tau\ \texttr{list}}$ (cons) 
+      
+
+        \normalsize
+        \noindent
+        Given context $\Gamma$, the empty list \texttr{[]} has type $\tau\ \texttr{list}$ for any type $\tau$ (nil).
+        If $e_1$ is of type $\tau$ and $e_2$ is of type $\tau\ \texttr{list}$, then the expression $e_1\ \texttr{::}\ e_2$ has type $\tau\ \texttr{list}$ (cons).
+
+        \item \textbf{Semantics:} \large \quad
+        $\dfrac{}{\texttr{[]} \Downarrow \varnothing}$ (nilEval)
+        \quad $\dfrac{e_2 \Downarrow [v_2, ..., v_k] \quad e_1 \Downarrow v_1}{e_1\ \texttr{::}\ e_2 \Downarrow [v_1, v_2, ..., v_k]}$ (consEval) \normalsize\\
+        
+        \noindent
+        The empty list \texttr{[]} evaluates to the empty list as a value (nilEval).
+        If $e_2$ evaluates to the list $[v_2, ..., v_k]$ and $e_1$ evaluates to $v_1$, then $e_1\ \texttr{::}\ e_2$ evaluates to the list $[v_1, v_2, ..., v_k]$ (consEval).
+    \end{itemize}
+\end{Def}
+
+\newpage
+
+\noindent
+Matching in a general sense is complex (deep matching), we can simplify with weak matching:
+
+\begin{Def}[Weak Matching]
+
+    Weak matching is a form of pattern matching that is for specific cases.
+\end{Def}
+
+\noindent
+Additionally, we introduce the concept of \textit{side conditions} before we jump into weak matching on lists.
+
+\begin{Def}[Side Conditions in Formal Semantics]
+
+    A \textbf{side condition} is an additional constraint that must be satisfied before applying a rule. Side conditions are used to prevent undefined behavior and ensure correctness in evaluation.
+
+    \textbf{Example 1: Integer Division Rule}
+
+    \begin{itemize}
+        \item Consider the evaluation rule for integer division:
+
+        \LARGE
+        \[
+        \dfrac{e_1 \Downarrow v_1 \quad e_2 \Downarrow v_2 \quad v_2 \neq 0}
+        {e_1 \div e_2 \Downarrow v_1 \div v_2}
+        \]
+        \normalsize
+
+        \item The side condition \LARGE $v_2 \neq 0$ \normalsize ensures that:
+        \begin{itemize}
+            \item The denominator $v_2$ is not zero before performing division.
+            \item If $v_2 = 0$, the rule cannot be applied to avoid division by zero.
+        \end{itemize}
+
+        \item Without this side condition, the expression could cause an error or undefined behavior.
+    \end{itemize}
+
+    \textbf{Example 2: Exponentiation with Non-Negative Exponents}
+
+    \begin{itemize}
+        \item Consider the evaluation rule for exponentiation:
+
+        \LARGE
+        \[
+        \dfrac{e_1 \Downarrow v_1 \quad e_2 \Downarrow v_2 \quad v_2 \geq 0}
+        {e_1^{e_2} \Downarrow v_1^{v_2}}
+        \]
+        \normalsize
+
+        \item The side condition \LARGE $v_2 \geq 0$ \normalsize ensures that:
+        \begin{itemize}
+            \item The exponent $v_2$ is non-negative before applying the exponentiation operation.
+            \item If $v_2 < 0$, the rule cannot be applied to avoid undefined results in integer arithmetic.
+        \end{itemize}
+
+        \item Without this side condition, expressions like $2^{-3}$ would be invalid in integer arithmetic.
+    \end{itemize}
+
+    Side conditions help enforce correctness by restricting operations to only valid inputs.
+
+\end{Def}
+
+
+
+\newpage
+
+\begin{Def}[Weak Matching on Lists]
+
+    Let $\Gamma$ be the OCaml context, then:
+    \begin{itemize}
+        \item \textbf{Syntax:} \LARGE 
+        $\langle$expr$\rangle::=$ \texttr{match }$\langle$expr$\rangle$\texttr{ with }\\
+        \text{}\hspace{7.5em}\texttr{| [] -> }$\langle$expr$\rangle$\\
+        \text{}\hspace{7.5em}\texttr{| }$\langle$var$\rangle$ \texttr{:: }$\langle$var$\rangle$ \texttr{-> }$\langle$expr$\rangle$ \normalsize\\
+
+        \vspace{-1em}
+        \noindent
+        If $e, e_1, e_2$ are well-formed expressions and $x, y$ are valid variable names, then\\
+        $\texttr{match } e \texttr{ with | [] -> } e_1 \texttr{| } x \texttr{ :: } y \texttr{ -> } e_2$
+        is a well-formed expression.
+
+        \item \textbf{Typing Rule:}\\ \LARGE 
+        
+        $\dfrac{\Gamma\vdash e:\tau' \texttr{ list} \quad \Gamma\vdash e_1:\tau \quad \Gamma, x:\tau', y:\tau' \texttr{ list} \vdash e_2:\tau}
+        {\Gamma\vdash \texttr{match } e \texttr{ with | [] -> } e_1 \texttr{| } x \texttr{ :: } y \texttr{ -> } e_2 : \tau}$ \normalsize\\
+        
+        \noindent
+        If $e$ is of type $\tau' \texttr{ list}$ in the context $\Gamma$, and $e_1$ is of type $\tau$ in the context $\Gamma$, and $e_2$ is of type $\tau$ in the context $\Gamma$ with $(x:\tau')$ and $(y:\tau' \texttr{ list})$ added, then the entire match expression is of type $\tau$.
+
+        \item \textbf{Semantics:}\\ 
+        \LARGE 
+            $\dfrac{e \Downarrow \varnothing \quad e_1 \Downarrow v}{\texttr{match } e \texttr{ with} \texttr{ [] -> } e_1 \texttr{| } x \texttr{:: } y \texttr{ -> } e_2 \Downarrow v}$ (nil) \normalsize\\
+            
+            \noindent
+            If $e$ evaluates to the empty list $\varnothing$ and $e_1$ evaluates to $v$, then the entire match expression evaluates to $v$.
+
+        \LARGE 
+            $\dfrac{e \Downarrow h \texttr{ :: } t \quad e'_2 = [t/y][h/x]e_2 \quad e'_2 \Downarrow v}
+            {\texttr{match } e \texttr{ with | [] -> } e_1 \texttr{| } x \texttr{ :: } y \texttr{ -> } e_2 \Downarrow v}$ (cons) \normalsize\\
+            
+            \noindent
+            If $e$ evaluates to a nonempty list $h::t$ with first element $h$ and remainder $t$, and the expression $e_2$ with $h$ substituted for $x$ and $t$ substituted for $y$ evaluates to $v$, then the entire match expression evaluates to $v$.
+       
+    \end{itemize}
+\end{Def}
+
+\newpage
+
