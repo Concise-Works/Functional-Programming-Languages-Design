@@ -1202,22 +1202,23 @@ Using \snippet{option} ensures that every time you work with a value that might 
 
 \begin{Example}[Handling Optional Values When Summing Integers]
 
-    Suppose we have a function that adds the head of a list to some sum. We might try:
+    Suppose we have a function that adds the head of a typed list to some sum.
     
-    \begin{lstlisting}[language=OCaml, caption={Incorrect: Using [] for an Option}, numbers=none]
+    \begin{lstlisting}[language=OCaml, caption={Incorrect Approach for Null case}, numbers=none]
     (* Here, suppose next is of some arbitrary strong type *)
     let add_next sum (next: MyType) =
       match next with
-      | [] -> sum (* Error: [] is not a valid constructor for int option *)
+      | [] -> sum (* Error: [] is not a valid constructor for MyType *)
       | Some x :: _  -> sum + x
     \end{lstlisting}
     
+    \noindent
     Instead we should use \snippet{None} to represent the absence of a value, adding \snippet{option} to the type:
     
     \begin{lstlisting}[language=OCaml, caption={Correct: Using None for an Option}, numbers=none]
     let add_next sum (next: MyType option) =
       match next with
-      | None    -> sum         (* Correctly handles the case where there is no integer *)
+      | None -> sum  (* Correctly handles the null case *)
       | Some x  -> sum + x
     \end{lstlisting}
 
