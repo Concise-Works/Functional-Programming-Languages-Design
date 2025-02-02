@@ -1209,7 +1209,7 @@ Using \snippet{option} ensures that every time you work with a value that might 
     let add_next sum (next: MyType) =
       match next with
       | [] -> sum (* Error: [] is not a valid constructor for MyType *)
-      | Some x :: _  -> sum + x
+      | x :: _  -> sum + x
     \end{lstlisting}
     
     \noindent
