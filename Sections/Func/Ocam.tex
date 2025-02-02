@@ -1132,6 +1132,101 @@ let carol = { name = "Carol"; age = "twenty-five" }
 
 \newpage 
 
+\subsection{Handling Absence of Values with Options}
+
+In many programming languages, you might be familiar with the concept of a \textbf{null} value to represent the absence of a value. However, using \texttt{null} can lead to unexpected runtime errors if not handled carefully. OCaml avoids this pitfall by using the built-in \textbf{option} type, which forces you to explicitly handle the case when a value is absent.
+
+\vspace{2em}
+
+\begin{Def}[Option Type in OCaml]
+
+The \textbf{option} type is a variant that can either hold a value of a given type or no value at all. Its definition is built into OCaml and is equivalent to:
+
+\begin{lstlisting}[language=OCaml, caption={Definition of the Option Type}, numbers=none]
+type 'a option =
+  | None
+  | Some of 'a
+\end{lstlisting}
+
+A value of type \snippet{'a option} is either:
+\begin{itemize}
+    \item \snippet{Some x}, indicating that a value \snippet{x} of type \snippet{'a} is present, or 
+    \item \snippet{None}, indicating the absence of a value.
+\end{itemize}
+\end{Def}
+
+\vspace{2em}
+
+\begin{Example}[A Simple Example: Safe Division]
+
+Consider the problem of performing division, where division by zero is undefined. Instead of returning a special error code or risking a runtime error, we use the option type to signal that a valid result might not always be available.
+
+\begin{lstlisting}[language=OCaml, caption={Safe Division Using Options}, numbers=none]
+let safe_divide (x : int) (y : int) : int option =
+  if y = 0 then None
+  else Some (x / y)
+
+(* Usage Examples *)
+let result1 = safe_divide 10 2   (* Evaluates to Some 5 *)
+let result2 = safe_divide 10 0   (* Evaluates to None *)
+\end{lstlisting}
+
+In this example, \snippet{safe\_divide} returns \snippet{Some result} when division is possible, and \snippet{None} when division by zero is attempted. This forces the caller to handle both cases explicitly.
+\end{Example}
+
+\vspace{2em}
+
+\begin{Example}[Avoiding "Null" in OCaml]
+
+In some languages, you might try to define a type that mixes an actual value with a \snippet{null}-like value. For example, one might be tempted to write:
+
+\begin{lstlisting}[language=OCaml, caption={Incorrect Approach with a "Null" Value}, numbers=none]
+(* Incorrect: attempting to mix an int with a null literal *)
+type example = int | "null"
+\end{lstlisting}
+
+\noindent
+OCaml's type system does not allow this kind of mixing. Instead, we define such types using the \snippet{option} type:
+
+\begin{lstlisting}[language=OCaml, caption={Correct Approach Using Option}, numbers=none]
+type example = int option
+
+(* Here, Some 42 represents an int value,
+   and None represents the absence of a value. *)
+let value1 : example = Some 42
+let value2 : example = None
+\end{lstlisting}
+
+Using \snippet{option} ensures that every time you work with a value that might be absent, you must handle the \snippet{None} case, making your code safer and more robust.
+\end{Example}
+
+\begin{Example}[Handling Optional Values When Summing Integers]
+
+    Suppose we have a function that adds the head of a list to some sum. We might try:
+    
+    \begin{lstlisting}[language=OCaml, caption={Incorrect: Using [] for an Option}, numbers=none]
+    (* Here, suppose next is of some arbitrary strong type *)
+    let add_next sum (next: MyType) =
+      match next with
+      | [] -> sum (* Error: [] is not a valid constructor for int option *)
+      | Some x :: _  -> sum + x
+    \end{lstlisting}
+    
+    Instead we should use \snippet{None} to represent the absence of a value, adding \snippet{option} to the type:
+    
+    \begin{lstlisting}[language=OCaml, caption={Correct: Using None for an Option}, numbers=none]
+    let add_next sum (next: MyType option) =
+      match next with
+      | None    -> sum         (* Correctly handles the case where there is no integer *)
+      | Some x  -> sum + x
+    \end{lstlisting}
+
+\end{Example}
+    
+
+
+\newpage 
+
 \subsection{Print Debugging}
 
 To debug our functions we can use the print statements. For example:
