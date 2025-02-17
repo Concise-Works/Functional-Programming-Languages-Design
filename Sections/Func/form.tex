@@ -1,5 +1,5 @@
 \section{Formalizing Ocaml Expressions}
-
+\subsection{Basic Ocaml Expressions}
 Now we can begin to formalize expressions
 in OCaml. We again re-iterate what steps are needed to build expressions
 in our language, given that we have some \textit{context} now.
@@ -40,9 +40,6 @@ all the types we've defined before (\ref{tab:ocaml-types}).
         Following our context $\Gamma$, if a well-formed expression $e_1$ evaluates to $v_1$ and the substitution of $v_1$ for variable $x$ in another 
         well-formed expression $e_2$ evaluates to $v$, then the expression $\texttr{let }x\texttr{ = }e_1\texttr{ in }e_2$ evaluates to $v$.
     \end{itemize}
-
-    \noindent
-    Thus, we have formalized the \texttt{let} expression in OCaml.
 \end{Def}
 
 \newpage 
