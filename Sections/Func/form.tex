@@ -311,5 +311,88 @@ Additionally, we introduce the concept of \textit{side conditions} before we jum
     \end{itemize}
 \end{Def}
 
+\noindent
+\subsection{All Ocaml Formalizations}
+\noindent Below is the full list from which we will reference throughout the text.
+\begin{gbox}
+    \textbf{Full Specifications:} For a full list of all the formalized expressions we'll be using. This list 
+    also includes the next topic we'll discuss \textbf{Derivations}:\\
+    \href{https://nmmull.github.io/PL-at-BU/320Caml/notes.html}{https://nmmull.github.io/PL-at-BU/320Caml/notes.html}
+\end{gbox}
+
 \newpage
 
+\subsection{Derivations}
+
+\noindent
+Derivations allow us to unpack the formal expressions to prove their validity.
+\begin{Def}[Tree Derivations]
+
+    \textbf{Tree derivations} are a structured way of representing step-by-step reasoning in formal systems. They are often used in type systems, operational semantics, and logic proofs to show how conclusions follow from premises.\\
+
+    \noindent
+    Each derivation is represented as a \textbf{tree}, where:
+    \begin{itemize}
+        \item \textbf{Leaves} represent axioms or base cases.
+        \item \textbf{Internal nodes} apply inference rules to derive new conclusions.
+        \item \textbf{The root} represents the final conclusion of the derivation, i.e., the starting point.
+    \end{itemize}
+\end{Def}
+
+\vspace{-1em}
+\begin{Example}[Typing Derivation]
+
+    Say we wanted to prove the typing derivation: $\texttt{let y = 2 in y + y} : \texttt{int}$
+
+    \begin{center}
+    \begin{prooftree}
+        % Leftmost branch for the integer literal
+        \Infer0[(intLit)]{\{\} \vdash \textcolor{purple}{2} : \textcolor{purple}{\texttt{int}}}
+    
+        % Middle branch for variable y
+        \Infer0[(var)]{\{ \textcolor{purple}{y : \texttt{int}} \} \vdash \textcolor{purple}{y} : \textcolor{purple}{\texttt{int}}}
+    
+        % Rightmost branch for variable y
+        \Infer0[(var)]{\{ \textcolor{purple}{y : \texttt{int}} \} \vdash \textcolor{purple}{y} : \textcolor{purple}{\texttt{int}}}
+    
+        % Adding the two y's together
+        \Infer2[(intAdd)]{\{ \textcolor{purple}{y : \texttt{int}} \} \vdash \textcolor{purple}{y + y} : \textcolor{purple}{\texttt{int}}}
+    
+        % Let-binding y = 2
+        \Infer2[(let)]{\{\} \vdash \textcolor{purple}{\texttt{let y = 2 in y + y} : \texttt{int}}}
+    \end{prooftree}\\
+\end{center}
+
+    \vspace{1em}
+    \noindent
+    Here the bottom of the tree is the final conclusion. We now unpack the highest level wrapper expression. The first expression 
+    we encounter is the \snippet{let} expression. The syntax of which are $(e_3::=\texttt{let }x\texttt{ = }e_1\texttt{ in }e_2)$. Hence we 
+    split into two branches to examine $e_1$ and $e_2$. The left branch 
+    examines the integer literal. The right branch looks at \snippet{(y + y)}. Since \snippet{(y + y)} is an addition operation, we must unravel once 
+    more into two branches examining both sides of the expression. The left and right branch examines the variable as an integer. Tunnelling from 
+    the leaf axioms to the root conclusion justifies the typing derivation as valid.
+
+\end{Example}
+
+\vspace{-1em}
+\begin{Example}[Semantic Derivations]
+
+    Continuing the same example, now with the semantics derivation: $\texttt{let y = 2 in y + y} \Downarrow 4$
+    \begin{center}
+    \begin{prooftree}
+        % Evaluating the integer 2
+        \Infer0[(intLit)]{\textcolor{purple}{2} \Downarrow \textcolor{purple}{2}}
+    
+        % Evaluating y (y is substituted with 2)
+        \Infer0[(var)]{\textcolor{purple}{y} \Downarrow \textcolor{purple}{2}}
+    
+        \Infer0[(var)]{\textcolor{purple}{y} \Downarrow \textcolor{purple}{2}}
+    
+        % Addition step
+        \Infer2[(intAdd)]{\textcolor{purple}{y + y} \Downarrow \textcolor{purple}{4}}
+    
+        % Let-binding evaluation (substitutes y = 2 in y + y)
+        \Infer2[(let)]{\textcolor{purple}{\texttt{let y = 2 in y + y}} \Downarrow \textcolor{purple}{4}}
+    \end{prooftree}
+    \end{center}
+\end{Example}

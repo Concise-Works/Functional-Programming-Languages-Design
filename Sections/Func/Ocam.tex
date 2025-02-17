@@ -678,6 +678,7 @@ In OCaml, \underline{\textbf{There is no switch-case statement}}, pattern matchi
       match x with
       | 0 -> "zero"
       | 1 -> "one"
+      | 2 | 3 -> "two or three"
       | _ -> "other";;
     
     describe_number 0;; (* Evaluates to "zero" *)
@@ -1001,28 +1002,28 @@ A \textbf{variant} is a custom type that can take multiple forms. This is simila
 
 \begin{lstlisting}[language=OCaml, caption={Defining and Using Variants Correctly}, numbers=none]
 (* Define a variant type for operating systems *)
-type os =
-  | Windows
-  | MacOS
-  | Linux
-  | BSD
+    type os =
+    | Windows
+    | MacOS
+    | Linux
+    | BSD // <-- Constructor
 
-(* Function to describe the OS with explicit typing *)
-let describe_os (system : os) : string =
-  match system with
-  | Windows -> "A proprietary OS developed by Microsoft."
-  | MacOS -> "A Unix-based OS developed by Apple."
-  | Linux -> "An open-source OS based on the Linux kernel."
-  | BSD -> "A Unix-like OS known for its security and stability."
+    (* Function to describe the OS with explicit typing *)
+    let describe_os (system : os) : string =
+    match system with
+    | Windows -> "A proprietary OS developed by Microsoft."
+    | MacOS -> "A Unix-based OS developed by Apple."
+    | Linux -> "An open-source OS based on the Linux kernel."
+    | BSD -> "A Unix-like OS known for its security and stability."
 
-(* Correct Usage *)
-let my_os : os = Linux
-let description = describe_os my_os
-(* Evaluates to: "An open-source OS based on the Linux kernel." *)
+    (* Correct Usage *)
+    let my_os : os = Linux
+    let description = describe_os my_os
+    (* Evaluates to: "An open-source OS based on the Linux kernel." *)
 
-(* Incorrect Usage *)
-let unknown_os = Solaris
-(* Error: Unbound constructor Solaris *)
+    (* Incorrect Usage *)
+    let unknown_os = Solaris
+    (* Error: Unbound constructor Solaris *)
 \end{lstlisting}
 \end{Def}
 
@@ -1051,13 +1052,13 @@ A \textbf{record} is a immutable data structure that groups multiple values toge
 
 \begin{lstlisting}[language=OCaml, caption={Incorrect Usage Example}, numbers=none]
 ...
-(* Attempting to create a record with a missing field *)
-let bob = { name = "Bob" }
-(* Error: Some record fields are undefined (age is missing). *)
+    (* Attempting to create a record with a missing field *)
+    let bob = { name = "Bob" }
+    (* Error: Some record fields are undefined (age is missing). *)
 
-(* Using an incorrect type for a field *)
-let carol = { name = "Carol"; age = "twenty-five" }
-(* Error: This expression has type string but an expression was expected of type int. *)
+    (* Using an incorrect type for a field *)
+    let carol = { name = "Carol"; age = "twenty-five" }
+    (* Error: This expression has type string but an expression was expected of type int. *)
 \end{lstlisting}
 
     \begin{lstlisting}[language=OCaml, caption={Updating Records}, numbers=none]
@@ -1143,9 +1144,9 @@ In many programming languages, you might be familiar with the concept of a \text
 The \textbf{option} type is a variant that can either hold a value of a given type or no value at all. Its definition is built into OCaml and is equivalent to:
 
 \begin{lstlisting}[language=OCaml, caption={Definition of the Option Type}, numbers=none]
-type 'a option =
-  | None
-  | Some of 'a
+    type 'a option =
+    | None
+    | Some of 'a
 \end{lstlisting}
 
 A value of type \snippet{'a option} is either:
@@ -1162,13 +1163,13 @@ A value of type \snippet{'a option} is either:
 Consider the problem of performing division, where division by zero is undefined. Instead of returning a special error code or risking a runtime error, we use the option type to signal that a valid result might not always be available.
 
 \begin{lstlisting}[language=OCaml, caption={Safe Division Using Options}, numbers=none]
-let safe_divide (x : int) (y : int) : int option =
-  if y = 0 then None
-  else Some (x / y)
+    let safe_divide (x : int) (y : int) : int option =
+    if y = 0 then None
+    else Some (x / y)
 
-(* Usage Examples *)
-let result1 = safe_divide 10 2   (* Evaluates to Some 5 *)
-let result2 = safe_divide 10 0   (* Evaluates to None *)
+    (* Usage Examples *)
+    let result1 = safe_divide 10 2   (* Evaluates to Some 5 *)
+    let result2 = safe_divide 10 0   (* Evaluates to None *)
 \end{lstlisting}
 
 In this example, \snippet{safe\_divide} returns \snippet{Some result} when division is possible, and \snippet{None} when division by zero is attempted. This forces the caller to handle both cases explicitly.
@@ -1181,20 +1182,20 @@ In this example, \snippet{safe\_divide} returns \snippet{Some result} when divis
 In some languages, you might try to define a type that mixes an actual value with a \snippet{null}-like value. For example, one might be tempted to write:
 
 \begin{lstlisting}[language=OCaml, caption={Incorrect Approach with a "Null" Value}, numbers=none]
-(* Incorrect: attempting to mix an int with a null literal *)
-type example = int | "null"
+    (* Incorrect: attempting to mix an int with a null literal *)
+    type example = int | "null"
 \end{lstlisting}
 
 \noindent
 OCaml's type system does not allow this kind of mixing. Instead, we define such types using the \snippet{option} type:
 
 \begin{lstlisting}[language=OCaml, caption={Correct Approach Using Option}, numbers=none]
-type example = int option
+    type example = int option
 
-(* Here, Some 42 represents an int value,
-   and None represents the absence of a value. *)
-let value1 : example = Some 42
-let value2 : example = None
+    (* Here, Some 42 represents an int value,
+    and None represents the absence of a value. *)
+    let value1 : example = Some 42
+    let value2 : example = None
 \end{lstlisting}
 
 Using \snippet{option} ensures that every time you work with a value that might be absent, you must handle the \snippet{None} case, making your code safer and more robust.
