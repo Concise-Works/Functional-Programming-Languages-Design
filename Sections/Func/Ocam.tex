@@ -190,13 +190,13 @@ To disect the roles of \textbf{syntax}, \textbf{semantics}, and \textbf{types} i
 In OCaml, functions do not require parentheses, arguments directly follow the function name. 
 For example:
 \begin{lstlisting}[language=OCaml]
-    let add x y z= x + y + z in 
+    let add x y z = x + y + z in 
     let result = add 3 5 5
     (* semantically evaluates to 3 + 5 + 5 *)
 \end{lstlisting}
 
 \noindent
-Here, the \snippet{add} function takes two arguments, \snippet{x} and \snippet{y}, which is substituted into \snippet{result} with arguments 3,5, and 5.\\
+Here, the \snippet{add} function takes three arguments, \snippet{x}, \snippet{y}, and \snippet{z} which is substituted into \snippet{result} with arguments 3, 5, and 5.\\
 
 \begin{Def}[Anonymous Functions]
 
