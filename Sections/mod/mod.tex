@@ -1,0 +1,134 @@
+\section{Modules In Ocaml}
+
+This section details how OCaml deals with modular programming, including abstractions and interfaces.
+
+\begin{Def}[Modular Programming]
+
+Modular programming is a software design approach that emphasizes separating a program's functionality into independent, interchangeable modules,
+which are composed of three key elements:
+
+\begin{enumerate}
+    \item \textbf{Namespaces:} A way of separating code into logical units of functions, types, and values together while avoiding name conflicts.
+    
+    \item \textbf{Abstraction/Encapsulation:} A way of abstracting away implementation details and organizing core functionality. This creates a clear boundary between the module's intent and its implementation for clarity.
+    
+    \item \textbf{Code Reuse:} Well-designed modules can serve as reusable components across multiple projects, reducing duplication.
+\end{enumerate}
+
+\end{Def}
+
+\begin{Def}[The (\texttt{module}) \& (\texttt{struct}) Keyword in OCaml]
+
+    The \textbf{module} keyword in OCaml is used to define a collection of related code elements (types, values, functions) that are grouped together into a single namespace.
+
+    \begin{lstlisting}[language=OCaml, numbers=none, caption= \textbf{Basic Module Syntax:}]
+    module ModuleName = struct
+    (* Types, values, and functions *)
+    type t = int * int
+    let create x y = (x, y)
+    let add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+    end
+    \end{lstlisting}
+
+    \noindent
+    Where the \snippet{struct} keyword defines the collection of
+    definitions under the module.
+    Once defined, module elements are accessed using the dot notation:
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    let point = ModuleName.create 10 20
+    let sum = ModuleName.add point point
+    \end{lstlisting}
+
+    \noindent
+    Multiple modules may be defined in a single file, and be used in and between other files.
+
+\end{Def}
+
+\newpage 
+
+\begin{Def}[Module Access: (\texttt{open}) and Local Opens]
+    OCaml provides multiple ways to access module contents:\\
+
+    \noindent
+    \textbf{Qualified access:} uses dot notation: \snippet{ModuleName.function\_name}\\
+        
+    \noindent
+    \textbf{Global open:} brings all module contents into the current scope:
+        \begin{lstlisting}[language=OCaml, numbers=none]
+    (* All List functions now available without qualification *)
+    open List  
+    let x = map (fun x -> x * 2) [1; 2; 3]  (* No need for List.map *)
+        \end{lstlisting}
+        
+    \noindent
+    \textbf{Local open:} provides temporary access within a limited scope:
+        \begin{lstlisting}[language=OCaml, numbers=none]
+    (* Using Module.(expr) syntax *)
+    let result = List.(
+    map (fun x -> x * 2) [1; 2; 3]  
+    (* List is open only in this scope *)
+    )
+
+    (* Outside the parentheses, module is not opened *)
+    let standard = List.length [1; 2; 3]  (* Need qualification again *)
+        \end{lstlisting}
+ 
+\end{Def}
+
+\begin{Def}[Module Signatures: (\texttt{sig}) \& (\texttt{module type})]
+    
+    Signatures are interfaces to modules. They 
+    are created in \snippet{.mli} files:
+
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    module type POINT = sig
+      (* Abstract type - implementation hidden *)  
+      type t              
+      val private create : int -> int -> t
+      val add : t -> t -> t
+    end
+    \end{lstlisting}
+
+    \noindent
+    The \snippet{val} keyword explains rather than defines like \snippet{let}. Signatures are then applied to modules to ensure they conform to the interface:
+    
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    module Point : POINT = struct
+      type t = int * int
+      let create x y = (x, y)
+      let add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+      
+      (* This function is private as its not in the signature *)
+      let sub x y = x - y 
+    end
+    \end{lstlisting}
+\end{Def}
+
+\begin{Def}[Module Helper Pattern for Data Structures]
+    
+    A common pattern in OCaml is to create helper functions inside modules to simplify working with complex data structures. 
+    This approach makes code more concise and readable by providing shorthand notations for constructors.\\
+
+    \noindent
+    For example, with a binary tree:
+    
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    type 'a tree =
+      | Leaf
+      | Node of 'a * 'a tree * 'a tree
+
+    module TreeExample = struct
+      let l = Leaf
+      let n l r = Node ((), l, r)
+    end
+    
+    (* Using local open for concise tree construction *)
+    let example = TreeExample.(n (n (n l l) l) (n l l))
+    \end{lstlisting}
+    
+    \noindent
+    Instead of writing the full constructor names repeatedly, the module provides shorthand aliases (\snippet{l} for \snippet{Leaf} and \snippet{n} for creating \snippet{Node}s). Combined with local opens, this makes tree construction much more readable than the equivalent:
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    let example = Node ((), Node ((), Node ((), Leaf, Leaf), Leaf), Node ((), Leaf, Leaf))
+    \end{lstlisting}
+\end{Def}

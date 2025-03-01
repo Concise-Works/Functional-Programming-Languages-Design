@@ -151,9 +151,6 @@ We'll discuss three common patterns we see a lot in programmings \textbf{Maps}, 
     \[
     \texttt{fold\_left } (-) \ a_0\ [x_1, x_2, \dots, x_n] = (((a_0 - x_1) - x_2) \dots - x_n)
     \]
-
-    \noindent
-    I.e., we dig to the base case hitting $x_n$, then start unraveling, tunneling \textbf{left} back to ($x_1$, $a_0$).
     \begin{lstlisting}[language=OCaml, caption={Ocaml Implementation of Fold\_Left}, numbers=none]
     let rec fold_left f acc lst =
       match lst with
@@ -173,7 +170,6 @@ We'll discuss three common patterns we see a lot in programmings \textbf{Maps}, 
     \]
 
     \noindent
-    I.e., we dig to the base case hitting ($x_n, a_0$), we start boxing up values pushing them to the \textbf{right}, building up to the top layer, $x_1$.
     \begin{lstlisting}[language=OCaml, caption={Ocaml Implementation of Fold\_Right}, numbers=none]
     let rec fold_right f lst acc =
       match lst with
@@ -196,8 +192,9 @@ We'll discuss three common patterns we see a lot in programmings \textbf{Maps}, 
 To illustrate the difference between \texttt{fold\_left} and \texttt{fold\_right}, consider the following illustration:
 
 \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{Sections/order/fold.png}
+    
+    \hspace{-.5em}
+    \includegraphics[width=1\textwidth]{Sections/order/fold.png}
     \caption{Fold Left vs. Fold Right}
 \end{figure}
 
@@ -206,16 +203,12 @@ In both, we still build from the base case/last element to the front of the list
 The difference: 
 
 \begin{itemize}
-    \item \textbf{Fold Left}: We tunnel in from right to left, applying the accumulator to the first element.
-    \item \textbf{Fold Right}: We box up values from left to right, applying the accumulator to the last element.
+    \item \textbf{Fold Left}: We are essentially wrapping the accumulator form the start to the end of the list. Meaning,
+    The list folds from right to left starting with the last element.
+    \item \textbf{Fold Right}: Here we make recursive calls starting with the first element and appending the accumulator to the end of the list. Meaning,
+    we fold from left to right starting with the first element.
 \end{itemize}
 
-\noindent
-Though again for emphasis, the original naming intention was: 
-\begin{itemize}
-    \item \textbf{Fold Left}: Apply the accumulator from the \textbf{left} of the list to the right.
-    \item \textbf{Fold Right}: Apply the accumulator from the \textbf{right} of the list to the left.
-\end{itemize}
 
 
 

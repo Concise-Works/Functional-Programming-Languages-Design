@@ -1,0 +1,258 @@
+\newpage
+\section{Handling Errors \& Testing: Results, Bind, \& Monads}
+
+\subsection{Monads \& Binds}
+\begin{Def}[Monads]
+
+    A \textbf{monad} extends the functionality of a type by wrapping it in a monadic context.
+    For example, we could extend the type \snippet{int} to include a \snippet{Null} type by wrapping it in a
+    a custom type, \snippet{type myNumber = Null | Int of int}.
+    Monads consists of:
+    \begin{itemize}
+        \item A \textbf{type constructor} \( M \) that wraps values.
+        \item A \textbf{unit} (or \texttt{return}) function that lifts a value into the monadic context:
+        \[
+        \eta : A \to M(A).
+        \]
+        \noindent
+        Where \(\eta\) is our unit function taking $A$ and wrapping it in the monadic context $M(A)$.
+        \item A \textbf{bind} function that ensures the monadic structure is maintained between operations:
+        \[
+        \mu : M(A) \times (A \to M(B)) \to M(B),
+        \]
+        \noindent
+        Where \(\mu\) is our bind function. Recall,
+        the ($\times$) is the cartesian product of the two types, i.e., a tuple of the two objects.
+    \end{itemize}
+\noindent
+    A monad satisfies the \textbf{monad laws}:
+    \begin{enumerate}
+        \item \textbf{Left Identity:} \( \left(\eta(x) \texttt{ bind } f\right) = f(x) \). Binding a monadic value to a function is equivalent to applying the function to the value.
+        \item \textbf{Right Identity:} \( (m \texttt{ bind } \eta) = m \). Binding a monadic value to the unit function is equivalent to the original value.
+        \item \textbf{Associativity:} \( (m \texttt{ bind } f) \texttt{ bind } g = m \texttt{ bind } ( \lambda x. f(x) \texttt{ bind } g) \). The order of binding functions does not matter.
+    \end{enumerate}
+
+    \noindent
+    \rule{\textwidth}{0.4pt}\\
+
+    \noindent
+    In an OCaml context, \snippet{options} are an example of a monad.
+    \begin{lstlisting}[language=OCaml, caption={Option Monad in OCaml}, numbers=none]
+    type 'a option = 
+    | Some of 'a 
+    | None    
+    \end{lstlisting}
+    \noindent
+    For the Option monad, \snippet{Some} serves as the unit function, as it takes a value of type \snippet{'a} and lifts it into the monadic context \snippet{'a option}.
+    Both \snippet{Some} and \snippet{None} are constructors for the \snippet{option} type.
+    \end{Def}
+    
+    \newpage 
+    \vspace{2em}
+
+    \begin{Def}[Bind with \texttt{let*} in OCaml]
+
+\label{def:let*}
+
+        The \snippet{let*} operator corresponds to the monad's bind function. The bind operation could be thought of as ``try to unwrap $x$ and then do $f$''.
+        For example, in the \snippet{option} monad:
+        
+        \begin{lstlisting}[language=OCaml, numbers=none]
+        (* Define the bind function for option *)
+        let bind opt f =
+          match opt with
+          | Some x -> f x
+          | None -> None
+        (* Define the let* operator *)
+        let ( let* ) = bind
+        \end{lstlisting}
+    
+    
+        \noindent
+        Though OCaml has saved us the trouble of defining the bind function, via the \snippet{.bind} function in ocaml.
+        \begin{lstlisting}[language=OCaml, numbers=none]
+        let ( let* ) = Option.bind
+        \end{lstlisting}
+    
+        \noindent
+        \textbf{Using \snippet{let*} in Monadic Expressions:}  
+        Once \snippet{let*} is defined, it allows chaining monadic computations naturally. Consider an example using the \snippet{option} monad:
+    
+        \begin{lstlisting}[language=OCaml, numbers=none]
+    (* Using let* to chain option operations *)
+    let foo =
+        let ( let* ) = Option.bind in
+        let* x = Some 4 in
+        let* y = Some 3 in
+        let* z = Some 2 in
+        Some (x + y + z);
+    
+    (* foo evaluates to Some 9 *)
+        \end{lstlisting}
+
+        \noindent
+        This could be seen as the below nested match expressions:
+        \begin{lstlisting}[language=OCaml, numbers=none]
+            match Some 4 with
+            | None -> None
+            | Some x -> (
+                match Some 3 with
+                | None -> None
+                | Some y -> (
+                    match Some 2 with
+                    | None -> None
+                    | Some z -> Some (x + y + z)
+                    )
+                )
+        \end{lstlisting}
+        \noindent
+        This is for curiosity sake, and conceptually would be simpler to think of bind as a means of unwrapping the monad
+        to preform some operation before rewrapping it.
+    
+    \end{Def}
+    
+    \newpage 
+
+    \begin{Def}[Result Type in OCaml]
+        
+        The \snippet{result} type is another example of a monad in OCaml that represents computations which may \underline{\textbf{succeed} or \textbf{fail}}. Unlike the \snippet{option} type which only indicates presence or absence, \snippet{result} provides information about why a computation failed.
+        
+        \begin{lstlisting}[language=OCaml, caption={Result Type in OCaml}, numbers=none]
+        type ('a, 'e) result = 
+        | Ok of 'a      (* Success case with value of type 'a *)
+        | Error of 'e   (* Error case with error of type 'e *)
+        \end{lstlisting}
+        
+        \noindent
+        For the Result monad:
+        \begin{itemize}
+            \item \snippet{Ok} serves as the unit function, lifting a value into the success context
+            \item The bind operation sequences computations while handling errors
+        \end{itemize}
+        
+        \noindent
+        \textbf{Using Result with Bind:}
+        
+        \begin{lstlisting}[language=OCaml, numbers=none]
+        (* Define the bind operator for result *)
+        let ( let* ) = Result.bind
+        
+        (* Example chaining result operations *)
+        let divide x y =
+          if y = 0 then Error "Division by zero"
+          else Ok (x / y)
+        
+        let computation x y z =
+          let* result1 = divide x y in
+          let* result2 = divide result1 z in
+          Ok (result2 * 2)
+        
+        (* Success case: computation 10 2 1 = Ok 10 *)
+        (* Error case:   computation 10 0 1 = Error "Division by zero" *)
+        \end{lstlisting}
+        
+        \noindent
+        In the example above, if any Error occurs it short-circuits the computation and returns the error immediately.
+        Recall the nested match in the \snippet{let*} Definition (\ref{def:let*}), this is conceptually similar to that.
+
+    \end{Def}
+
+    \newpage 
+
+    \subsection{Testing \& Ounit2}
+    This section is about testing as a means of ensuring the correctness of our code down the development pipeline.
+
+    \begin{Def}[Types of Testing]
+
+        In software development, testing can be categorized into several hierarchical levels, with the three primary types being:
+        
+        \begin{enumerate}
+            \item \textbf{Unit Testing:} Tests individual components (functions, modules) in isolation.
+                        \begin{itemize}
+                            \item Focuses on verifying that each unit of code works as expected
+                            \item Typically automated and run frequently during development
+                        \end{itemize}
+                        
+                        \item \textbf{Integration Testing:} Tests interactions between components.
+                        \begin{itemize}
+                            \item Verifies that different units work together correctly
+                            \item Components may be nested or distributed across the simulated workflow
+                        \end{itemize}
+                        
+                        \item \textbf{End-to-End (E2E) Testing:} Tests the application from start to finish.
+                        \begin{itemize}
+                            \item Simulates real user scenarios and workflows
+                            \item Verifies the system works in real-world conditions with actual data
+                            \item Tests the entire application stack including UI, API, database connections, etc.
+                        \end{itemize}
+        \end{enumerate}
+        \noindent
+        In software development \textbf{testing frameworks} are used to help speed up the process of writing and running tests.
+        These are libraries that provide tools for writing, organizing, and running tests.
+    \end{Def}
+    
+    \begin{Tip} While academic settings often focus on the theoretical aspects of testing, industry practices are typically more nuanced and pragmatic. In many professional software development environments:
+
+        \begin{itemize}
+            \item \textbf{Test-Driven Development (TDD)} has gained significant traction, where developers write tests before implementing functionality. This approach often leads to more testable and modular code, but requires discipline to maintain.
+            
+            \item \textbf{Continuous Integration (CI)} systems run tests automatically when code changes are committed, catching regressions early in the development cycle. Companies may run thousands of tests multiple times daily.
+            
+            \item The \textbf{testing pyramid} concept is widely followed, with many unit tests forming the base, fewer integration tests in the middle, and even fewer E2E tests at the top—balancing thoroughness with execution speed.
+    \end{itemize}
+    \end{Tip}
+ 
+    \newpage
+
+    \noindent
+    We choose \textbf{OUnit2} for testing, which should have been installed in Sub-section (\ref{subsec:opam_packages}).
+    Though not the most featured testing framework, it is simple and easy to use.
+
+    \vspace{-0em}
+    \begin{Def}[OUnit2 in OCaml]
+
+        \textbf{OUnit2} is a unit testing framework for OCaml that allows developers to write and run tests to verify code correctness.
+        To use OUnit2, add it as a dependency in your dune project file:
+        \begin{lstlisting}[language=OCaml, numbers=none]
+        (test
+         (name test_program)
+         (libraries ounit2))
+        \end{lstlisting}
+
+        \noindent
+        \textbf{Key OUnit2 Functions:}
+        \begin{itemize}
+            \item \snippet{(>::)} - Creates a labelled test
+            \item \snippet{(>:::)} - Creates a labelled test suite
+            \item \snippet{assert\_equal} - Compares two values in a unit test
+            \item \snippet{assert\_raises} - Checks that an expression raises the expected exception
+            \item \snippet{run\_test\_tt\_main} - Runs a test suite
+        \end{itemize}
+
+        \noindent
+        \textbf{Example OUnit2 Test:}
+        \begin{lstlisting}[language=OCaml, numbers=none]
+    open OUnit2
+
+    (* Function to test *)
+    let add x y = x + y
+
+    (* Test cases *)
+    let tests = 
+        "test suite for addition" >:::
+        [
+        "adding two positive numbers" >:: (fun _ -> 
+            assert_equal 5 (add 2 3));
+        
+        "adding zero" >:: (fun _ -> 
+            assert_equal 7 (add 7 0));
+            
+        "testing exception" >:: (fun _ ->
+            assert_raises (Failure "division by zero") 
+            (fun () -> 1 / 0))
+        ]
+
+    (* Run the tests *)
+    let () = run_test_tt_main tests
+        \end{lstlisting}
+    \end{Def}

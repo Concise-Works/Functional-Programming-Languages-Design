@@ -237,7 +237,8 @@ down the chain of functions. To illustrate:
 
 \vspace{-1em}
 \noindent
-Alternatively, we may illustrate an analogous example with scoped functions in a pseudo syntax:
+This works because of \textbf{closures}, where the inner functions have access to the variables of the outer functions.
+It's called \textbf{closures} because the variables are \textit{enclosed} within another function's scope.
 
 \begin{figure}[h]
     {
@@ -245,16 +246,15 @@ Alternatively, we may illustrate an analogous example with scoped functions in a
     \centering
     \fbox{\hspace{8.7em}\includegraphics[width=0.6\textwidth]{Sections/Func/ocam/curry2.png}\hspace{8em}}
     }
-    \caption{Nested Functions Pseudo-code Example}
+    \caption{Where $x$ is a local variable of the outer-most function within scope of the inner functions, and so on with $y$ and $z$.
+    This is the concept known as \textbf{closures}.}
     
     \label{fig:ocaml-anon2}
 \end{figure}
 
-\vspace{-.5em}
 \noindent
-Where $x$ is a local variable of the outer-most function within scope of the inner functions, and so on with $y$ and $z$.
-This is the concept known as \textbf{currying}.
 
+\vspace{-1em}
 \begin{Tip}
     Lambda calculus was developed by \textbf{Alonzo Church} in the 1930s at Princeton University. Church was the doctoral advisor of \textbf{Alan Turing}, the creator of the Turing Machine (1936), a theoretical model that laid the groundwork for modern computation.
     
@@ -705,7 +705,7 @@ In OCaml, \underline{\textbf{There is no switch-case statement}}, pattern matchi
 
 \newpage 
     
-\subsection{Looping: Recursion, Tail-End Recursion}
+\subsection{Looping: Recursion, Tail-End Recursion, Mutually Recursive (and)}
 
 In functional programming, looping is typically achieved through \textbf{recursion}. Unlike imperative programming, where loops rely on mutable state, 
 recursion allows us to iterate by repeatedly calling a function while unravelling our expressions. While OCaml is not a purely functional language and does provide \snippet{for} and \snippet{while} loops, 
@@ -800,8 +800,28 @@ Recursion is the process of a function calling itself. Any and all recursive fun
         
 \end{Def}
 
-\newpage
+\newpage 
 
+\begin{Def}[Mutually Recursive Functions (\texttt{and})]
+
+    Mutually recursive functions are functions that call each other in a cycle. Instead of defining them separately, we use the keyword \snippet{and} to define them simultaneously.
+    
+    For example, we can define a pair of functions that determine whether a number is even or odd using mutual recursion:
+    
+    \begin{lstlisting}[language=OCaml, caption={Mutually Recursive Even and Odd Functions}, numbers=none]
+    let rec is_even n =
+        if n = 0 then true
+        else is_odd (n - 1)
+    and is_odd n =
+        if n = 0 then false
+        else is_even (n - 1)
+    in is_even 4
+    (* Evaluates to true as 4 is even. *)
+    \end{lstlisting}
+    
+    \noindent In this example, \snippet{is\_even} calls \snippet{is\_odd} and vice versa. The recursion stops when \( n = 0 \), where we return either \snippet{true} (for even) or \snippet{false} (for odd).
+\end{Def}    
+\newpage
 \subsection{Strings, Characters, and Printing in OCaml}
 
 Strings, characters, and printing behave much the same as in other languages, with some unique functions and syntax in OCaml.
@@ -1226,7 +1246,53 @@ Using \snippet{option} ensures that every time you work with a value that might 
 
 \end{Example}
     
+\newpage 
+\section{Defining Operators: infix and prefix operators}
 
+In OCaml, operators are defined as functions, and we can define our own operators using the \snippet{let} keyword.
+\begin{Def}[Infix and Prefix Operators in OCaml]
+
+    \noindent
+    \textbf{Infix Operators:} An infix operator is a function that appears between its arguments. In OCaml, certain symbols can be used as infix operators. For example, addition (+) and multiplication (*) are built-in infix operators.
+    The list of allowed infix is limited to: 
+    \begin{lstlisting}[language=OCaml, numbers=none]
+        !  $  %  &  *  +  -  .  /  :  <  =  >  ?  @  ^  |  ~ 
+    \end{lstlisting}
+    \noindent
+    Operators cannot start with alphanumeric characters (a-z, A-Z, 0-9) and the following:
+    \begin{lstlisting}[language=OCaml, numbers=none]
+        ! ? ~ : 
+    \end{lstlisting}
+
+    \noindent
+    Though this might require trial and error depending on the pre-existing operators present in the Ocaml project.
+    
+    \begin{lstlisting}[language=OCaml, caption={Defining an Infix Operator}, numbers=none]
+    (* Define a custom infix operator *)
+    let ( +++ ) x y = x + y
+    
+    let result = 4 +++ 5;;  (* result = 9 *)
+    \end{lstlisting}
+    
+    \noindent
+    To use an infix operator as a function, enclose it in parentheses:
+    
+    \begin{lstlisting}[language=OCaml, numbers=none]
+    let add = ( + );;
+    let sum = add 3 4;;  (* sum = 7 *)
+    \end{lstlisting}
+    
+    \noindent
+    \textbf{Prefix Operators:} A prefix operator is a function that appears before its argument. Most functions in OCaml are naturally prefix functions. However, some operators like - (negation) and ! (dereferencing) are built-in prefix operators.
+    
+    \begin{lstlisting}[language=OCaml, caption={Defining a Prefix Operator}, numbers=none]
+    (* Define a custom prefix operator *)
+    let (!@!) x = x * x;;
+    
+    let !@! x;;  (* 16 *)
+    \end{lstlisting}
+    
+    \end{Def}
 
 \newpage 
 
@@ -1293,6 +1359,8 @@ Write an OCaml function that fixes the previous \textbf{Else If} function to eva
 \begin{Exercise}
 Write an OCaml function implementation of the Fibonacci sequence using tail-end recursion.
 \end{Exercise}
+
+\newpage 
 
 
 
