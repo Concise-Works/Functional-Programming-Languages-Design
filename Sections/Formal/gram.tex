@@ -1,5 +1,5 @@
 \section{Formal Grammars}
-
+\subsection{Defining a Language}
 Now we introduce formal grammars as a way of building up our language.
 This is similar to English, where we have a grammar system that tells us how to build sentences.
 For example, we know the basic structure of a sentence is \textit{subject-verb-object}. \\
@@ -140,12 +140,236 @@ Now if we wanted to state these rules before-hand that a \texttt{<sentence>} is 
 
     \vspace{-.5em}
     \noindent
-        Consider a more programmer-like example:
+        Consider a more programmer-like example, assuming we read from left-to-right:
 
         \begin{figure}[h]
             \centering
             \includegraphics[width=1\textwidth]{Sections/Formal/bnf2.png}
             \caption{A simple language, consisting of \texttt{and} and \texttt{or} operations.}
+            \label{fig:bnf2}
         \end{figure}
 
 \newpage
+
+\noindent
+The process of taking non-terminal symbols and replacing them with terminal symbols is called a \textbf{leftmost derivation}.
+\begin{Def}[Leftmost Derivation]
+
+    A \textbf{leftmost derivation} is a sequence of sentential forms in which, at each step, the \textbf{leftmost} non-terminal symbol is replaced according to a production rule. This process continues until the entire string consists only of terminal symbols. Leftmost derivations are useful for defining deterministic parsing strategies and constructing parse trees in a structured manner.
+    
+\end{Def}
+    
+\subsection{Ambiguity in Grammars}
+
+In natural language we have cases where what we say can be ambiguous. For example,
+\begin{center}
+    \textit
+    {``The duck is ready for the dinner table.''}
+\end{center}
+
+\noindent
+Natural questions may arise:
+\begin{itemize}
+    \item Was the duck ready to be eaten?
+    \item Was the duck preparing the table for dinner?
+    \item Was the duck a wrestler, ready to body-slam a constituent?
+\end{itemize}
+\noindent
+For instance, let's clean up the previous sentence, avoiding any and all ambiguity:
+\begin{center}
+    \textit
+    {``The duck is ready \textbf{to body slam} the dinner table.''}
+\end{center}
+\noindent
+Now Consider the previous example of \texttt{and} and \texttt{or} operations from Figure (\ref{fig:bnf2}):
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Sections/Formal/amb.png}
+    \caption{Two possible parse-tree derivations based off of Figure (\ref{fig:bnf2}). (1) Shows our previous intention, while (2) shows a different interpretation, if parsing order was not specified.}
+    \label{fig:amb}
+\end{figure}
+
+\newpage
+
+\noindent
+In Figure (\ref{fig:amb}), (1) shows, \texttt{\textcolor{Wine}{not x and (y or z)}} while (2) shows, \texttt{\textcolor{Wine}{not (x and y) or z}}. This ambiguity can cause issues; for example, 
+$x=y=False$, $z=True$, yields different results for (1) and (2). \\
+
+\begin{Def}[Ambiguity in BNF Grammar]
+
+    A \textbf{BNF grammar} is \textbf{ambiguous} if there exists a sentence with multiple valid parse-trees.
+\end{Def}
+    
+\noindent
+These, small pieces of ambiguity can crop up anywhere. Consider the following example:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Sections/Formal/amb2.png}
+    \caption{An ambiguous grammar \texttt{if} expressions.}
+    \label{fig:amb2}
+\end{figure}
+
+\noindent
+In Figure (\ref{fig:amb2}), contains sub-cases which can lead to ambiguity. As, ``is it the sub-case or the super-case?'' For 
+example, consider:
+\begin{center}
+    \texttt{\textcolor{Wine}{if x then (if y then z else w)}} or is it \texttt{\textcolor{Wine}{if x then (if y then z) else w}}
+\end{center}
+
+\noindent 
+These problems often arise when interpreting expressions at the linear level. On an important note:
+\begin{theo}[Ambiguity is Undecidable]
+    
+    It is impossible to write a generalized program to determine if a given grammar set is ambiguous.
+    This requires to finding all possible sentences; \textbf{However}---our grammar is recursive---this would mean generating 
+    an infinite number of sentences.
+\end{theo}
+
+\noindent
+Though we can avoid ambiguity by specifying our operation order:
+\begin{Def}[Fixity]
+
+    The \textbf{fixity} of an operator refers to its placement relative to its operands:
+    
+    \begin{itemize}
+        \item \textbf{Prefix}: The operator appears \textit{before} its operand (e.g., $f\ x$, $-x$).
+        \item \textbf{Postfix}: The operator appears \textit{after} its operand (e.g., $a!$ for factorial or dereferencing).
+        \item \textbf{Infix}: The operator appears \textit{between} two operands (e.g., $a * b$, $a + b$, $a \mod b$).
+        \item \textbf{Mixfix}: The operator is interleaved with its operands, appearing in multiple positions (e.g., \texttt{if} $b$ \texttt{then} $x$ \texttt{else} $y$).
+    \end{itemize} 
+    \end{Def}
+
+\newpage 
+\noindent
+So by specifying only Prefix or only Postfix operations ambiguity can be avoided:
+\begin{Def}[Polish Notation]
+
+    \textbf{Polish Notation} is a notation for arithmetic expressions in which the operator precedes its operands. For example, the polish notation $- / + 2 * 1 - 2 3$ is written as $- (2 + (1 * (- 2) / 3)$.\\
+    
+    \noindent
+    In contrast, \textbf{Reverse Polish Notation} (RPN) places the operator after its operands. For example, Infix: $(3 + 4) * 5$ is $3\ 4 + 5\ *$ in RPN.
+\end{Def}
+
+However, this is not always practical. Consider \texttt{if} expressions dealt this way:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Sections/Formal/amb3.png}
+    \caption{An unambiguous grammar for \texttt{if} expressions.}
+    \label{fig:amb3}
+\end{figure}
+
+\noindent
+Likewise, if we decided to enforce parenthesis everywhere it might be a bit cumbersome:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Sections/Formal/amb4.png}
+    \caption{An unambiguous grammar for \texttt{and or not} expressions, with parenthesis everywhere.}
+    \label{fig:amb4}
+\end{figure}
+
+\noindent
+\begin{theo}[The Ambiguity of Associativity \& Precidence Rules]
+    
+    \begin{itemize}
+        \item \textbf{Associativity}: $a + b + c$ is ambiguous, as it could be $(a + b) + c$ or $a + (b + c)$.
+        \item \textbf{Precedence}: $a + b * c + d$ is ambiguous, as it could be $(a + (b * c)) + d$ or $a + ((b * c) + d)$.
+    \end{itemize}
+    \end{theo}
+\newpage 
+
+\noindent
+We can resolve this by breaking the symmetry of our grammar:
+\begin{theo}[Resolving Associativity: Breaking Symmetry]
+
+    The reason for ambiguity often comes symmetry in grammar rules of form:
+    \begin{center}
+        \texttt{<expr> ::= <expr> <op> <expr>}\\
+        \texttt{<op> ::= + | - | ...} \hspace{1.8em} \null
+    \end{center}
+
+    \noindent
+    This means that the left or right side can be expanded indefinitely. By breaking this symmetry, we can resolve ambiguity:
+    \begin{center}
+        \texttt{<expr> ::= <var> <op> <expr>}\\
+        \texttt{<op> ::= + | - | ...} \hspace{1.3em} \null\\
+        \texttt{<var> ::= x | y | z | ...} \hspace{-.3em} \null
+    \end{center}
+    \noindent
+    In the above we fixed the left side to be a \texttt{<var>} and the right side to be an \texttt{<expr>}.
+    This makes our expression \textbf{right-associative}. Vice-versa, if we fixed the right side, it would be \textbf{left-associative}.
+\end{theo}
+
+\begin{theo}[Resolving Precedence: Factor Out Higher Precedence]
+
+    Precedence issues arise when operations reside on the same level. For instance,
+        
+    \vspace{-1em}
+        \begin{align*}
+            \texttt{<expr>} &\texttt{::= <expr> + <expr> | <expr> * <expr>}
+        \end{align*}
+
+    \noindent
+    Here, it's unclear whether \texttt{+} or \texttt{-} should be evaluated first. By factoring out higher precedence operations, we can resolve this, 
+    as, \underline{\textbf{terms deeper in the parse tree are evaluated first}}:
+    \begin{align*}
+        \texttt{<expr>} &\texttt{::= <expr> + <term> | <term> }\\
+        \texttt{<term>} &\texttt{::= <term> * <var> | <var>}\\
+        \texttt{<var>} &\texttt{::= x | y | z | ...}
+    \end{align*}
+
+    \vspace{-1em}
+    \noindent
+    Here, \texttt{*} has higher precedence than \texttt{+}, as it's deeper in the parse tree. To handle 
+    \textbf{parentheses}, we can introduce another factor:
+    \begin{align*}
+        \texttt{<expr>} &\texttt{::= <expr> + <term> | <term> }\\
+        \texttt{<term>} &\texttt{::= <term> * <var> | <pars>}\\
+        \texttt{<pars>} &\texttt{::= var | ( <expr> )}\\
+        \texttt{<var>} &\texttt{::= x | y | z | ...}
+    \end{align*}
+    \noindent
+    Intuitively, in expressions like \texttt{(a + b) * c}, we want to treat \texttt{(a + b)} as a single unit/\textit{variable}. \textbf{Note},
+    the parentheses are tokens surrounding the non-terminal \texttt{<expr>}.
+\end{theo}
+
+\newpage 
+
+\noindent
+Now consider the \texttt{and or not} expressions from Figure (\ref{fig:bnf2}) resolving the associative ambiguity:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Sections/Formal/amb5.png}
+    \caption{An unambiguous grammar for \texttt{and or not} expressions, by breaking symmetry.}
+    \label{fig:amb5}
+\end{figure}
+
+\noindent
+Now we put all the rules together:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Sections/Formal/amb6.png}
+    \caption{An unambiguous grammar for \texttt{+, *} expressions, by breaking symmetry and precedence.}
+    \label{fig:amb6}
+\end{figure}
+
+\begin{Tip} \textbf{The ``Cult of Parentheses" in Lisp:} Lisp-style languages rely heavily on \textbf{prefix notation}, where operators and function names appear \textbf{before} their arguments. This leads to deeply nested \textbf{parentheses}, often making Lisp code look overwhelming to newcomers.\\
+    
+    \noindent
+    For example, the Fibonacci function in Lisp is written as:
+    
+    \begin{lstlisting}[numbers=none]
+    (defun fib (n)
+      "Return the nth Fibonacci number."
+      (if (< n 2)
+          n
+          (+ (fib (- n 1))
+             (fib (- n 2)))))
+    \end{lstlisting}
+    
+    \noindent
+    Since \textbf{everything} in Lisp is an expression and follows a \textbf{uniform syntax}, parentheses are required for every function call, condition, and operation. This often leads to \textbf{excessive nesting}, and the title, \textbf{``Cult of Parentheses"}.
+    
+    \end{Tip}
+    
+    
