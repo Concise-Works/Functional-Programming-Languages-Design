@@ -10,7 +10,7 @@ We can write \textbf{linear} statements such as ``John hit the ball'', which has
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{Sections/Formal/eng.png}
-\caption{The sentence ``John hit the ball'' has an underlying hierarchical structure of a tree. Here, \textbf{S}: Sentence (the root of the tree), \textbf{NP}: Noun Phrase (a phrase centered around a noun), \textbf{VP}: Verb Phrase (a phrase centered around a verb), \textbf{V}: Verb (the action in the sentence), \textbf{Det}: Determiner (words like "the", "a", "an", which specify nouns), and \textbf{N}: Noun (person, place, thing, or idea).}
+\caption{The sentence ``John hit the ball'' has an underlying hierarchical structure of a tree. Here, \textbf{S}: Sentence (the root of the tree), \textbf{NP}: Noun Phrase (a phrase centered around a noun), \textbf{VP}: Verb Phrase (a phrase centered around a verb), \textbf{V}: Verb (the action in the sentence), \textbf{Det}: Determiner (words like ``the", ``a", ``an", which specify nouns), and \textbf{N}: Noun (person, place, thing, or idea).}
 \end{figure}
 
 \noindent
@@ -22,7 +22,7 @@ We can write \textbf{linear} statements such as ``John hit the ball'', which has
 
 \noindent
 is grammatically correct, but carries little to no meaning. In contrast, 
-the sentence
+the sentence:
 
 \begin{center}
 \Large \textit{``Colorless the of allegator run am sleepily''}
@@ -86,6 +86,8 @@ The following diagram illustrate the translation process of a compiler and an in
     \caption{The high-level processes of a compiler and an interpreter.}
 \end{figure}
 
+\noindent
+The flow of a program through a compiler or interpreter is as follows:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Sections/Formal/comp2.png}
@@ -97,7 +99,7 @@ The following diagram illustrate the translation process of a compiler and an in
 \noindent
 \noindent
 To formally layout our language, we use the \textbf{Backus-Naur Form (BNF)} notation. But before we 
-do so, we gain some intuition by breaking down an english sentence from its \textbf{terminal symbols} to its \textbf{non-terminal symbols}. Recall these terms from the pre-requisite section (\ref{def:non-terminal-terminal}).\\
+do so, we gain some intuition by breaking down an english sentence from its \textbf{terminal symbols}, to its \textbf{non-terminal symbols}. Recall these terms from the pre-requisite section (\ref{def:non-terminal-terminal}).\\
 
 \begin{figure}[h]
     \centering
@@ -110,7 +112,7 @@ From which the above can be represented in a tree structure:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Sections/Formal/tree.png}
-    \caption{The sentence ``The cow jumped over the moon.'' represented as a \textbf{parse-tree}.}
+    \caption{The sentence ``The cow jumped over the moon,'' represented as a \textbf{parse-tree}.}
 \end{figure}
 
 \newpage
@@ -121,7 +123,7 @@ Now if we wanted to state these rules before-hand that a \texttt{<sentence>} is 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Sections/Formal/bnf.png}
-    \caption{The rules for the sentence ``The cow jumped over the moon.'' via a thread of production rules (\ref{def:production_rule}). This example illustrates \textbf{Backus-Naur Form (BNF)} notation.}
+    \caption{The rules for the sentence ``The cow jumped over the moon,'' via a thread of production rules (\ref{def:production_rule}). This example illustrates \textbf{Backus-Naur Form (BNF)} notation.}
 \end{figure}
 
 \vspace{-1em}
@@ -155,7 +157,7 @@ Now if we wanted to state these rules before-hand that a \texttt{<sentence>} is 
 The process of taking non-terminal symbols and replacing them with terminal symbols is called a \textbf{leftmost derivation}.
 \begin{Def}[Leftmost Derivation]
 
-    A \textbf{leftmost derivation} is a sequence of sentential forms in which, at each step, the \textbf{leftmost} non-terminal symbol is replaced according to a production rule. This process continues until the entire string consists only of terminal symbols. Leftmost derivations are useful for defining deterministic parsing strategies and constructing parse trees in a structured manner.
+    A \textbf{leftmost derivation} is a sequence of sentential forms in which, at each step, the \textbf{leftmost} non-terminal symbol is replaced according to a production rule. This process continues until the entire string consists only of terminal symbols.
     
 \end{Def}
     
@@ -171,17 +173,17 @@ In natural language we have cases where what we say can be ambiguous. For exampl
 Natural questions may arise:
 \begin{itemize}
     \item Was the duck ready to be eaten?
-    \item Was the duck preparing the table for dinner?
+    \item Was the duck a servant preparing the table for dinner?
     \item Was the duck a wrestler, ready to body-slam a constituent?
 \end{itemize}
 \noindent
-For instance, let's clean up the previous sentence, avoiding any and all ambiguity:
+For instance, let's clean up the previous sentence, avoiding any, and all ambiguity:
 \begin{center}
     \textit
     {``The duck is ready \textbf{to body slam} the dinner table.''}
 \end{center}
 \noindent
-Now Consider the previous example of \texttt{and} and \texttt{or} operations from Figure (\ref{fig:bnf2}):
+Now Consider the previous example of \texttt{and or not} operations from Figure (\ref{fig:bnf2}):
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Sections/Formal/amb.png}
@@ -210,10 +212,10 @@ These, small pieces of ambiguity can crop up anywhere. Consider the following ex
 \end{figure}
 
 \noindent
-In Figure (\ref{fig:amb2}), contains sub-cases which can lead to ambiguity. As, ``is it the sub-case or the super-case?'' For 
+In Figure (\ref{fig:amb2}) contains sub-cases which can lead to ambiguity. As, ``is it the sub-case or the super-case?'' For 
 example, consider:
 \begin{center}
-    \texttt{\textcolor{Wine}{if x then (if y then z else w)}} or is it \texttt{\textcolor{Wine}{if x then (if y then z) else w}}
+    \texttt{\textcolor{Wine}{if x then (if y then z else w)}}\quad and \quad \texttt{\textcolor{Wine}{if x then (if y then z) else w}}
 \end{center}
 
 \noindent 
@@ -250,6 +252,7 @@ So by specifying only Prefix or only Postfix operations ambiguity can be avoided
     In contrast, \textbf{Reverse Polish Notation} (RPN) places the operator after its operands. For example, Infix: $(3 + 4) * 5$ is $3\ 4 + 5\ *$ in RPN.
 \end{Def}
 
+\noindent
 However, this is not always practical. Consider \texttt{if} expressions dealt this way:
 \begin{figure}[h]
     \centering
@@ -259,7 +262,7 @@ However, this is not always practical. Consider \texttt{if} expressions dealt th
 \end{figure}
 
 \noindent
-Likewise, if we decided to enforce parenthesis everywhere it might be a bit cumbersome:
+Likewise, if we decided to enforce parenthesis everywhere, it might be a bit cumbersome:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Sections/Formal/amb4.png}
@@ -272,7 +275,7 @@ Likewise, if we decided to enforce parenthesis everywhere it might be a bit cumb
     
     \begin{itemize}
         \item \textbf{Associativity}: $a + b + c$ is ambiguous, as it could be $(a + b) + c$ or $a + (b + c)$.
-        \item \textbf{Precedence}: $a + b * c + d$ is ambiguous, as it could be $(a + (b * c)) + d$ or $a + ((b * c) + d)$.
+        \item \textbf{Precedence}: $a + b * c + d$ is ambiguous to a computer, as it could be $(a + b) * c + d$.
     \end{itemize}
     \end{theo}
 \newpage 
@@ -299,7 +302,7 @@ We can resolve this by breaking the symmetry of our grammar:
     This makes our expression \textbf{right-associative}. Vice-versa, if we fixed the right side, it would be \textbf{left-associative}.
 \end{theo}
 
-\begin{theo}[Resolving Precedence: Factor Out Higher Precedence]
+\begin{theo}[Resolving Precedence: Factor Out Higher Precedences]
 
     Precedence issues arise when operations reside on the same level. For instance,
         
@@ -323,7 +326,7 @@ We can resolve this by breaking the symmetry of our grammar:
     \textbf{parentheses}, we can introduce another factor:
     \begin{align*}
         \texttt{<expr>} &\texttt{::= <expr> + <term> | <term> }\\
-        \texttt{<term>} &\texttt{::= <term> * <var> | <pars>}\\
+        \texttt{<term>} &\texttt{::= <term> * <pars> | <pars>}\\
         \texttt{<pars>} &\texttt{::= var | ( <expr> )}\\
         \texttt{<var>} &\texttt{::= x | y | z | ...}
     \end{align*}
