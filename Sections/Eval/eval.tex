@@ -1,0 +1,200 @@
+\section{Semantic Evaluation}
+\subsection{Small-step Semantics}
+
+\noindent
+In our previous derivations, we've been doing \textbf{Big-step semantics}:
+
+\begin{Def}[Big-Step Semantics]
+
+    Big-step semantics describes how a complete expression evaluates directly to a final value, without detailing each intermediate step. It relates an expression to its result in a single derivation.
+    
+    \medskip
+    \noindent\textbf{Notation:} We write $e \Downarrow v$ to mean that the expression $e$ evaluates to the value $v$.\\
+    \noindent\textbf{Example:}
+    \[
+    (\text{sub}\ 10\ (\text{add}\ (\text{add}\ 1\ 2)\ (\text{add}\ 2\ 3))) \Downarrow 2
+    \]
+    \end{Def}
+
+\noindent
+Here, we now introduce \textbf{Small-step semantics}:
+
+\begin{Def}[Small-Step Semantics]
+
+    Small-step semantics describes how an expression is reduced one step at a time. Each step transforms the current expression into a simpler one until no further reductions are possible.
+    \noindent\textbf{Notation:} We write $e \rightarrow e'$ to mean that $e$ reduces to $e'$ in a single step.
+    The notation:
+    \begin{center}
+    \LARGE
+    $\underbracket{(S,p)}_{\text{configuration}} \longrightarrow \underbracket{(S',p')}_{\text{transformation.}}$
+    \normalsize
+    \end{center}
+    \noindent
+    Where $S$ is the state of the program and $p$ is the program. The rightarrow shows the \textbf{transformation} or \textbf{reduction} of the program. Since
+    for our purposes OCaml \textit{doesn't} have state, so we'd typically write:
+    \begin{center}
+    \LARGE
+    $(\varnothing, p) \longrightarrow (\varnothing,p')$
+    \normalsize
+    \end{center}
+    \noindent
+    Hence, moving forward we \underline{shorthand this to $p \rightarrow p'$} for brevity. We may describe the semantics for 
+    grammars in terms of small-step semantics using inference rules:
+    \Large
+    \[
+    \begin{prooftree}
+    \hypo{e1 \rightarrow e1'}
+    \Infer1[(\text{reduction})]{e1 + e2 \longrightarrow e1' + e2}
+    \end{prooftree}
+    \]
+    \normalsize
+    \noindent
+    Where $e$ is a well-formed expression that can be reduced to $e'$, hence our premise ``$e \rightarrow e'$''.
+
+\end{Def}
+
+\newpage
+
+\noindent
+We can use these small-step semantics to define evalutions in our grammar:
+
+\begin{Example}[Defining Grammars in Small-Step Semantics]
+    
+    \label{ex:small-step-semantics}
+    Say we have part of some toy-language grammar:
+    \begin{lstlisting}[numbers=none]
+    <expr> ::= ( <op> <expr> <expr> )
+            | <int>
+    <op>   ::= add | sub | eq
+    <int>  ::= ...
+    \end{lstlisting}
+
+    \noindent
+    Let's assume our language reads from left to right and define the semantics of \texttt{add}:
+    \begin{itemize}
+        \item \textbf{Both arguments are expressions:}
+        \[
+        \begin{prooftree}
+        \hypo{\text{add}\ e_1 \rightarrow e_1'}
+        \Infer1[\text{(add-left)}]{ (\text{add}\ e_1\ e_2) \rightarrow (\text{add}\ e_1'\ e_2) }
+        \end{prooftree}
+        \]
+        \item \textbf{Left argument is an integer:}
+        \[
+        \begin{prooftree}
+        \hypo{n \text{ is an integer literal}\qquad e_2 \rightarrow e_2'}
+        \Infer1[\text{(add-right)}]{ (\text{add}\ n\ e_2) \rightarrow (\text{add}\ n\ e_2') }
+        \end{prooftree}
+        \]
+        \item \textbf{Both arguments are integers:}
+        \[
+        \begin{prooftree}
+        \hypo{n_1 \text{ and } n_2 \text{ are integer literals}}
+        \Infer1[\text{(add-ok)}]{ (\text{add}\ n_1\ n_2) \rightarrow n_1 + n_2 }
+        \end{prooftree}
+        \]
+    \end{itemize}
+
+    \noindent
+    The intuition is to think about our grammar, in this case \textbf{add}, and think, ``What are all the possible argument states of add?''
+    If we have \texttt{(add <expr> <expr>)}, we have to reduce \texttt{<expr>} before we can evaluate it. In cases like 
+    \texttt{(add 1 2)}, there is nothing left to reduce.\\
+
+    \noindent
+    We can almost think of these terminal-symbols as \textbf{base cases}.
+    Additionally, since we read left to right, \texttt(add <expr> 2) is impossible, as we should have evaluated the left-hand side first.
+
+\end{Example}
+        
+\begin{Tip}
+    States can represent data structures like stacks, making them ideal for modeling stack-oriented languages. For example ($\epsilon$ is the empty program):
+    \begin{align*}
+    &(\varnothing,\ \texttt{push 2;\ push 3;\ add}) \\
+    \rightarrow\quad &(2\ \texttt{::}\ \varnothing,\ \texttt{push 3;\ add}) \\
+    \rightarrow\quad &(3\ \texttt{::}\ 2\ \texttt{::}\ \varnothing,\ \texttt{add}) \\
+    \rightarrow\quad &(5\ \texttt{::}\ \varnothing,\ \epsilon)
+    \end{align*}
+
+\end{Tip}
+    
+\newpage
+\begin{Def}[Multi-Step Semantics]
+
+    Multi-step semantics captures the idea of reducing a configuration through \textbf{zero or more \underline{single-step reductions}}.
+    We write $C \rightarrow^{\star} D$ to mean that configuration $C$ reduces to configuration $D$ in zero or more steps.
+This relation is defined inductively with two rules:
+    
+\Large
+    \begin{center}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+
+        \vspace{{.5em}}
+        \begin{prooftree}
+        \infer0[(reflexivity)]{C \rightarrow^{\star} C}
+        \end{prooftree}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{prooftree}
+        \hypo{C \rightarrow C'}
+        \hypo{C' \rightarrow^{\star} D}
+        \infer2[(transitivity)]{C \rightarrow^{\star} D}
+        \end{prooftree}
+    \end{minipage}
+    \end{center}
+    
+    \normalsize
+    \noindent
+    These rules formalize:
+    \begin{itemize}
+        \item Every configuration reduces to itself \hfill \textit{(reflexivity)}
+        \item Multi-step reductions can be extended by single-step reductions \hfill \textit{(transitivity)}
+        \item If there are multiple ways to reduce $C\rightarrow^\star D$, we say the small-step semantics is \textbf{ambiguous}.
+    \end{itemize}
+    \end{Def}
+    
+\begin{Example}[Multi-step Reduction]
+
+    \noindent
+    We show (add (add 3 4) 5)$\rightarrow^{\star} 14$ based off the semantics we defined in Example (\ref{ex:small-step-semantics}). We 
+    will do multiple rounds of reductions to yield a final value:
+    \begin{enumerate}
+    \item \hspace{6em}
+    \begin{prooftree}
+        
+        \Infer0[(add-ok)]{\text{add 3 4} \rightarrow 7}
+        \Infer1[(add-right)]{\text{add 5 (add 3 4)} \rightarrow \text{add 5 7}}
+        \Infer1[(add-left)]{\text{(add (add 5 (add 3 4)) 2)} \rightarrow \text{(add (add 5 7) 2)}}
+    \end{prooftree}
+
+    \vspace{2em}    
+    
+    \item \hspace{8em}
+    \begin{prooftree}
+        \Infer0[(add-ok)]{\text{(add 5 7)} \rightarrow 12}
+        \Infer1[(add-left)]{\text{(add (add 5 7) 2)} \rightarrow \text{(add 12 2)}}
+    \end{prooftree}
+
+    \vspace{2em}   
+
+    \item \hspace{12em}
+    \begin{prooftree}
+        \Infer0[(add-ok)]{\text{(add 12 2)} \rightarrow 14}
+    \end{prooftree}\\
+
+    \end{enumerate}
+    Thus, $\text{(add (add 3 4) 5)} \rightarrow^{\star} 14$. When deriving, we think like a compiler, and grab the next recursive call to reduce. Notice how our very first reduction matches with 
+    (add-left). In particular, $e1:=$ (add 5 (add 3 4)), and we see that's our starting value the next layer up.\\
+
+    \noindent
+    Moreover, the trailing 2 in (add (add 5 7) 2), is not evaluated until the very last step (3), as we read from left-to-right.
+    Even though \textit{we can see it}, the computer does not.
+
+\end{Example}
+
+
+
+
+    
+    
