@@ -1,3 +1,4 @@
+\newpage
 \section{Semantic Evaluation}
 \subsection{Small-step Semantics}
 
@@ -43,8 +44,8 @@ Here, we now introduce \textbf{Small-step semantics}:
     \Large
     \[
     \begin{prooftree}
-    \hypo{e1 \rightarrow e1'}
-    \Infer1[(\text{reduction})]{e1 + e2 \longrightarrow e1' + e2}
+    \hypo{e_1 \rightarrow e_1'}
+    \Infer1[(\text{reduction})]{e_1 + e_2 \longrightarrow e_1' + e_2}
     \end{prooftree}
     \]
     \normalsize
@@ -150,7 +151,7 @@ This relation is defined inductively with two rules:
     \begin{itemize}
         \item Every configuration reduces to itself \hfill \textit{(reflexivity)}
         \item Multi-step reductions can be extended by single-step reductions \hfill \textit{(transitivity)}
-        \item If there are multiple ways to reduce $C\rightarrow^\star D$, we say the small-step semantics is \textbf{ambiguous}.
+        \item If there are multiple ways to reduce $C\rightarrow^\star D$, then the semantics are \textbf{ambiguous}.
     \end{itemize}
     \end{Def}
     
@@ -158,7 +159,7 @@ This relation is defined inductively with two rules:
 
     \noindent
     We show (add (add 3 4) 5)$\rightarrow^{\star} 14$ based off the semantics we defined in Example (\ref{ex:small-step-semantics}). We 
-    will do multiple rounds of reductions to yield a final value:
+    will do multiple rounds of single-step reductions to yield a final value:
     \begin{enumerate}
     \item \hspace{6em}
     \begin{prooftree}
@@ -185,16 +186,558 @@ This relation is defined inductively with two rules:
 
     \end{enumerate}
     Thus, $\text{(add (add 3 4) 5)} \rightarrow^{\star} 14$. When deriving, we think like a compiler, and grab the next recursive call to reduce. Notice how our very first reduction matches with 
-    (add-left). In particular, $e1:=$ (add 5 (add 3 4)), and we see that's our starting value the next layer up.\\
+    (add-left). In particular, $e_1:=$ (add 5 (add 3 4)), and we see that's our starting value the next layer up.\\
 
     \noindent
-    Moreover, the trailing 2 in (add (add 5 7) 2), is not evaluated until the very last step (3), as we read from left-to-right.
+    Moreover, the trailing 2 in (add (add 5 (add 3 4)) 2), is not evaluated until the very last step (3), as we read from left-to-right.
     Even though \textit{we can see it}, the computer does not.
 
 \end{Example}
 
+\newpage 
+
+\noindent
+Though there is a clear distinction between big-step and small-step semantics:
+
+\begin{theo}[Small-Step vs. Big-Step Semantics]
+
+    Multi-step semantics bridges small-step and big-step semantics:
+    \Large
+    \[
+      e \rightarrow^\star v \quad \approx \quad e \Downarrow v
+    \]
+    \normalsize
+    Where a well-formed expression \( e \) reduces to a value \( v \) via zero or more single-step reductions. This is approximately what big-step semantics aims to accomplish
+    without underlying intermediate steps.\\
+  
+    \noindent
+    Unlike big-step semantics, small-step semantics allows us to choose how we reduce our terms in every step, and \textbf{in which order}. This eliminates possible ambiguity in the grammar.
+\end{theo}
+  
+\subsection{Lambda Calculus}
+
+\noindent
+We briefly touched on \textbf{Lambda Calculus} in a previous section when discussing the Anonymous Function Definition (\ref{def:anon-func}). Here
+we go more in-depth:
+
+\begin{Def}[Lambda Calculus Syntax]
+
+    Lambda calculus is a formal system for representing computations using only single-argument functions, avoiding the need for multiple parameters or state. Lambda calculus has three basic constructs:
+    \begin{itemize}
+      \item \textbf{Variables:} \(x\), \(y\), \(z\), etc.
+      \item \textbf{Abstraction:} \(\lambda x. e\) (a function that takes an argument \(x\) and returns expression \(e\)).
+      \item \textbf{Application:} \(e_1\, e_2\) (applying function \(e_1\) to argument \(e_2\)).
+    \end{itemize}
+  
+    \noindent
+    In particular:
+    \LARGE
+    \[
+        \lambda x. e \quad \equiv \quad \texttt{fun } x \texttt{ -> } e
+    \]\\
+    \normalsize
+    \noindent
+    Where we replace the `\texttt{fun}' with `$\lambda$', and `\texttt{->}' with `\texttt{.}'.
+  \end{Def}
+  
+  \begin{Def}[The Identity Function]
+
+    \label{def:identity-func}
+    The identity function is a function that returns its argument unchanged. In lambda calculus, it is represented as:
+    $
+    \lambda x. x
+    $.
+    \noindent
+    In particular,
+    $
+    (\lambda x. x)\ 5 \rightarrow 5
+    $ (application).
+    \noindent
+    In OCaml, this is represented as: \texttt{(fun x -> x) 5}.
+  \end{Def}
+
+  \newpage 
+
+\noindent
+Before moving on we address a few notational conventions:
+\begin{Def}[Symbols $\triangleq$ vs. :=]
+
+    The symbol \texttt{:=} is used to define a variable or expression.  
+    The symbol $\triangleq$ is used to state that two expressions are equal \textbf{by definition}.
+    For example, we may write a paper which reuses some large specific configuration $(\{\dots\}, \dots  )$; Instead of 
+    writing it again and again, we assign one variable to represent such idea:
+    
+    \Large
+    \[
+    \Delta^{\star}_{\Pi}   \triangleq (\{\dots\}, \dots  )
+    \]
+    \normalsize
+    Now throughout our paper, $\Delta^{\star}_{\Pi}$ signals to the reader that we are using this configuration.
+    As opposed to \texttt{:=} where we might temporarily assign the variable $a$ to some value multiple times over 
+    the course of a document.
+    \end{Def}
+    
+\noindent
+Next we look at what happens when we apply the identity function to itself:
+
+\begin{Def}[The Diverging Term \(\Omega\)]
+
+    The identity function, that we'll denote as $I$, when applied to itself is called the \textbf{diverging term},
+    for which we define as $\Omega$:
+
+    \Large
+    \[
+      \Omega\triangleq (\lambda x. x\,x)(\lambda x. x\,x)
+    \]
+    \normalsize
+    \noindent    
+    The inner function \(\lambda x. x\,x\) is sometimes called the \textbf{mockingbird combinator}, as it applies its argument to itself:
+    \Large
+    \[
+      M \triangleq \lambda x. x\,x
+    \]
+    \normalsize
+    Thus, \(\Omega = M\,M\) creates an infinite loop of self-application.
+  \end{Def}
+
+  \begin{Example}[Showing \(\Omega\) Divergence]
+
+    \noindent
+    We can show that \(\Omega\) diverges by applying it to itself:
+    \begin{align*}
+      \Omega &\triangleq (\lambda x. x\,x)(\lambda x. x\,x) \\
+      &\rightarrow (\lambda x. (\lambda x. x\,x)\ (\lambda x. x\,x)) \\
+      &\rightarrow (\lambda x. (\lambda x. (\lambda x. x\,x)\,(\lambda x. x\,x))) \\
+      &\rightarrow (\lambda x. (\lambda x. (\lambda x. (\lambda x. x\,x)\,(\lambda x. x\,x)))) \\
+      &\rightarrow \ldots
+    \end{align*}
+    \noindent
+    This shows that \(\Omega\) diverges as it continues to apply itself indefinitely.
+\end{Example}
+
+\newpage 
+
+\noindent
+Application has a formal definition in lambda calculus:
+\begin{Def}[Application \& $\beta$-Reduction]
+
+    \label{def:beta-reduction}
+    \textbf{$\beta$-reduction} is the process of applying a function to an argument in lambda calculus. We proceed with the small-step semantics
+    for the application of two functions:
+
+    \begin{enumerate}
+        \item \[
+        \begin{prooftree}
+        \hypo{e_1 \rightarrow e_1'}
+        \Infer1[(\text{beta-left})]{e_1\ e_2 \rightarrow e_1'\ e_2}
+        \end{prooftree}
+        \]
+        \item \[
+        \begin{prooftree}
+        \hypo{e_2 \rightarrow e_2'}
+        \Infer1[(\text{beta-right})]{(\lambda x . e_1)\ e_2 \rightarrow (\lambda x . e_1)\ e_2'}
+        \end{prooftree}
+        \]
+        \item  \[
+        \begin{prooftree}
+        \Infer0[(\text{beta-ok})]{(\lambda x. e)\ (\lambda y. e') \rightarrow [(\lambda y. e')/x]e}
+        \end{prooftree}
+        \]
+        \item For e.g., $e:= x + x$ then, \[ [(\lambda x. e')/x]e = (\lambda x. e') + (\lambda x. e') \]
+    \end{enumerate}
+
+    \noindent
+    Where (1) we reduce the left-hand side of the application, (2) we reduce the right-hand side of the application, and (3) we apply a function to another function by substitution.
+    \textbf{Note:} (4) that the outer $\lambda$ is discarded upon substitution, only the substituted body remains.\\
+
+    \noindent
+    We can make this more compact and generalize to any expression $e'$:
+
+    \begin{enumerate}
+        \item \[
+        \begin{prooftree}
+        \hypo{e_1 \rightarrow e_1'}
+        \Infer1[(\text{beta-left})]{e_1\ e_2 \rightarrow e_1'\ e_2}
+        \end{prooftree}
+        \]
+        \item \[
+        \begin{prooftree}
+           \Infer0[(\text{beta-ok})]{(\lambda x. e)\ e' \rightarrow [e'/x]e}
+        \end{prooftree}
+        \]
+    \end{enumerate}
+
+    \noindent
+    Note, $e'$ only needs to be a well-formed expression for a $\beta$-reduction.
+
+\end{Def}
+
+\begin{Example}[Simple $\beta$-Reduction]
+
+    \noindent
+    Consider the following example of $\beta$-reduction:
+    \[
+    (\lambda x. x + 1)\ 2 \rightarrow [2/x](x + 1) \rightarrow 2 + 1 \rightarrow 3
+    \]
+    \noindent
+    Here, we apply the function to the argument \(2\), substitute \(2\) for \(x\) in the body of the function, and finally evaluate the expression to get \(3\).
+\end{Example}
+
+\newpage
+\noindent
+Though we must be wary of what we are substituting for:
+\begin{Def}[$\alpha$-Equivalence]
+
+    Two lambda calculus expressions are said to be \textbf{$\alpha$-equivalent} (alpha) if they differ only by the names of their bound variables. 
+    This formalizes the \textbf{principle of name irrelevance}: renaming bound variables does not change the meaning of an expression.
+    
+    \[
+    \lambda x. \lambda y. x \ =_\alpha\ \lambda v. \lambda w. v
+    \]
+    
+    \noindent
+    In OCaml-like syntax:
+    
+    \[
+    \texttt{let x = 2 in x + 1} \ =_\alpha\ \texttt{let z = 2 in z + 1}
+    \]
+    
+    \noindent
+    \textbf{Substitution should preserve $\alpha$-equivalence}. If \( e_1 =_\alpha e_2 \), then for any term \( v \), we have:
+    
+    \[
+    [v/x]e_1 =_\alpha [v/x]e_2
+    \]
+    
+    \end{Def}
 
 
+
+\noindent
+To continue we make the following distinction:
+\begin{Def}[Free and Bound Variables]
+
+    In lambda calculus, a variable in an expression can be either \textbf{free} or \textbf{bound}:
+    
+    \begin{itemize}
+      \item A variable is \textbf{bound} if it is defined by a $\lambda$ abstraction in the expression. 
+      \begin{itemize}
+        \item \textbf{E.g.,} in the expression $\lambda x. x + 1$, the variable $x$ is bound.
+      \end{itemize}
+      \item A variable is \textbf{free} if it is not bound by any enclosing $\lambda$ abstraction.
+        \begin{itemize}
+            \item \textbf{E.g.,} in the expression $\lambda x. y + 1$, the variable $y$ is free.
+        \end{itemize} 
+    \end{itemize}
+    
+    \noindent
+    Formally, the set of free variables in an expression $e$, written $\mathit{FV}(e)$, is defined inductively as:
+    \[
+    \begin{aligned}
+      \mathit{FV}(x) & = \{x\} \\
+      \mathit{FV}(\lambda x. e) & = \mathit{FV}(e) \setminus \{x\} \\
+      \mathit{FV}(e_1\ e_2) & = \mathit{FV}(e_1) \cup \mathit{FV}(e_2)
+    \end{aligned}
+    \]
+    
+    \noindent
+    A variable is \textbf{bound} if it is not free.
+    
+    \end{Def}
+
+
+
+    \noindent
+    In just a moment, we will define substitution in a way that preserves $\alpha$-equivalence. 
+    The high-level idea is that we should \textbf{avoid} substituting variables that are \textbf{bound} within an expression.
+    
+\newpage
+
+\noindent
+Now we define the semantics of substitution:
+\begin{Def}[Substitution Semantics]
+
+    \label{def:substitution}
+    
+    Substitution replaces \textbf{free} occurrences of a variable with another expression. The rules are defined recursively as follows:
+    
+    \begin{center}
+        \begin{tabular}{@{}l@{\quad}l@{}}
+        (1) & \hspace{2em}
+        $[v/y]x = 
+        \begin{cases}
+        v & \text{if } x = y \\
+        x & \text{otherwise}
+        \end{cases}$ \\[1em]
+        
+        (2) & \hspace{0em}
+        $[v/y](\lambda x. e) = 
+        \begin{cases}
+        \lambda x. e & \text{if } x = y \\
+        \lambda z. [v/y]([z/x]e) & \text{if } x \in \text{FV}(v),\ z \text{ is fresh} \\
+        \lambda x. [v/y]e & \text{otherwise}
+        \end{cases}$ \\[1em]
+        
+        (3) & \hspace{-.2em}
+        $[v/y](e_1\ e_2) = ([v/y]e_1)\ ([v/y]e_2)$
+        \end{tabular}
+    \end{center}
+    
+    \noindent
+    Moreover, we pay close attention to (2)'s middle condition.
+    $FV(v)$ means free variables in $v$,
+    so if $v:=(\lambda w.y)$ then $FV(v)=\{y\}$.
+    Then $[v/x](\lambda\ y.x)$ would be a major problem as,
+    \LARGE
+    $$\Large \lambda y.\lambda w.y = \lambda y.y \neq_\alpha \lambda y.x,$$
+    \normalsize
+    is not $\alpha$-equivalent. The condition accounts for
+    this by making a \textbf{fresh variable} $z$ that does not have any
+    conflicts in the body. For example $[y/x](\lambda y.x(\lambda z.y))$ ignoring freshes:
+    
+    \vspace{-1em}
+    \LARGE
+    $$ (\lambda z.y(\lambda z.z)) \neq_\alpha (\lambda y.x(\lambda z.y))$$
+    \normalsize
+    Now we pick some arbitrary \textbf{fresh} variable $z$:
+    argument with $z$:
+
+    \vspace{-1em}
+    \LARGE
+    $$ (\lambda u.y(\lambda z.u)) \neq_\alpha (\lambda y.x(\lambda z.y))$$
+    \normalsize
+
+    \noindent
+    Here we chose the variable $u$ as it does not conflict with the rest of the expression.
+\end{Def}
+    .
+\begin{Example}[Multi-step $\beta$-Reductions]
+
+    \noindent
+    Consider the following derivations of $(\lambda f. \lambda x. fx)(\lambda y. y)$ using our substitution semantics:
+
+    \begin{enumerate}
+        \item \[
+        \begin{prooftree}
+        \Infer0[(beta-ok)]{(\lambda f. \lambda x. fx)(\lambda y. y) \rightarrow [(\lambda y. y)/f](\lambda x. fx)=(\lambda x. (\lambda y. y)x)}
+        \end{prooftree}
+        \]
+        \item \[
+        \begin{prooftree}
+        
+        \Infer0[(beta-ok)]{(\lambda y. y)\,x \rightarrow [x/y](y)=x}
+        \Infer1[(beta-left)]{(\lambda x. (\lambda y. y)\,x) \rightarrow (\lambda x. x)}
+        \end{prooftree}
+        \]
+    \end{enumerate}
+    \noindent
+    Hence, $(\lambda f. \lambda x. fx)(\lambda y. y)\rightarrow^{\star} \lambda x. x$.
+\end{Example}
+
+\newpage 
+
+\noindent
+Though we can't cover everything with our grammar:
+\begin{Def}[Stuck Terms]
+
+    A \textbf{stuck term} is a well-formed expression in lambda calculus that cannot be reduced, yet is not a value (i.e., not a lambda abstraction). Applying a non-function value to an argument often causes such issue:
+    \Large
+    \[
+    ((\lambda x. yx)(\lambda x. x)) \rightarrow y(\lambda x. x)
+    \]
+    \normalsize
+    Here, the variable \(y\) is free and not bound to a function, so we cannot proceed with application. Since \(y(\lambda x. x)\) is not a lambda and cannot reduce, it is stuck.
+    We can avoid such scenarios via \textbf{typing systems}.
+    
+\end{Def}
+
+\noindent
+There are two main evaluation strategies in lambda calculus:
+\begin{Def}[Call-by-Value vs. Call-by-Name]
+
+    \textbf{Call-by-value (CBV)} and \textbf{Call-by-name (CBN)} are two evaluation strategies in lambda calculus and functional programming.
+    
+    \begin{itemize}
+        \item \textbf{Call-by-value (CBV)} evaluates the argument \emph{before} substituting it into the function body.
+        \item \textbf{Call-by-name (CBN)} substitutes the argument expression \emph{directly} into the function body without evaluating it first.
+    \end{itemize}
+    
+    \noindent 
+    We may illustrate this with the following rules:
+    
+    \[
+    \text{(CBV)} \quad
+    \frac{
+    e_1 \Downarrow \lambda x. e_1'
+    \quad
+    e_2 \Downarrow v_2
+    \quad
+    [v_2/x]e_1' \Downarrow v
+    }{
+    e_1\ e_2 \Downarrow v
+    }
+    \quad\quad
+    \text{(CBN)} \quad
+    \frac{
+    e_1 \Downarrow \lambda x. e_1'
+    \quad
+    [e_2/x]e_1' \Downarrow v
+    }{
+    e_1\ e_2 \Downarrow v
+    }
+    \]
+    
+    \noindent
+    The benefit of CBV is that it \textbf{only evaluates an argument once} and is reused. With 
+    CBN, the argument is evaluated \textbf{every time} it needs to be computed. This is good if 
+    an expensive computation is passed around, but barely touched in the execution.
+    \end{Def}
+
+    \noindent 
+    We saw this before in Definition (\ref{def:beta-reduction}). The first semantics were CBV, while the latter was CBN.
+    
+    \begin{Tip} There are many evaluation strategies optimizing different aspects of computation. In addition to \textbf{CBV} and \textbf{CBN} there are:
+    \textbf{Call-by-need} (lazy eval)---like call-by-name, but avoids recomputation by memoizing results. Used in Haskell.
+    \textbf{Call-by-reference}---used in languages with pointers (functions receive variable references).
+    \textbf{Call-by-sharing}---also pointer focused langues (functions receive object references).
+
+\end{Tip}
+        
+\newpage 
 
     
+\begin{Def}[Well-Scopedness and Closedness]
+
+    \label{def:well-scopedness}
+
+    Lambda Calculus redefines \textbf{scope} in terms of \textbf{free} and \textbf{bound} variables: 
+
+    \begin{itemize}
+        \item 
+    An expression \( e \) is \textbf{well-scoped} if every \textbf{free variable} in \( e \) is bound somewhere in the surrounding context.
+
+    \item 
+    An expression \( e \) is \textbf{closed} if it contains \textbf{no free variables}. That is, all variables in \( e \) are bound within \( e \) itself.
+    \end{itemize}
+    \noindent
+    \underline{\textbf{Every closed expression is well-scoped by definition}}, but not every well-scoped expression is closed.
+    Closed terms are especially important because they are self-contained and can be evaluated without needing an external context.
+\end{Def}
+
+\begin{Example}[Closed vs. Open Terms]
     
+    Recall that abstractions bind to their argument variable:
+    \begin{itemize}
+        \item \textbf{Open Term:} \((\lambda x. y)\) is \emph{not closed}, since \(y\) is free.
+        \item \textbf{Closed Term:} \((\lambda x. \lambda y. y)\) is \emph{closed}, since both \(x\) and \(y\) are bound.
+    \end{itemize}
+
+\end{Example}
+
+\begin{Def}[Lexical vs Dynamic Scope]
+
+    \label{def:scope}
+
+    \noindent
+    A variable's \textbf{scope} determines where in the program the variable can be referenced.
+
+    \begin{itemize}
+        \item \textbf{Lexical (or static) scope} refers to the textual delimiters to define the scope of a binding.
+        
+        \item \textbf{Dynamic scope} bindings are determined at runtime based on the call stack. I.e., the most recent binding in the call stack is used regardless 
+        of where the function was defined.
+    \end{itemize}
+
+    \noindent
+    Most modern programming languages use lexical scoping because it makes code easier to understand and reason about just by reading the source.
+\end{Def}
+
+\newpage 
+
+\noindent
+To understand the difference between lexical and dynamic scoping:
+
+\begin{Example}[Dynamic vs Lexical Scoping]
+
+    \noindent
+    Consider the following Bash code:
+    
+    \begin{lstlisting}[language=bash,numbers=none]
+    f() { x=23; g; } 
+    g() {  y=$x; }
+    f
+    echo $y   # prints 23
+    \end{lstlisting}
+    
+    \noindent
+    In Bash, the variable \texttt{x} is not defined in \texttt{g}, but since \texttt{f} called \texttt{g} and \texttt{x} was defined in \texttt{f}, \texttt{g} sees it. This is \textbf{dynamic scoping}.
+    In contrast, consider the following Python code:
+
+    \begin{lstlisting}[language=python,numbers=none]
+    x = 0
+    def f():
+        x = 1
+        return x
+    
+    assert f() == 1
+    assert x == 0
+    \end{lstlisting}
+    
+    \noindent
+    Now consider the following OCaml code:
+    \begin{lstlisting}[language=ML,numbers=none]
+    let x = 0
+    let f () = 
+        let x = 1 in
+        x
+    
+    let _ = assert (f () = 1)
+    let _ = assert (x = 0)
+    \end{lstlisting}
+    
+    \noindent
+    Both Python and OCaml use \textbf{lexical scoping}, meaning each use of \texttt{x} refers to the closest enclosing definition in the source code, not the caller's environment.
+\end{Example}
+
+\begin{Def}[Environment]
+
+    \label{def:environment}
+
+    \noindent
+    An \textbf{environment} is a data structure that keeps track of \textbf{variable bindings}, i.e., associations between variables and their corresponding values. Environments are written as finite mappings:
+    \LARGE
+    \[
+        \{ x \mapsto v,\ y \mapsto w,\ z \mapsto f \}
+    \]
+    \normalsize
+    where each variable is mapped to a value, such as a number, function, or expression.
+\end{Def}
+
+        
+\newpage 
+
+\noindent
+
+\begin{Def}[Operations on Environments]
+
+    \label{def:env-operations}
+
+    \noindent
+    Environments support basic operations for managing variable bindings, similar to a map:
+
+    \begin{itemize}
+        \item \(\varnothing\) — represents the empty environment (OCaml: \texttt{empty}).
+        \item \(\mathcal{E}\) — represents the current environment (OCaml: \texttt{env}).
+        \item \(\mathcal{E}[x \mapsto v]\) — adds a new binding of variable \(x\) to value \(v\) (OCaml: \texttt{add x v env}).
+        
+        \item \(\mathcal{E}(x)\) — looks up the value of variable \(x\) (OCaml: \texttt{find\_opt x env}).
+        
+        \item \(\mathcal{E}(x) = \bot\) — indicates that \(x\) is unbound in the environment\\ (OCaml: \texttt{find\_opt x env = None}).
+    \end{itemize}
+
+    \noindent
+    Additionally, if a new binding is added for a variable that already exists, the new binding \textbf{shadows} the old one:
+    \[
+    \mathcal{E}[x \mapsto v][x \mapsto w] = \mathcal{E}[x \mapsto w]
+    \]
+\end{Def}
