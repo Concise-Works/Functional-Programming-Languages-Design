@@ -422,7 +422,7 @@ Though we must be wary of what we are substituting for:
 
 \noindent
 To continue we make the following distinction:
-\begin{Def}[Free and Bound Variables]
+\begin{Def}[Free \& Bound Variables]
 
     In lambda calculus, a variable in an expression can be either \textbf{free} or \textbf{bound}:
     
@@ -447,6 +447,7 @@ To continue we make the following distinction:
     \end{aligned}
     \]
     
+
     \end{Def}
 
 
@@ -613,7 +614,7 @@ There are two main evaluation strategies in program evaluation:
     \begin{itemize}
         
         \item 
-        An expression \( e \) is \textbf{closed} if it contains \textbf{no free variables}.
+        An expression \( e \) is \textbf{closed} if it contains \textbf{no free variables}, also called a \textbf{combinator}.
         \item 
         An expression \( e \) is \textbf{well-scoped} if the expression is closed or is bound under the configuration's state.
     \end{itemize}
@@ -698,45 +699,23 @@ To understand the difference between lexical and dynamic scoping:
     Both Python and OCaml use \textbf{lexical scoping}, meaning each use of \texttt{x} refers to the closest enclosing definition in the source code, not the caller's environment.
 \end{Example}
 
-\begin{Def}[Environment]
+\begin{theo}[Lambda Calculus -- True \& False]
 
-    \label{def:environment}
-
-    \noindent
-    An \textbf{environment} is a data structure that keeps track of \textbf{variable bindings}, i.e., associations between variables and their corresponding values. Environments are written as finite mappings:
+    True,false, and if conditions are defined as:
+    \Large
+    \[
+    \texttt{true} \triangleq \lambda x. \lambda y. x
+    \quad\quad
+    \texttt{false} \triangleq \lambda x. \lambda y. y
+    \]
     \LARGE
     \[
-        \{ x \mapsto v,\ y \mapsto w,\ z \mapsto f \}
+    \texttt{IF} \triangleq \lambda cond. \lambda then. \lambda else. cond\ then\ else
     \]
+
     \normalsize
-    where each variable is mapped to a value, such as a number, function, or expression.
-\end{Def}
-
-        
-\newpage 
-
-\noindent
-
-\begin{Def}[Operations on Environments]
-
-    \label{def:env-operations}
-
     \noindent
-    Environments support basic operations for managing variable bindings, similar to a map:
-
-    \begin{itemize}
-        \item \(\varnothing\) — represents the empty environment (OCaml: \texttt{empty}).
-        \item \(\mathcal{E}\) — represents the current environment (OCaml: \texttt{env}).
-        \item \(\mathcal{E}[x \mapsto v]\) — adds a new binding of variable \(x\) to value \(v\) (OCaml: \texttt{add x v env}).
-        
-        \item \(\mathcal{E}(x)\) — looks up the value of variable \(x\) (OCaml: \texttt{find\_opt x env}).
-        
-        \item \(\mathcal{E}(x) = \bot\) — indicates that \(x\) is unbound in the environment\\ (OCaml: \texttt{find\_opt x env = None}).
-    \end{itemize}
-
-    \noindent
-    Additionally, if a new binding is added for a variable that already exists, the new binding \textbf{shadows} the old one:
-    \[
-    \mathcal{E}[x \mapsto v][x \mapsto w] = \mathcal{E}[x \mapsto w]
-    \]
-\end{Def}
+    \textbf{E.g.,}\\ 
+    (\texttt{IF true 1 2}) $\to [2/y][1/x](\lambda x.\lambda y.x) \to 1$.\\
+     (\texttt{IF false 1 2}) $\to [2/y][1/x](\lambda x.\lambda y.y) \to 2$.
+\end{theo}

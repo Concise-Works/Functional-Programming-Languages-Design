@@ -1,0 +1,138 @@
+
+        
+\newpage 
+
+\subsection{Handling Lambda Recursion \& Environments}
+\noindent
+We have $\Omega$ which allows us to do recursion, but we need self-referencing.
+
+\begin{Def}[Fixed-point Combinator]
+    
+    A \textbf{fixed point} is a value unchanged by a transformation (e.g.,
+    the fixed point of $f$ is some value $x$ such that, $f(x) = x$). A fixed-point combinator is a higher-order function that
+    satisfies:
+    \LARGE
+    \[
+     \texttt{FIX}\ f = f (\texttt{FIX} f)
+    \]
+
+    \normalsize
+    \noindent
+    i.e., functions \texttt{FIX} and $f$ when applied returns $f$ 
+    whose argument is the original application. This enables recursion, as there is a 
+    self reference in scope. This unfolds to an infinite series of applications:
+    ($\texttt{FIX}\ f = f (\texttt{FIX} f)= f(f(\texttt{FIX} f)) = f(f(f(\texttt{FIX} f))) = \ldots$).
+    Whether or not it converges depends on the behavior of $f$ (i.e., a base-case).
+\end{Def}
+
+\begin{Example}[Writing Recursive Functions]
+
+    \label{ex:recursion}
+    Say we defined the following recursive factorial function, extending our lambda syntax:
+    \Large
+    \[
+        \texttt{FACT} \triangleq \lambda n. \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n * \texttt{FACT}(n - 1)
+    \]
+    \normalsize
+    \noindent
+    To supply \texttt{FACT} with its own definition, we may preform an intermediary step:
+    \Large
+    \[
+        \texttt{FACT'} \triangleq \lambda f. \lambda n. \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n * (f f(n - 1))
+    \]
+    \normalsize
+    We define \texttt{FACT'}, which takes an additional function $f$ to supply its recursive case. Now, we can apply \texttt{FACT'} to itself to render 
+    our desired \texttt{FACT} function: 
+    
+    \vspace{-1em}
+    \Large
+    \[
+        \texttt{FACT} \triangleq \texttt{ FACT' FACT'}
+    \]
+    \normalsize
+    \noindent
+    For example, let's supply 3 to \texttt{FACT}:
+    \begin{align*}
+        \texttt{FACT}\ 3 
+        &= (\texttt{FACT}'\ \texttt{FACT}')\ 3 && \text{Definition of FACT} \\
+        &= ((\lambda f.\, \lambda n.\, \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n \times (f\ f\ (n - 1)))\ \texttt{FACT}')\ 3 && \text{Definition of FACT'} \\
+        &\to (\lambda n.\, \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n \times (\texttt{FACT}'\ \texttt{FACT}'\ (n - 1)))\ 3 && \text{Application to FACT'} \\
+        &\to \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 \times (\texttt{FACT}'\ \texttt{FACT}'\ (3 - 1)) && \text{Application to } n \\
+        &\to 3 \times (\texttt{FACT}'\ \texttt{FACT}'\ (3 - 1)) && \text{Evaluating \texttt{if}} \\
+        &\to \ldots \\
+        &\to 3 \times 2 \times 1 \times 1 \\
+        &\to^* 6 && \cite{CS4110Lecture17}
+        \end{align*}
+        
+
+\end{Example}
+
+\newpage 
+
+\noindent
+We make the following distinction to emphasize the meaning of a fixed-point:
+\begin{theo}[The identity function \& fixed-points]
+
+    Any function $f$ is a fixed-point of the identity function $I$ $(\lambda x.x)$, i.e., $I\ f = f$.
+\end{theo}
+
+\noindent
+Our previous implementation of \texttt{FACT} in Example (\ref{ex:recursion}) was manual. This would be 
+quite tedious for every recursive function. We can automate this with the following fixed-point combinator:
+\begin{Def}[Y Combinator]
+
+    \label{def:y-combinator}
+    In lambda calculus, the \textbf{Y combinator} is a fixed-point combinator of form:
+    \LARGE
+    \[
+        \texttt{Y} \triangleq \lambda f.\, (\lambda x.\, f (x\ x))\, (\lambda x.\, f (x\ x))
+    \]
+    \normalsize
+    \noindent
+    \textbf{E.g.,} $Y\ f = (\lambda x.\, f (x\ x))\, (\lambda x.\, f (x\ x))$ = $f((\lambda x.f(xx)(\lambda x.f(xx))))=f(f(\dots))=\dots$.
+
+\end{Def}
+\newpage
+
+\noindent
+
+
+\begin{Def}[Operations on Environments]
+
+    \label{def:env-operations}
+
+    \noindent
+    Environments support basic operations for managing variable bindings, similar to a map:
+
+    \begin{itemize}
+        \item \(\varnothing\) — represents the empty environment (OCaml: \texttt{empty}).
+        \item \(\mathcal{E}\) — represents the current environment (OCaml: \texttt{env}).
+        \item \(\mathcal{E}[x \mapsto v]\) — adds a new binding of variable \(x\) to value \(v\) (OCaml: \texttt{add x v env}).
+        
+        \item \(\mathcal{E}(x)\) — looks up the value of variable \(x\) (OCaml: \texttt{find\_opt x env}).
+        
+        \item \(\mathcal{E}(x) = \bot\) — indicates that \(x\) is unbound in the environment\\ (OCaml: \texttt{find\_opt x env = None}).
+    \end{itemize}
+
+    \noindent
+    Additionally, if a new binding is added for a variable that already exists, the new binding \textbf{shadows} the old one:
+    \[
+    \mathcal{E}[x \mapsto v][x \mapsto w] = \mathcal{E}[x \mapsto w]
+    \]
+\end{Def}
+
+\begin{Def}[Environment]
+
+    \label{def:environment}
+
+    \noindent
+    An \textbf{environment} is a data-structure that keeps track of \textbf{variable bindings}, i.e., associations between variables and their corresponding values. Environments are written as finite mappings:
+    \LARGE
+    \[
+        \{ x \mapsto v,\ y \mapsto w,\ z \mapsto f \}
+    \]
+    \normalsize
+    Where each variable is mapped to a value. We may use such data-structure for state configurations (e.g., $\langle\{x\mapsto \lambda y.y\}, x  \rangle$). We shall denote environments as $\mathcal{E}$.
+\end{Def}
+\noindent
+We've seen this before in Definition (\ref{def:well-scopedness}).
