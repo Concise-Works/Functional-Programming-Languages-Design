@@ -181,6 +181,7 @@ To stop this we introduce another type of combinator for eager evaluation:
 
 \newpage 
 
+\noindent
 Last example touches on the idea of short-circuiting:
 \begin{Def}[Short-Circuiting]
 
@@ -235,50 +236,3 @@ Last example touches on the idea of short-circuiting:
     \noindent
     Notice that in (andEvalFalse), (orEvalTrue), and (ifTrueEval) the second expression is never evaluated. This is a form of \textbf{short-circuiting}.
     \end{Def}
-   
-\subsection{Environments: Variable Binding Data-Structure}
-\noindent
-Though as programs and systems grow more complex it may be difficult to keep track of variables. Say 
-we jump to another function, or create a new thread. We need some way to keep track of the variable mappings.
-That's where environments come into play:
-\begin{Def}[Environment]
-
-    \label{def:environment}
-
-    \noindent
-    An \textbf{environment} is a data-structure that keeps track of \textbf{variable bindings}, i.e., associations between variables and their corresponding values. Environments are written as finite mappings:
-    \LARGE
-    \[
-        \{ x \mapsto v,\ y \mapsto w,\ z \mapsto f \}
-    \]
-    \normalsize
-    Where each variable is mapped to a value. We may use such data-structure for state configurations (e.g., $\langle\{x\mapsto \lambda y.y\}, x  \rangle$). We shall denote environments as $\mathcal{E}$.
-\end{Def}
-\newpage 
-\begin{Def}[Operations on Environments]
-
-    \label{def:env-operations}
-
-    \noindent
-    Environments support basic operations for managing variable bindings, similar to a map:
-
-    \begin{itemize}
-        \item \(\varnothing\) — represents the empty environment (OCaml: \texttt{empty}).
-        \item \(\mathcal{E}\) — represents the current environment (OCaml: \texttt{env}).
-        \item \(\mathcal{E}[x \mapsto v]\) — adds a new binding of variable \(x\) to value \(v\) (OCaml: \texttt{add x v env}).
-        
-        \item \(\mathcal{E}(x)\) — looks up the value of variable \(x\) (OCaml: \texttt{find\_opt x env}).
-        
-        \item \(\mathcal{E}(x) = \bot\) — indicates that \(x\) is unbound in the environment\\ (OCaml: \texttt{find\_opt x env = None}).
-    \end{itemize}
-
-    \noindent
-    Additionally, if a new binding is added for a variable that already exists, the new binding \textbf{shadows} the old one:
-    \[
-    \mathcal{E}[x \mapsto v][x \mapsto w] = \mathcal{E}[x \mapsto w]
-    \]
-\end{Def}
-
-
-\noindent
-We've seen this before in Definition (\ref{def:well-scopedness}).

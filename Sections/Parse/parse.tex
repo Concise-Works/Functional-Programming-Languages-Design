@@ -548,7 +548,7 @@ Lets begin by defining the AST in \snippet{ast.ml}:
             
     \newpage 
 
-\begin{Example}[Setting Up Dune and Testing in \texttt{utop}]
+\begin{Example}[Simple Lexer \& Parser (Part 6)]
 
     Now that we've written our AST, lexer, and parser, we need to set up Dune so we can compile everything and test it in \texttt{utop}.\\
     
@@ -599,12 +599,14 @@ Lets begin by defining the AST in \snippet{ast.ml}:
     In \texttt{utop}, you can test the parser like this:
     
     \begin{lstlisting}[numbers=none]
-    # Demo.parse "let x = 3 + 4 in x * 2";;
-    - : Demo__Ast.prog option =
+    # open Demo;;
+    # parse "let x = 3 + 4 in x * 2";;
+    - : prog option =
     Some
-    (Demo__.Ast.Let ("x",
-    Demo__.Ast.Bop (Demo__.Ast.Add, Demo__.Ast.Num 3, Demo__.Ast.Num 4),
-    Demo__.Ast.Bop (Demo__.Ast.Mul, Demo__.Ast.Var "x", Demo__.Ast.Num 2)))
+    (Let ("x",
+         Bop (Add, Num 3, Num 4),
+         Bop (Mul, Var "x", Num 2)
+    ))
     \end{lstlisting}
     \end{Example}
         
