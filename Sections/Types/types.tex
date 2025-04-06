@@ -3,6 +3,8 @@
 \section{Type Theory}
 \subsection{Simply Typed Lambda Calculus}
 
+\label{sec:types}
+
 \noindent
 An additional way to protect and reduce ambiguity in programming languages is to use \textbf{types}:
 
@@ -158,52 +160,55 @@ To prove the above lemma we must recall structural induction:
 
     \textbf{Structural induction} is a proof technique used to prove properties of recursively defined structures. It consists of two parts:
     \begin{itemize}
-        \item \textbf{Base case:} Prove the property for the simplest structure (e.g., base case of recursion).
-        \item \textbf{Inductive step:} Assume the property holds for a structure and prove it holds for a more complex structure built from it.
+        \item \textbf{Base case:} Prove the property for the simplest constructor (e.g., a variable or unit).
+        \item \textbf{Inductive step:} Assume the property holds for immediate substructures, and prove it holds for the structure built from them.
     \end{itemize}
     
     \noindent
-    This differs from mathematical induction over natural numbers, where the base case may be $0$ and the inductive step is $n \to n+1$. For use in 
-    \textbf{lambda calculus}, a well-formed expression $e$ may comprise of multiple sub-expressions $e_1, e_2, \ldots, e_k$:
+    This differs from standard mathematical induction over natural numbers, where the base case is typically $n = 0$ (or $1$), and the inductive step proves $(n+1)$ assuming $(n)$.
+    
+    \noindent
+    In the context of \textbf{lambda calculus}, expressions are recursively defined and built from smaller expressions. Structural induction proceeds as:
     \begin{itemize}
-        \item \textbf{Base case:} Prove the property for the simplest expression (e.g., variable or unit value).
-        \item \textbf{Inductive step:} Assume the property holds for sub-expressions $e_1, e_2, \ldots, e_k$ and prove it holds for a more complex patterns $e$ built from them (e.g., an application or abstraction).
+        \item \textbf{Base case:} Prove the property for the simplest expressions (e.g., variables and units).
+        \item \textbf{Inductive step:} Assume the property holds for sub-expressions $e_1, e_2, \ldots, e_k$, and prove it holds for a compound expression $e$ (e.g., abstractions and application).
     \end{itemize}
-\end{Def}
+    
+    \end{Def}
+    
 \noindent
 A proof of the previous lemma is as follows:
 \begin{Proof}[Lemma -- Uniqueness of Types]
 
     We prove that if $\Gamma \vdash e : \tau_1$ and $\Gamma \vdash e : \tau_2$, then $\tau_1 = \tau_2$ ($\Gamma$ is a fixed typing context, and $e$ a well-formed expression)
-    via structural-induction:
+    via structural-induction:\\
 
     \noindent
     \textbf{Case 1:} $e = \bullet$ (unit value).  
-    The $\bullet$ is assigned to $\top$ under one rule. Therefore, $\tau_1 = \tau_2 = \top$.
+    Since $\bullet\Downarrow\top$ it is an atom. Therefore, $\tau_1 = \tau_2 = \top$.
     \\
 
     \noindent
     \textbf{Case 2:} $e = x$ (a variable).  
-    Variable typings depend on the context $\Gamma$. Since $(x : \tau_1), (x : \tau_2) \in \Gamma$ and $\Gamma$ is fixed, $x$ maps to a single type. Hence, $\tau_1 = \tau_2$.
+    Since $(x : \tau_1), (x : \tau_2) \in \Gamma$ and $\Gamma$ is fixed, $x$ maps to a single type. Thus, $\tau_1 = \tau_2$.
     \\
 
     \noindent
     \textbf{Case 3:} $e = \lambda x^\tau. e'$.  
-    Abstraction typings require the form $\tau \to \tau'$.  
-    Given $\Gamma \vdash \lambda x^\tau. e' : \tau_1$ and $\Gamma \vdash \lambda x^\tau. e' : \tau_2$,
-    $x$ is a fixed variable in the context $\Gamma$. Given abstraction are deterministic the input must give the same output.
-    By the induction hypothesis applied to $e'$ (under $\Gamma,x:\tau$), we conclude $\tau_1 = \tau_2$.
-    \\
+    Abstraction typings require the form $\tau \to \tau'$. Both derivations,
+    $\Gamma \vdash \lambda x^\tau. e' : \tau_1$ and $\Gamma \vdash \lambda x^\tau. e' : \tau_2$,
+    must have such form. Hence, by inductive hypothesis on $e'$ (under $\Gamma,x:\tau$), we conclude $\tau_1 = \tau_2$.
+    \\ 
 
     \noindent
     \textbf{Case 4:} $e = e_1\, e_2$ (application).  
     Suppose $\Gamma \vdash e_1\, e_2 : \tau_1$ and $\Gamma \vdash e_1\, e_2 : \tau_2$.  
-    Then $e_1$ must have type $\tau' \to \tau_1$ and $\tau' \to \tau_2$ respectively (case 3) and $e_2$ type $\tau'$.  
-    By the inductive hypothesis on $e_1$ and $e_2$, we conclude $\tau_1 = \tau_2$.
+    Then $e_1$ must have type $\tau' \to \tau_1$ and $\tau' \to \tau_2$ respectively, and $e_2$ type $\tau'$.  
+    With likewise reasoning from Case 3, and through the inductive hypothesis on $e_1$ and $e_2$, we conclude $\tau_1 = \tau_2$.
     \\
 
     \noindent
-    Hence, by typing derivation structural induction, assigned types of any expression is unique.
+    Hence, by induction on the typing derivation, the type assigned to any expression is unique.
 
     \end{Proof}
         

@@ -36,7 +36,6 @@ A quick aside on Domain Specific Languages (DSLs):
     A domain-specific language (DSL) is a programming language or specification language dedicated to a particular problem domain.
     An example of a DSL is SQL, as its only purpose is to query databases. This is in contrast to general-purpose languages like Python, which can be used for a wide range of applications.
 
-    DSL's require custom parsers to be written. This can be done by hand, or using parser generators.
 \end{Def}
 
 \noindent
@@ -56,14 +55,14 @@ EBNF includes the following additional constructs:
     \end{itemize}
     \item \texttt{\{\ldots \}} — repetition: the enclosed pattern may repeat \underline{\textbf{zero} or more times}.
     \begin{itemize}
-        \item \textbf{E.g.,}  \snippet{<digits> ::= \{0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\}}, match:
+        \item \textbf{E.g.,}  \snippet{<digits> ::= \{0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\}}, matches:
         \begin{itemize}
             \item[>] \texttt{"0"}, \texttt{"320"}, \texttt{"11235813"}
         \end{itemize}
     \end{itemize}
     \item \texttt{[\ldots ]} — optionality: the enclosed pattern may appear zero or one time.
     \begin{itemize}
-        \item \textbf{E.g.,} \snippet{<number> ::= ["-"] <digits>}, match:
+        \item \textbf{E.g.,} \snippet{<number> ::= ["-"] <digits>}, matches:
         \begin{itemize}
             \item[>] \texttt{"1"}, \texttt{"-320"}
         \end{itemize}
@@ -82,6 +81,7 @@ EBNF includes the following additional constructs:
 
 \newpage
 
+\noindent
 Let's elaborate more on \snippet{<digits>} from above:
 \begin{Example}[Dealing with Optionality]
 

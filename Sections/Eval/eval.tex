@@ -252,7 +252,7 @@ we go more in-depth:
     (\lambda x. x)\ 5 \rightarrow 5
     $ (application).
     \noindent
-    In OCaml, this is represented as: \texttt{(fun x -> x) 5}.
+    In OCaml, this is represented as: \texttt{(fun x -> x) 5}. This is also know as the ``\texttt{I}'' combinator.
   \end{Def}
 
   \newpage 
@@ -348,7 +348,7 @@ Application has a formal definition in lambda calculus:
 
     \noindent
     \textbf{Note:} (3) is our base case where \textbf{only values} are allowed to be substituted.
-    We take a different approach and not \textbf{eagerly} evaluate expressions.
+    We can take a different approach and not \textbf{eagerly} evaluate expressions.
 
     \begin{enumerate}
         \item \[
@@ -433,7 +433,7 @@ To continue we make the following distinction:
       \end{itemize}
       \item A variable is \textbf{free} if it is not bound by any enclosing $\lambda$ abstraction.
         \begin{itemize}
-            \item \textbf{E.g.,} $(\lambda x. y + 1)$, the variable $y$ is free.
+            \item \textbf{E.g.,} $(\lambda x. y + 1)$, the variable $y$ is free, \textbf{but} $x$ is still bound.
         \end{itemize} 
     \end{itemize}
     
@@ -441,9 +441,9 @@ To continue we make the following distinction:
     Formally, the set of free variables in an expression $e$, written $\mathit{FV}(e)$, is defined inductively as:
     \[
     \begin{aligned}
-      \mathit{FV}(x) & = \{x\} \quad \textit{(Alone variable)} \\
-      \mathit{FV}(\lambda x. e) & = \mathit{FV}(e) \setminus \{x\} \quad \textit{(Function body)}\\
-      \mathit{FV}(e_1\ e_2) & = \mathit{FV}(e_1) \cup \mathit{FV}(e_2) \quad \textit{(Application)}\\
+      \mathit{FV}(x) & = \{x\} && \textit{(Alone variable)} \\
+      \mathit{FV}(\lambda x. e) & = \mathit{FV}(e) \setminus \{x\} && \textit{(Function body)}\\
+      \mathit{FV}(e_1\ e_2) & = \mathit{FV}(e_1) \cup \mathit{FV}(e_2) && \textit{(Application)}\\
     \end{aligned}
     \]
     
@@ -479,7 +479,7 @@ Now we define the semantics of substitution:
         $[v/y](\lambda x. e) = 
         \begin{cases}
         \lambda x. e & \text{if } x = y \\
-        \lambda z. [v/y]([z/x]e) & \text{if } x \in \text{FV}(v),\ \text{then make fresh } z \\
+        \lambda z. [v/y]([z/x]e) & \text{if } x \in \text{FV}(v),\ \text{choose a fresh} z \\
         \lambda x. [v/y]e & \text{otherwise}
         \end{cases}$ \\[1em]
         
@@ -546,7 +546,7 @@ There are times where we can't evaluate a term
     \]
     \normalsize
     Here, the variable \(y\) is free, and thus, cannot proceed with application. Hence, we are ``stuck'' in the evaluation.
-    We can avoid such scenarios via \textbf{typing systems} (discussed later).
+    We can avoid such scenarios via \textbf{typing systems} (discussed in Sec. (\ref{sec:types})).
     
 \end{Def}
 
