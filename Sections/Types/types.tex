@@ -1,0 +1,215 @@
+\newpage 
+
+\section{Type Theory}
+\subsection{Simply Typed Lambda Calculus}
+
+\label{sec:types}
+
+\noindent
+An additional way to protect and reduce ambiguity in programming languages is to use \textbf{types}:
+
+\begin{Def}[A Type]
+
+    A \textbf{type} is a syntactic object that describes 
+    the kind of values that an expression pattern is allowed to take.
+    This happens before evaluation to safeguard unintended behavior.
+\end{Def}
+
+\noindent
+Recall our work in Section (\ref{sec:formalizing-ocaml-expressions}). We add the following:
+
+\begin{Def}[Contexts \& Typing Judgments]
+
+    \textbf{Contexts:} $\Gamma$ is a finite mapping of variables to types. \textbf{Typing Judgments:} $\Gamma \vdash e : \tau$, reads ``$e$ has type $\tau$ in context $\Gamma$''. It is 
+    said that $e$ is \textbf{well-typed} if $\cdot \vdash e : \tau$ for some $\tau$, where ($\cdot$) is the \textbf{empty context}.
+    Such types we may inductively define:\\
+    \begin{minipage}{0.45\textwidth}
+        \begin{align*}
+            \Gamma &::= \cdot \mid \Gamma, x : \tau \\
+            x &::= vars\\
+            \tau &::= types
+        \end{align*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \[
+        \frac{
+          \Gamma \vdash e_1 : \tau_1 \quad \cdots \quad \Gamma \vdash e_k : \tau_k
+        }{
+          \Gamma \vdash e : \tau
+        }
+        \]
+    \end{minipage}
+
+    \vspace{.5em}
+    \noindent
+    In practice, a context is a set (or ordered list) of variable declarations (variable-type pairs). Our 
+    inference rules operate with these contexts to determine the type of an expression:
+\end{Def}
+
+\noindent 
+This leads us to an extension of lambda calculus:
+\begin{Def}[Simply Typed Lambda Calculus (STLC)]
+
+    The syntax of the Simply Typed Lambda Calculus (STLC) extends the lambda calculus by including types and a unit expression.
+    
+    \begin{lstlisting}[numbers=none, mathescape=true]
+    <e>  ::=  () | <v> | <e> <e> 
+          |   fun "("<v> : <ty>")" -> <e>
+    <ty> ::=  unit | <ty> -> <ty>
+    <v>  ::=  [a-zA-Z]
+    \end{lstlisting}
+    
+    \noindent
+    We include the unit type (arbitrary value/void) and that functions are now typed. We transition into 
+    a more mathematical notation:
+
+\[
+\begin{array}{ll}
+e ::= & \bullet \mid x \mid \lambda x^{\tau}.\, e \mid e\,e \\
+\tau ::= & \top \mid \tau \rightarrow \tau \\
+x ::= & \textit{variables}
+\end{array}
+\]
+
+\end{Def}
+    
+
+
+\newpage 
+\noindent
+This brings us to the typing rules for STLC:
+
+\begin{Def}[Typing Rules for STLC]
+
+    \textbf{Typing Rules:} The typing rules for STLC are as follows:
+    \[
+\begin{array}{cc}
+\begin{prooftree}
+  \hypo{}
+  \infer1[\textsf{(unit)}]{\Gamma \vdash \bullet : \top}
+\end{prooftree}
+&
+\begin{prooftree}
+  \hypo{\Gamma, x{:}\tau \vdash e : \tau'}
+  \infer1[\textsf{(abstraction)}]{\Gamma \vdash \lambda x^{\tau} .\, e : \tau \rightarrow \tau'}
+\end{prooftree}
+\\[2em]
+\begin{prooftree}
+  \hypo{(x{:}\tau) \in \Gamma}
+  \infer1[\textsf{(variable)}]{\Gamma \vdash x : \tau}
+\end{prooftree}
+&
+\begin{prooftree}
+  \hypo{\Gamma \vdash e_1 : \tau \rightarrow \tau'}
+  \hypo{\Gamma \vdash e_2 : \tau}
+  \infer2[\textsf{(application)}]{\Gamma \vdash e_1 e_2 : \tau'}
+\end{prooftree}
+\end{array}
+\]
+\noindent
+Such rules enforce that application is only valid when the $e_1$ position is a function type and the $e_2$ position is a valid argument type.
+\end{Def}
+
+When encountering notation, types are often omitted in some contexts:
+\begin{Def}[Church vs. Curry Typing]
+
+There are two main styles of typing:\\
+
+\noindent
+ \textbf{Curry-style typing:} Typing is \textbf{implied} (extrinsic) via typing judgement: 
+    \begin{lstlisting}[numbers=none, mathescape=true]
+    fun x -> x
+    \end{lstlisting}
+    
+\vspace{1em}
+\noindent
+\textbf{Church-style typing:} Types are \textbf{explicitly} (intrinsic) annotated in the expression:
+    \begin{lstlisting}[numbers=none, mathescape=true]
+    fun (x : unit) -> x
+    \end{lstlisting}
+
+
+\noindent
+\textbf{Important:} Curry-style does not imply polymorphism, expressions are judgement-backed.
+
+\end{Def}
+
+\noindent 
+This leads us the an important lemma:
+\begin{Def}[Lemma -- Uniqueness of Types ]
+
+    Let $\Gamma$ be a typing context and $e$ a well-formed expression in STLC:
+    \Large
+    \begin{center}
+        If $\Gamma \vdash e : \tau_1$ and $\Gamma \vdash e : \tau_2$, then $\tau_1 = \tau_2$.
+    
+    \end{center}
+    \normalsize
+
+    \noindent
+    I.e., typing in STLC is \textbf{deterministic} -- a well-typed expression has a \textbf{unique type} under any fixed context.
+    
+    \end{Def}
+
+    \newpage 
+
+\noindent 
+To prove the above lemma we must recall structural induction:
+\begin{Def}[Structural Induction]
+
+    \textbf{Structural induction} is a proof technique used to prove properties of recursively defined structures. It consists of two parts:
+    \begin{itemize}
+        \item \textbf{Base case:} Prove the property for the simplest constructor (e.g., a variable or unit).
+        \item \textbf{Inductive step:} Assume the property holds for immediate substructures, and prove it holds for the structure built from them.
+    \end{itemize}
+    
+    \noindent
+    This differs from standard mathematical induction over natural numbers, where the base case is typically $n = 0$ (or $1$), and the inductive step proves $(n+1)$ assuming $(n)$.
+    
+    \noindent
+    In the context of \textbf{lambda calculus}, expressions are recursively defined and built from smaller expressions. Structural induction proceeds as:
+    \begin{itemize}
+        \item \textbf{Base case:} Prove the property for the simplest expressions (e.g., variables and units).
+        \item \textbf{Inductive step:} Assume the property holds for sub-expressions $e_1, e_2, \ldots, e_k$, and prove it holds for a compound expression $e$ (e.g., abstractions and application).
+    \end{itemize}
+    
+    \end{Def}
+    
+\noindent
+A proof of the previous lemma is as follows:
+\begin{Proof}[Lemma -- Uniqueness of Types]
+
+    We prove that if $\Gamma \vdash e : \tau_1$ and $\Gamma \vdash e : \tau_2$, then $\tau_1 = \tau_2$ ($\Gamma$ is a fixed typing context, and $e$ a well-formed expression)
+    via structural-induction:\\
+
+    \noindent
+    \textbf{Case 1:} $e = \bullet$ (unit value).  
+    Since $\bullet\Downarrow\top$ it is an atom. Therefore, $\tau_1 = \tau_2 = \top$.
+    \\
+
+    \noindent
+    \textbf{Case 2:} $e = x$ (a variable).  
+    Since $(x : \tau_1), (x : \tau_2) \in \Gamma$ and $\Gamma$ is fixed, $x$ maps to a single type. Thus, $\tau_1 = \tau_2$.
+    \\
+
+    \noindent
+    \textbf{Case 3:} $e = \lambda x^\tau. e'$.  
+    Abstraction typings require the form $\tau \to \tau'$. Both derivations,
+    $\Gamma \vdash \lambda x^\tau. e' : \tau_1$ and $\Gamma \vdash \lambda x^\tau. e' : \tau_2$,
+    must have such form. Hence, by inductive hypothesis on $e'$ (under $\Gamma,x:\tau$), we conclude $\tau_1 = \tau_2$.
+    \\ 
+
+    \noindent
+    \textbf{Case 4:} $e = e_1\, e_2$ (application).  
+    Suppose $\Gamma \vdash e_1\, e_2 : \tau_1$ and $\Gamma \vdash e_1\, e_2 : \tau_2$.  
+    Then $e_1$ must have type $\tau' \to \tau_1$ and $\tau' \to \tau_2$ respectively, and $e_2$ type $\tau'$.  
+    With likewise reasoning from Case 3, and through the inductive hypothesis on $e_1$ and $e_2$, we conclude $\tau_1 = \tau_2$.
+    \\
+
+    \noindent
+    Hence, by induction on the typing derivation, the type assigned to any expression is unique.
+
+    \end{Proof}
+        
+    

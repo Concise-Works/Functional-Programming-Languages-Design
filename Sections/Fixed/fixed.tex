@@ -1,0 +1,238 @@
+
+        
+\newpage 
+
+\subsection{Handling Lambda Recursion}
+\noindent
+We have $\Omega$ which allows us to do recursion, but we need self-referencing.
+
+\begin{Def}[Fixed-point Combinator]
+    
+    A \textbf{fixed point} is a value unchanged by a transformation (e.g.,
+    the fixed point of $f$ is some value $x$ such that, $f(x) = x$). A fixed-point combinator is a higher-order function that
+    satisfies:
+    \LARGE
+    \[
+     \texttt{FIX}\ f = f (\texttt{FIX} f)
+    \]
+
+    \normalsize
+    \noindent
+    i.e., functions \texttt{FIX} and $f$ when applied returns $f$ 
+    whose argument is the original application. This enables recursion, as there is a 
+    self reference in scope. This unfolds to an infinite series of applications:
+    ($\texttt{FIX}\ f = f (\texttt{FIX} f)= f(f(\texttt{FIX} f)) = f(f(f(\texttt{FIX} f))) = \ldots$).
+    Whether or not it converges depends on the behavior of $f$ (i.e., a base-case).
+\end{Def}
+
+\begin{Example}[Writing Recursive Functions]
+
+    \label{ex:recursion}
+    Say we defined the following recursive factorial function, extending our lambda syntax:
+    \Large
+    \[
+        \texttt{FACT} \triangleq \lambda n. \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n * \texttt{FACT}(n - 1)
+    \]
+    \normalsize
+    \noindent
+    To supply \texttt{FACT} with its own definition, we may preform an intermediary step:
+    \Large
+    \[
+        \texttt{FACT'} \triangleq \lambda f. \lambda n. \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n * (f f(n - 1))
+    \]
+    \normalsize
+    We define \texttt{FACT'}, which takes an additional function $f$ to supply its recursive case. Now, we can apply \texttt{FACT'} to itself to render 
+    our desired \texttt{FACT} function: 
+    
+    \vspace{-1em}
+    \Large
+    \[
+        \texttt{FACT} \triangleq \texttt{ FACT' FACT'}
+    \]
+    \normalsize
+    \noindent
+    For example, let's supply 3 to \texttt{FACT}:
+    \begin{align*}
+        \texttt{FACT}\ 3 
+        &= (\texttt{FACT}'\ \texttt{FACT}')\ 3 && \text{Definition of FACT} \\
+        &= ((\lambda f.\, \lambda n.\, \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n \times (f\ f\ (n - 1)))\ \texttt{FACT}')\ 3 && \text{Definition of FACT'} \\
+        &\to (\lambda n.\, \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n \times (\texttt{FACT}'\ \texttt{FACT}'\ (n - 1)))\ 3 && \text{Application to FACT'} \\
+        &\to \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 \times (\texttt{FACT}'\ \texttt{FACT}'\ (3 - 1)) && \text{Application to } n \\
+        &\to 3 \times (\texttt{FACT}'\ \texttt{FACT}'\ (3 - 1)) && \text{Evaluating \texttt{if}} \\
+        &\to \ldots \\
+        &\to 3 \times 2 \times 1 \times 1 \\
+        &\to^* 6 && \cite{CS4110Lecture17}
+        \end{align*}
+        
+
+\end{Example}
+
+\newpage 
+
+\noindent
+We make the following distinction to emphasize the meaning of a fixed-point:
+\begin{theo}[The identity function \& fixed-points]
+
+    Any function $f$ is a fixed-point of the identity function $I$ $(\lambda x.x)$, i.e., $I\ f = f$.
+\end{theo}
+
+\noindent
+Our previous implementation of \texttt{FACT} in Example (\ref{ex:recursion}) was manual. This would be 
+quite tedious for every recursive function. We can automate this with the following fixed-point combinator:
+\begin{Def}[Y-Combinator]
+
+    \label{def:y-combinator}
+    In lambda calculus, the \textbf{Y combinator} is a fixed-point combinator of form:
+    \LARGE
+    \[
+        \texttt{Y} \triangleq \lambda f.\, (\lambda x.\, f (x\ x))\, (\lambda x.\, f (x\ x))
+    \]
+    \normalsize
+    \noindent
+    \textbf{E.g.,} $Y\ f = (\lambda x.\, f (x\ x))\, (\lambda x.\, f (x\ x))$ = $f((\lambda x.f(xx)(\lambda x.f(xx))))=f(f(\dots))=\dots$.
+
+\end{Def}
+
+\begin{Example}[Factorial with Y-Combinator]
+
+    \label{ex:factorial-y}
+    We can now define \texttt{FACT} using the Y combinator:
+    \begin{align*}
+    \texttt{FACT} &\triangleq \lambda f.\lambda n. \texttt{if } n = 0 \texttt{ then } 1 \texttt{ else } n * (f(n - 1)) && \text{( Definition of FACT' )} \\
+    \texttt{Y FACT } 3 & = ((\lambda x.\, \texttt{FACT} (x\ x))\, (\lambda x.\, \texttt{FACT} (x\ x)))\ 3 && (\ [\texttt{FACT}/f]\texttt{Y}\ )\\
+    & = \texttt{FACT}\ ((\lambda x.\, \texttt{FACT} (x\ x))\ (\lambda x.\, \texttt{FACT} (x\ x)))\ 3 && (\ [\lambda x.\, \texttt{FACT} (x\ x)/x] \texttt{FACT} (x\ x)\ ) \\
+    \end{align*}
+
+    \vspace{-1em}
+   \noindent
+   Remember that \texttt{FACT} still requires two arguments $f$ and $n$, for which we now supply:
+    \begin{align*}
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * ((\lambda x.\, \texttt{FACT} (x\ x))\ (\lambda x.\, \texttt{FACT} (x\ x))(3 - 1))\\
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * \texttt{FACT} ((\lambda x.\, \texttt{FACT} (x\ x))\ (\lambda x.\, \texttt{FACT} (x\ x)))\ (3 - 1)\\
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * (\texttt{Y FACT}(3 - 1)) \\
+        &\vdots \\
+        &= \texttt{if } 2 = 0 \texttt{ then } 1 \texttt{ else } 2 * (\texttt{Y FACT}(2 - 1)) \\
+        &= \texttt{if } 1 = 0 \texttt{ then } 1 \texttt{ else } 1 * (\texttt{Y FACT}(1 - 1)) \\
+        &= \texttt{if } 0 = 0 \texttt{ then } 1 \texttt{ else } 0 * (\texttt{Y FACT}(0 - 1)) \\
+    \end{align*}
+    \noindent
+    We hit the base-case and then evaluate $3 * (2 * (1 * 1))$ to get $6$.
+\end{Example}
+\newpage
+
+\noindent
+If we aren't careful, step three of our derivation in Example (\ref{ex:factorial-y}) could lead to an infinite loop:
+
+\begin{Def}[Strict vs. Lazy Evaluation]
+
+    \label{def:strict-vs-lazy}
+    \noindent
+    \textbf{Strict evaluation} means that all arguments to a function are evaluated before the function is applied, i.e., CBV (call-by-value).
+
+    \noindent
+    \textbf{Lazy evaluation} means that an argument to a function is not evaluated until it is actually used in the body of the function, i.e., CBN (call-by-name).
+\end{Def}
+
+\begin{theo}[Y-Combinator \& Lazy-Evaluation]
+
+    \label{theo:y-combinator-lazy}
+    \noindent
+    The Y-combinator only works in lazy-evaluation settings. In strict evaluation, the Y-combinator will infinitely reduce.
+\end{theo}
+
+\noindent
+To stop this we introduce another type of combinator for eager evaluation:
+\begin{Def}[Z-Combinator]
+    
+        \label{def:z-combinator}
+        \noindent
+        The Z-combinator is a fixed-point combinator that works in strict evaluation settings:
+        \LARGE
+        \[
+        Z \;\triangleq\; 
+        \lambda f.\,\bigl(\lambda x.\,f\bigl(\lambda v.\,x\,x\,v\bigr)\bigr)
+                    \bigl(\lambda x.\,f\bigl(\lambda v.\,x\,x\,v\bigr)\bigr).
+        \]
+        \normalsize
+\end{Def}
+
+\begin{Example}[Factorial with Z-Combinator (Part-1)]
+    
+    We now define the \texttt{FACT} using the Z combinator:
+    \begin{align*}
+        \texttt{Z FACT 3} & = ((\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\, (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v)))\ 3 && (\ [\texttt{FACT}/f]\texttt{Z}\ )\\
+        & = \texttt{FACT} (\lambda v.(\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v)\ v))\ 3 && ( \text{ Application }) \\
+    \end{align*}
+
+    \vspace{-1em}
+    \noindent
+    The extra argument waiting for a value delays \texttt{Z} long enough to evaluate \texttt{FACT}:
+    \begin{align*}
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * (\lambda v.(\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ v)\ (3 - 1))) \\
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * (\lambda v.(\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ v)\ (2))) \\
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ 2 \\
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * \texttt{FACT} (\lambda v.(\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ (\lambda x.\, \texttt{FACT} (\lambda v.x\ x\ v))\ v)\ \ 2 \\
+        &= \texttt{if } 3 = 0 \texttt{ then } 1 \texttt{ else } 3 * (\texttt{Z FACT} \ 2)
+    \end{align*}
+    \noindent
+    This assumes that truthy \texttt{if} expressions don't evaluate the \texttt{else} branch.
+\end{Example}
+\noindent
+
+\newpage 
+
+\noindent
+Last example touches on the idea of short-circuiting:
+\begin{Def}[Short-Circuiting]
+
+    \label{def:short-circuiting}
+    \noindent
+    \textbf{Short-circuiting} is a semantic trick which skips additional computation of a boolean expressions 
+    if some former part of the expression is sufficient to determine the value of the entire expression.
+    For example ($\mathbb{B}$ is the set of booleans):
+    
+    \vspace{-1em}
+  
+        \[
+        \begin{matrix}
+        \begin{prooftree}
+            \hypo{e_1 \Downarrow \bot}
+            \infer1[(andEvalFalse)]{e_1 \;\&\&\; e_2 \Downarrow \bot}
+        \end{prooftree}
+        &
+        \begin{prooftree}
+            \hypo{e_1 \Downarrow \top}
+            \hypo{e_2 \Downarrow v,\; v \in \mathbb{B}}
+            \infer2[(andEvalTrue)]{e_1 \;\&\&\; e_2 \Downarrow v}
+        \end{prooftree}
+        \vspace{1em}\\ 
+
+        \begin{prooftree}
+            \hypo{e_1 \Downarrow \top}
+            \infer1[(orEvalTrue)]{e_1 \;||\; e_2 \Downarrow \top}
+        \end{prooftree}
+        &
+        \begin{prooftree}
+            \hypo{e_1 \Downarrow \bot}
+            \hypo{e_2 \Downarrow v,\; v \in \mathbb{B}}
+            \infer2[(orEvalFalse)]{e_1 \;||\; e_2 \Downarrow v}
+        \end{prooftree}
+        \vspace{1em} \\ 
+
+        \begin{prooftree}
+            \hypo{e_1 \Downarrow \top}
+            \hypo{e_2 \Downarrow v}
+            \infer2[(ifTrueEval)]{\text{if } e_1 \text{ then } e_2 \text{ else } e_3 \Downarrow v}
+        \end{prooftree}
+        &
+        \begin{prooftree}
+            \hypo{e_1 \Downarrow \bot}
+            \hypo{e_3 \Downarrow v}
+            \infer2[(ifFalseEval)]{\text{if } e_1 \text{ then } e_2 \text{ else } e_3 \Downarrow v}
+        \end{prooftree}
+        \end{matrix}
+        \]
+
+    \noindent
+    Notice that in (andEvalFalse), (orEvalTrue), and (ifTrueEval) the second expression is never evaluated. This is a form of \textbf{short-circuiting}.
+    \end{Def}
