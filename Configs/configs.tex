@@ -18,6 +18,8 @@
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 \usepackage{graphicx} % Required for including images
 
+\usepackage{stmaryrd} % for ll and rr paren
+
 % Tables
 \usepackage{multirow} % Required for creating multirow cells in tables
 \usepackage{array} % Required for creating tables
@@ -110,6 +112,12 @@
 
 \newcommand{\Div}{%
     \par\noindent\hrulefill\par
+}
+\newcommand{\llp}{
+    \llparenthesis\,
+}
+\newcommand{\rrp}{
+    \,\rrparenthesis
 }
 
 \renewcommand{\clearforchapter}{ \newpage}

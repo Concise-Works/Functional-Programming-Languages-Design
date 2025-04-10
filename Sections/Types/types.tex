@@ -177,6 +177,7 @@ To prove the above lemma we must recall structural induction:
     \end{Def}
     
 \noindent
+% Generation Lemma
 A proof of the previous lemma is as follows:
 \begin{Proof}[Lemma -- Uniqueness of Types]
 
@@ -185,12 +186,14 @@ A proof of the previous lemma is as follows:
 
     \noindent
     \textbf{Case 1:} $e = \bullet$ (unit value).  
-    Since $\bullet\Downarrow\top$ it is an atom. Therefore, $\tau_1 = \tau_2 = \top$.
+    We define a generation lemma (\textbf{*}): if $\Gamma \vdash \bullet : \tau \to \tau = \top$. Therefore, if 
+    $\Gamma \vdash \bullet : \tau_1$ and $\Gamma \vdash \bullet : \tau_2$, then $\tau_1=\tau_2=\top$, by lemma (\textbf{*}).  
     \\
 
     \noindent
-    \textbf{Case 2:} $e = x$ (a variable).  
-    Since $(x : \tau_1), (x : \tau_2) \in \Gamma$ and $\Gamma$ is fixed, $x$ maps to a single type. Thus, $\tau_1 = \tau_2$.
+    \textbf{Case 2:} $e = x$ (a variable). 
+    We define a generation lemma (\textbf{**}): $\Gamma,x\vdash \tau\to x:\tau \in \Gamma$ 
+    Since $(x : \tau_1), (x : \tau_2) \in \Gamma$ and $\Gamma$ is fixed, $x$ maps to a single type. Thus, $\tau_1 = \tau_2$, by lemma (\textbf{**}).
     \\
 
     \noindent
