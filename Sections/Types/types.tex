@@ -80,8 +80,10 @@ x ::= & \textit{variables}
 \noindent
 This brings us to the typing rules for STLC:
 
+
 \begin{Def}[Typing Rules for STLC]
 
+    \label{def:stlc-typing-rules}
     \textbf{Typing Rules:} The typing rules for STLC are as follows:
     \[
 \begin{array}{cc}
@@ -214,5 +216,510 @@ A proof of the previous lemma is as follows:
     Hence, by induction on the typing derivation, the type assigned to any expression is unique.
 
     \end{Proof}
+
+    \newpage 
+
+    \noindent
+    We continue with the following theorems:
         
+    \begin{theo}[Well-Typed Implies Well-Scoped]
+
+        If $e$ is well-typed in $\Gamma$, then $e$ is well-scoped.
+    \end{theo}
+
+    \begin{Proof}[Well-Typed Implies Well-Scoped]
+
+        We prove this by induction on the structure of a well-formed expression $e$:
+        \begin{itemize}
+            \item Base cases: $e = \bullet$ or $e = x$ (variable), as based on Definition (\ref{def:stlc-typing-rules}), maps to a single type. Hence, they are well-typed.
+            \item Inductive cases:
+            \begin{itemize}
+                \item $e = \lambda x^{\tau}. e'$: The abstraction argument $x$ is bound and explicitly typed. By the inductive hypothesis, $e'$ is well-typed in $\Gamma, x : \tau$.
+                \item $e = e_1\, e_2$: Expression $e_1$ must be a function type $\tau' \to \tau_1$ and $e_2$ must be of type $\tau'$. By the inductive hypothesis, both $e_1$ and $e_2$ are well-typed in $\Gamma$.
+            \end{itemize}
+        \end{itemize}
+
+        \noindent
+        Therefore by induction, if $e$ is well-typed, then all sub-expressions must also be bound, and hence well-scoped.
+    \end{Proof}
+        
+    \noindent
+    We've been assuming the following properties of our evaluation relation:
+    \begin{theo}[Big-Step Soundness]
+
+        If $\cdot \vdash e : \tau$ then there is a value $v$ such that $\langle \varnothing, e \rangle \Downarrow v$ and $\cdot \vdash v : \tau$.
+        \end{theo}
+        
+        \noindent
+        Or to be more specific with small-step evaluation:
+    \begin{theo}[Progress \& Preservation]
+
+    If $\cdot \vdash e : \tau$, then
+    \begin{itemize}
+        \item \textbf{(Progress)} Either $e$ is a value or there is an $e'$ such that $e \rightarrow e'$.
+        \item \textbf{(Preservation)} If $\cdot \vdash e : \tau$ and $e \rightarrow e'$, then $\cdot \vdash e' : \tau$.
+    \end{itemize}
+    \end{theo}
+        
+    \newpage 
+
+\begin{Proof}[Progress \& Preservation]
+
+    We prove the progress and preservation theorem by induction on the structure of a well-formed expression $e$:
+
+    \begin{itemize}
+        \item \textbf{Base cases:} $e = \bullet$, $e = x$ (well-scoped variable), or $e = \lambda x^{\tau}. e'$ are values by Definition(\ref{def:stlc-typing-rules}), so they satisfy progress and need not reduce.
+
+        \item \textbf{Inductive case:} $e = e_1\, e_2$ (application):
+
+        \begin{itemize}
+            \item \emph{Progress.} By the inductive hypothesis, either $e_1$ and $e_2$ are values, or they can take a step. 
+            If both are values, then $e_1$ must be a lambda abstraction (i.e., $\lambda x^{\tau}. e'$), and $e_1\, e_2$ can step to $[e_2 / x]e'$, given that $e'$ is the body of $e_1$. Thus, progress holds.
+
+            \item \emph{Preservation.} Suppose $\Gamma \vdash e_1\, e_2 : \tau$. Then by inversion, $\Gamma \vdash e_1 : \tau_1 \to \tau$ and $\Gamma \vdash e_2 : \tau_1$ for some $\tau_1$. Assume $e_1 = \lambda x^{\tau_1}. e'$. Then $e_1\, e_2 \rightarrow [e_2/x]e'$. By the typing rule for abstractions, we have $\Gamma, x : \tau_1 \vdash e' : \tau$. Then by the \emph{Substitution Lemma}:
+
+            \begin{quote}
+                If $\Gamma \vdash e_2 : \tau_1$ and $\Gamma, x:\tau_1 \vdash e' : \tau$, then $\Gamma \vdash [e_2/x]e' : \tau$.
+            \end{quote}
+
+            Therefore, $\Gamma \vdash [e_2/x]e' : \tau$, which proves preservation for this case.
+        \end{itemize}
+    \end{itemize}
+
+    \noindent
+    Hence by induction, if $e$ is well-typed, then either $e$ is a value or there exists $e'$ such that $e \rightarrow e'$, and if $e \rightarrow e'$, then $e'$ is of the same type as $e$.
+\end{Proof}
+
+\noindent
+Now for some practice: 
+\begin{Example}[Determining Type of an Expression (Part-1)]
+
+    We determine the smallest typing context $\Gamma$ for the expression $(\lambda x ^{(\top \to \top) \to \top} .\ x(\lambda z^{\top}.\ x(wz)))\ y$:
+    \begin{align*}
+         \varnothing \vdash (\lambda x ^{(\top \to \top) \to \top} .\ x(\lambda z^{\top}.\ x(wz)))\ y\ :\ ?&& \text{(Given)}\\
+         \{y: (\top \to \top)\to\top\} \vdash  (\lambda x ^{(\top \to \top) \to \top} .\ x(\lambda z^{\top}.\ x(wz)))\ y\ :\ ?&& \text{(Application Arg.)}\\
+            \{y: (\top \to \top)\to\top, x: (\top \to \top) \to \top\} \vdash x(\lambda z^{\top}.\ x(wz))\ :\ ?&& \text{(Abstraction Type Sub.)}
+    \end{align*}
+
+    \noindent
+    We note that $(\lambda z^{\top}.\ x(wz))$ must be of type $(\top \to \top)$ to satisfy $x$:
+    \begin{align*}
+        \{y: (\top \to \top)\to\top, x: (\top \to \top) \to \top, z: \top\} \vdash x(wz)\ :\ ?&& \text{(Application Arg.)}
+    \end{align*}
+
+    \noindent
+    We see $(wz)$ must be type $(\top \to \top)$ as well. We know $z$ is of type $\top$, therefore $w$ must accept such type. In addition, 
+    $w$ must return type $(\top \to \top)$ for the application of $x$ to be valid. Hence, we conclude:
+    
+    $$\Gamma := \{y: (\top \to \top)\to\top, x: (\top \to \top) \to \top, z: \top, w: \top \to (\top \to \top)\}$$
+
+    \noindent
+    Since $x$ is the outermost abstraction, we can conclude that the output type is $\top$.
+\end{Example}
+
+\newpage 
+
+\begin{Example}[Typing an Ocaml Expression]
+    
+    We find the typing context $\Gamma$ for the following expressions:
+    \begin{lstlisting}[language=OCaml, numbers=none, mathescape=true]
+    (*1*) fun f -> fun x -> f (x + 1)      : ?
+    (*2*) let rec f x = f (f (x + 1)) in f : ?
+    \end{lstlisting}
+    
+    \noindent
+    1. We note the application of $f\ (x + 1)$. Therefore, $f$ must be an (\texttt{int}$\to$\texttt{?}), as addition returns an \texttt{int}. Subsequently,
+    the $x$ used in such addition and the function argument, must also be an \texttt{int}. The rest of the expression (\texttt{f (x + 1)}) is some arbitrary type \texttt{'a}. 
+    Hence:
+    $$\Gamma := \{f: \texttt{int} \to \texttt{'a}, x: \texttt{int}\}$$
+    \noindent
+    With a final type of \texttt{(int -> 'a) -> int -> 'a} for the entire expression.\\
+
+    \noindent
+    2. Again, we note the application of $f\ (x + 1)$. Therefore, $f$ must be an (\texttt{int}$\to$\texttt{?}). This function is enclosed
+    within another $f$ yielding $f(f(x+1))$, therefore, $f$ must return an \texttt{int} to satisfy the outer $f$. Hence, we conclude $\Gamma$ as: 
+
+    $$\Gamma := \{f: \texttt{int} \to \texttt{int}, x: \texttt{int}\}$$
+
+\end{Example}
+
+\subsection{Polymorphism}
+
+\noindent
+There are moments when we might redundantly define functions such as:
+
+\begin{lstlisting}[language=OCaml, numbers=none]
+    let rec rev_int (l : int list) : int list =
+        match l with
+        | [] -> []
+        | x :: l -> rev l @ [x]
+    let rec rev_string (l : string list) : string list =
+        match l with
+        | [] -> []
+        | x :: l -> rev l @ [x]
+\end{lstlisting}
+
+\noindent
+Here we have two functions that are identical in structure, but differ in type.
+
+\begin{Def}[Polymorphism]
+
+    \textbf{Polymorphism} is the ability of a function to operate on values of different types while using a single uniform interface (signature).
+    There are two types:
+    \begin{itemize}
+        \item \textbf{Ad hoc:} The ability to \textbf{overload} (redefine) a function name to accept different types.
+        \item \textbf{Parametric:} The ability to define a function that can accept any type as an argument, and return a value of the same type.
+    \end{itemize}
+\end{Def}
+
+\newpage
+\noindent
+We will focus on \textbf{parametric polymorphism}, as simply overloading in OCaml redefines the function name.
+An example of a parametric polymorphic function in OCaml is the identity function:
+\begin{lstlisting}[language=OCaml, numbers=none]
+    let id = fun x -> x (* 'a -> 'a *)
+    let a = id 0        (* int *)
+    let b = id (0 = 0)  (* bool *)
+    let c = id id       (* (int -> int) *)
+\end{lstlisting}
+
+\begin{Def}[Polymorphism vs Type Inference]
+
+    Polymorphism and type inference are distinct concepts: \textbf{polymorphism} allows a function to work uniformly over many types, while \textbf{type inference} is the compiler's ability to deduce types automatically. Polymorphism does not require inference, and \textbf{inference does not imply polymorphism}.\\
+
+    \noindent
+    Additionally, Parametric Polymorphism \textbf{cannot be used for dispatch} (inspecting types at runtime). 
+    \end{Def}
+    
+    \noindent
+    To implement such, there are two main systems:
+    \begin{Def}[Implementing Polymorphism]
+
+        Parametric polymorphism can be implemented in two main ways:
+        \begin{itemize}
+            \item \textbf{Hindley-Milner (OCaml):} Automatically infer the most general polymorphic type for an expression, without requiring explicit type annotations.
+            \item \textbf{System F (Second-Order $\lambda$-Calculus):} Extend the language to take types as explicit arguments in functions.
+        \end{itemize}
+        Both approaches introduce the concept of a \textbf{type variable}, representing an unknown or arbitrary type.
+        For example:
+        \begin{lstlisting}[language=OCaml, numbers=none]
+    let id : 'a -> 'a = fun x -> x
+        \end{lstlisting}
+
+        \noindent
+        Here \texttt{'a} is a type variable, and the function \texttt{id} can accept any type as an argument and return a value of the same type.
+    \end{Def}
+
+    \noindent
+    Though we will focus on OCaml, we discuss System F briefly.
+
+    \newpage 
+    \noindent
+    
+    \begin{Def}[Quantification]
+
+        A polymorphic type like \texttt{'a -> 'a} is read as: 
+        \large
+        \begin{center}
+            ``for any type \texttt{'a}, this function has type \texttt{'a -> 'a}.'' 
+        
+        \end{center}
+        \normalsize
+
+        \noindent
+        Also notated as: \texttt{'a . 'a -> 'a},\ or,\ $\forall \alpha.\alpha \to \alpha$
+    \end{Def}
+
+    \noindent
+    System F expands on this idea, providing extended syntax:
+        
+    \begin{Def}[System F Syntax]
+
+        The following is System F syntax:
+        \begin{lstlisting}[numbers=none, mathescape=true, escapeinside={(*}{*)}]
+            e ::=  (*$\bullet$*)  |  x  |  (*$\lambda x^\tau. e$*)  |  e e  |  (*$\Lambda \alpha. e$*)  |  e (*$\tau$*)
+            (*$\tau$*) ::=  (*$\top$*)  |  (*$\tau \to \tau$*)  |  (*$\alpha$*)  |  (*$\forall \alpha. \tau$*)
+            x ::= variables
+            (*$\alpha$*) ::= type variables
+        \end{lstlisting}
+
+        \noindent
+    Notably: $\Lambda$ (capital lambda) refers to type variables in the same way $\lambda$ refers to expression variables. Moreover,
+    $e$ and $\tau$ are expressions and types respectively.
+    \end{Def}
+
+    \begin{Def}[Polymorphic Identity Function]
+
+        The identity function $\lambda x.x$ can be expressed in System F as a polymorphic function:
+        \large 
+        \[
+        id \triangleq \Lambda \alpha. \lambda x^{\alpha}. x
+        \]
+        \normalsize
+
+        \noindent
+        This motivates application: ($id\ \tau) \rightarrow^\star (\lambda x^\tau.x):\tau\to\tau$. Note $\Lambda\alpha$ is dropped after substitution.
+    \end{Def}
+
+    \begin{Def}[System F Typing Rules]
+
+        The typing rules for System F are as follows:
+        \begin{center}
+            \begin{prooftree}
+                \hypo{}
+                \infer1
+                {\Gamma \vdash \bullet : \top}
+            \end{prooftree}
+            \quad
+            \begin{prooftree}
+                \hypo{(x : \tau) \in \Gamma}
+                \infer1
+                {\Gamma \vdash x : \tau}
+            \end{prooftree}
+            \quad
+            \begin{prooftree}
+                \hypo{\Gamma, x : \tau \vdash e : \tau'}
+                \infer1
+                {\Gamma \vdash \lambda x^\tau . e : \tau \to \tau'}
+            \end{prooftree}
+            \quad
+            \begin{prooftree}
+                \hypo{\Gamma \vdash e_1 : \tau \to \tau'}
+                \hypo{\Gamma \vdash e_2 : \tau}
+                \infer2
+                {\Gamma \vdash e_1 e_2 : \tau'}
+            \end{prooftree}
+            \end{center}
+            
+            \vspace{1em}
+            
+            \begin{center}
+            \begin{prooftree}
+                \hypo{\Gamma \vdash e : \tau}
+                \hypo{\alpha \text{ not free in } \Gamma}
+                \infer2[(var abstr.)]
+                {\Gamma \vdash \Lambda \alpha . e : \forall \alpha . \tau}
+            \end{prooftree}
+            \quad
+            \begin{prooftree}
+                \hypo{\Gamma \vdash e : \forall \alpha . \tau}
+                \hypo{\tau' \text{ is a type}}
+                \infer2[(type app.)]
+                {\Gamma \vdash e \tau' : [\tau' / \alpha] \tau}
+            \end{prooftree}
+            \end{center}
+            \noindent
+            Unit, variable, abstraction, application, type abstraction, and type application respectively.
+        \end{Def}            
+
+\newpage
+
+\noindent
+Now to define how we handle our substitution:
+
+\begin{Def}[System F Substitution]
+
+    The rules for substitution in System F are as follows:
+   
+    \[  \hspace{-4.8em}
+[\tau/\alpha]\, \top = \top
+\]
+
+\[
+[\tau/\alpha]\, \alpha' =
+\begin{cases}
+    \tau     & \alpha' = \alpha \\
+    \alpha'  & \texttt{else}
+\end{cases}
+\]
+
+\[
+\hspace{-.8em}
+[\tau/\alpha](\tau_1 \to \tau_2) = [\tau/\alpha]\tau_1 \to [\tau/\alpha]\tau_2
+\]
+
+\[
+\hspace{8.8em}
+[\tau/\alpha](\forall \alpha' . \tau') =
+\begin{cases}
+    \forall \alpha' . \tau' & \alpha' = \alpha \\
+    \forall \beta . [\tau/\alpha][\beta/\alpha']\tau' & \texttt{else } (\beta \text{ is fresh})
+\end{cases}
+\]
+\end{Def}
+    
+\begin{Example}[Typing a System F Expression]
+
+    \label{ex:system-f-typing}
+    We derive the type of
+    $(\Lambda \alpha . \lambda x^\alpha . x)\ (\top \to \top)\ \lambda x^\top . x
+    $ in System F (read from bottom to top):
+    
+    \vspace{2em}
+    \resizebox{.9\textwidth}{!}{%
+    \begin{prooftree}
+        \infer0{\{ x : \alpha \} \vdash x : \alpha}
+        % Abs rule
+        \infer1{\cdot\vdash \lambda x^\alpha . x : \alpha \to \alpha}
+        % TyAbs rule
+        \infer1{\cdot\vdash \Lambda \alpha . \lambda x^\alpha . x : \forall \alpha. \alpha \to \alpha}
+        \Infer1{\textcolor{blue}{\cdot \vdash (\Lambda \alpha . \lambda x^\alpha . x)\ (\top \to \top) : (\top \to \top) \to (\top \to \top)}}
+        \infer0{\{ x : \top \} \vdash x : \top}
+        \Infer1{\textcolor{red}{\cdot \vdash \lambda x^\top . x : \top \to \top}}
+        \infer2{\cdot \vdash (\Lambda \alpha . \lambda x^\alpha . x)\ (\top \to \top)\ \lambda x^\top . x : \top \to \top}
+    \end{prooftree}
+
+}
+    
+    \end{Example}
+    \newpage 
+
+\noindent
+% \DTsetlength{offset}{width}{sep}{rule-width}{dot-size}
+\DTsetlength{.2em}{1.5em}{.2em}{0.4pt}{0pt}
+
+\noindent
+We switch from doing bottom up proof trees, to a top down file tree structure to save on space:
+\begin{Def}[File Tree Derivations]
+
+    Given the above Example (\ref{ex:system-f-typing}), we represent it as a file tree:
+
+    \noindent
+    \rule{\textwidth}{0.4pt}
+    \vspace{1em}
+    \LARGE
+    \dirtree{%
+    .1 \ensuremath{\cdot \vdash (\Lambda \alpha . \lambda x^\alpha . x)\ (\top \to \top)\ \lambda x^\top . x : \top \to \top}.
+    .2 \ensuremath{\textcolor{red}{\cdot \vdash \lambda x^\top . x : \top \to \top}}.
+    .3 \ensuremath{\{ x : \top \} \vdash x : \top}.
+    .2 \ensuremath{\textcolor{blue}{\cdot \vdash (\Lambda \alpha . \lambda x^\alpha . x)\ (\top \to \top) : (\top \to \top) \to (\top \to \top)}}.
+    .3 \ensuremath{\cdot \vdash \Lambda \alpha . \lambda x^\alpha . x : \forall \alpha. \alpha \to \alpha}.
+    .4 \ensuremath{\cdot \vdash \lambda x^\alpha . x : \alpha \to \alpha}.
+    .5 \ensuremath{\{ x : \alpha \} \vdash x : \alpha}.
+    }
+    \normalsize
+
+    \vspace{1em}
+    \noindent
+    \rule{\textwidth}{0.4pt}\\
+
+
+    \noindent
+    Where the conclusion is the root node, each directory level defines the premises 
+    for the parent node, and the leaf nodes are the base cases.
+\end{Def}
+    
+\noindent
+
+\begin{Def}[Hindley-Milner Type Systems Corollary]
+
+    \textbf{A Hindley-Milner (HM)} enables automatic type inference of polymorphic types of non-explicitly typed expressions.
+    It supports a limited form of polymorphism where type variables are always quantified at the outermost level (e.g., $\forall \alpha.\forall \beta.\alpha \to \beta$, not $\forall \alpha.\alpha.\to \forall \beta.\beta$).
+    
+    These systems power languages like OCaml and Haskell, and make type inference both \textbf{decidable} and fairly \textbf{efficient}.
+    \end{Def}
+
+\noindent
+HM does this by employing a constraint-based approach to type inference:
+\begin{Def}[Type Inference with Constraints]
+
+    In Hindley-Milner type inference, we aim to assign the most general type $\tau$ to an expression $e$, while collecting a set of constraints $\mathcal{C}$ that must hold for $\tau$ to be valid.
+    If the type of a subexpression is unknown, we generate a fresh type variable to stand in for it.
+    
+    \vspace{-1em}
+    \LARGE
+    \[
+    \Gamma \vdash e : \tau \dashv \mathcal{C}
+    \]
+    \normalsize
+    
+    \noindent
+    Meaning, under context $\Gamma$, expression $e$ has type $\tau$ if constraints $\mathcal{C}$ are satisfied.
+\end{Def}
+
+\newpage 
+
+
+\noindent
+What are constraints?
+
+\begin{Def}[Type Constraint and Unification]
+
+    A \textbf{type constraint} is a requirement that two types must be equal. We write this as:
+    
+    \vspace{-1.5em}
+    \LARGE
+    \[
+    \tau_1 \doteq \tau_2
+    \]
+    \normalsize
+    
+    \noindent
+    This means ``\(\tau_1\) should be the same as \(\tau_2\).''
+    Solving such a constraint—i.e., making \(\tau_1\) and \(\tau_2\) equal—is called \textbf{unification}.
+    In particular, we are unifying $\tau_1$ and $\tau_2$.
+    \end{Def}
+    
+\noindent
+For now we introduce a reduced form of HM:
+\begin{Def}[Hindly-Milner$^-$ Typing]
+
+    \textbf{Hindley-Milner$^-$} is a simplified version of Hindley-Milner type inference, where we only consider the following typing rules:
+
+        \begin{center}
+        \begin{prooftree}
+            \hypo{n \text{ is an integer}}
+            \infer1[(int)]{\Gamma \vdash n : \texttt{int} \dashv \varnothing}
+        \end{prooftree}
+        
+        \vspace{1.5em}
+        \begin{prooftree}
+            \hypo{\Gamma \vdash e_1 : \tau_1 \dashv \mathcal{C}_1}
+            \hypo{\Gamma \vdash e_2 : \tau_2 \dashv \mathcal{C}_2}
+            \infer2[(add)]{\Gamma \vdash e_1 + e_2 : \texttt{int} \dashv \tau_1 \doteq \texttt{int},\ \tau_2 \doteq \texttt{int},\ \mathcal{C}_1,\ \mathcal{C}_2}
+        \end{prooftree}
+        
+        \vspace{1.5em}
+        \begin{prooftree}
+            \hypo{\Gamma \vdash e_1 : \tau_1 \dashv \mathcal{C}_1}
+            \hypo{\Gamma \vdash e_2 : \tau_2 \dashv \mathcal{C}_2}
+            \infer2[(eq)]{\Gamma \vdash e_1 = e_2 : \texttt{bool} \dashv \tau_1 \doteq \tau_2,\ \mathcal{C}_1,\ \mathcal{C}_2}
+        \end{prooftree}
+        
+        \vspace{1.5em}
+        \begin{prooftree}
+            \hypo{\Gamma \vdash e_1 : \tau_1 \dashv \mathcal{C}_1}
+            \hypo{\Gamma \vdash e_2 : \tau_2 \dashv \mathcal{C}_2}
+            \hypo{\Gamma \vdash e_3 : \tau_3 \dashv \mathcal{C}_3}
+            \infer3[(if)]{
+                \Gamma \vdash \texttt{if } e_1 \texttt{ then } e_2 \texttt{ else } e_3 : \tau_3 \dashv \tau_1 \doteq \texttt{bool},\ \tau_2 \doteq \tau_3,\ \mathcal{C}_1,\ \mathcal{C}_2,\ \mathcal{C}_3
+            }
+        \end{prooftree}
+        
+        \vspace{1.5em}
+        \begin{prooftree}
+            \hypo{\alpha \text{ is fresh} \quad \Gamma, x : \alpha \vdash e : \tau \dashv \mathcal{C}}
+            \infer1[(fun)]{\Gamma \vdash \lambda x . e : \alpha \to \tau \dashv \mathcal{C}}
+        \end{prooftree}
+        
+        \vspace{1.5em}
+        \begin{prooftree}
+            \hypo{\Gamma \vdash e_1 : \tau_1 \dashv \mathcal{C}_1}
+            \hypo{\Gamma \vdash e_2 : \tau_2 \dashv \mathcal{C}_2 \quad \alpha \text{ is fresh}}
+            \infer2[(app)]{\Gamma \vdash e_1\ e_2 : \alpha \dashv \tau_1 \doteq \tau_2 \to \alpha,\ \mathcal{C}_1,\ \mathcal{C}_2}
+        \end{prooftree}
+        
+        \vspace{1.5em}
+        \begin{prooftree}
+            \hypo{(x : \forall \alpha_1 \ldots \forall \alpha_k . \tau) \in \Gamma \quad \beta_1, \ldots, \beta_k \text{ are fresh}}
+            \infer1[(var)]{
+                \Gamma \vdash x : [\beta_1/\alpha_1] \ldots [\beta_k/\alpha_k]\tau \dashv \varnothing
+            }
+        \end{prooftree}
+        \end{center}
+        
+
+\end{Def}
+        
+    
     
