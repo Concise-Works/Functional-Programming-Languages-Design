@@ -614,7 +614,7 @@ We switch from doing bottom up proof trees, to a top down file tree structure to
 \begin{Def}[Hindley-Milner Type Systems Corollary]
 
     \textbf{A Hindley-Milner (HM)} enables automatic type inference of polymorphic types of non-explicitly typed expressions.
-    It supports a limited form of polymorphism where type variables are always quantified at the outermost level (e.g., $\forall \alpha.\forall \beta.\alpha \to \beta$, not $\forall \alpha.\alpha.\to \forall \beta.\beta$).
+    It supports a limited form of polymorphism where type variables are always quantified at the outermost level (e.g., $\forall \alpha.\forall \beta.\alpha \to \beta$, not $\forall \alpha.\alpha.\to \forall \beta.\beta\to\alpha$).
     
     These systems power languages like OCaml and Haskell, and make type inference both \textbf{decidable} and fairly \textbf{efficient}.
     \end{Def}
@@ -655,16 +655,62 @@ What are constraints?
     \normalsize
     
     \noindent
-    This means ``\(\tau_1\) should be the same as \(\tau_2\).''
-    Solving such a constraint—i.e., making \(\tau_1\) and \(\tau_2\) equal—is called \textbf{unification}.
+    This means ``$\tau_1$ should be the same as $\tau_2$.''
+    Solving such a constraint—i.e., making $\tau_1$ and $\tau_2$ equal—is called \textbf{unification}.
     In particular, we are unifying $\tau_1$ and $\tau_2$.
     \end{Def}
     
 \noindent
-For now we introduce a reduced form of HM:
-\begin{Def}[Hindly-Milner$^-$ Typing]
 
-    \textbf{Hindley-Milner$^-$} is a simplified version of Hindley-Milner type inference, where we only consider the following typing rules:
+\noindent
+Next, to introduce Hindley-Milner syntax: 
+\begin{Def}[Expressions and Types in Hindley-Milner]
+
+    We define the syntax of expressions and types under the Hindley-Milner type system:
+    
+    \begin{lstlisting}[numbers=none, mathescape=true, escapeinside={(*}{*)}]
+        e ::=  (*$\lambda x. e$*)  |  (*$e\ e$*) 
+            |  let (*$x = e$*) in (*$e$*) 
+            |  if (*$e$*) then (*$e$*) else (*$e$*) 
+            |  (*$e + e$*)  |  (*$e = e$*) 
+            |  (*$n$*) 
+            |  (*$x$*)
+
+        (*$\sigma$*) ::= int  |  bool  |  (*$\alpha$*)  |  (*$\sigma \to \sigma$*)  (monotypes)
+        
+        (*$\tau$*) ::= (*$\sigma$*)  |  (*$\forall \alpha. \tau$*)                    (type schemes)
+    \end{lstlisting}
+    
+    \noindent
+    \textbf{Monotypes} ($\sigma$), are types without any quantification. A type is called \textbf{monomorphic} if it is a monotype
+    with no type variables.\\
+    
+    \noindent
+    \textbf{Type schemes} ($\tau$), allow quantification over type variables via the $\forall$ operator. These represent \textbf{polymorphic types}, and a type is polymorphic if it is a closed type scheme; Meaning,
+    it contains no free type variables.
+    
+    \end{Def}
+
+\begin{Example}[OCaml Quantification]
+
+    OCaml is a Hindley-Milner type system, and it allows for polymorphic types. For example, the identity function can be expressed as:
+    \begin{lstlisting}[language=OCaml, numbers=none]
+        let id : 'a . 'a -> 'a = fun x -> x
+    \end{lstlisting}
+    
+    \noindent
+    When placed in utop it returns:
+    \begin{lstlisting}[language=OCaml, numbers=none]
+        val id : 'a -> 'a = <fun>
+    \end{lstlisting}
+\end{Example}
+    
+\newpage
+\noindent 
+For now we introduce a reduced form of the Hindley-Milner typing rules:
+\begin{Def}[Hindly-Milner Light]
+
+    \textbf{Hindley-Milner Light (HM$^-$)} contains the following typing rules:
 
         \begin{center}
         \begin{prooftree}
@@ -716,10 +762,31 @@ For now we introduce a reduced form of HM:
                 \Gamma \vdash x : [\beta_1/\alpha_1] \ldots [\beta_k/\alpha_k]\tau \dashv \varnothing
             }
         \end{prooftree}
+        
+        \vspace{1.5em}  
+        \begin{prooftree}
+            \hypo{\Gamma \vdash e_1 : \tau_1 \dashv \mathcal{C}_1}
+            \hypo{\Gamma, x : \tau_1 \vdash e_2 : \tau_2 \dashv \mathcal{C}_2}
+            \infer2[(let)]{\Gamma \vdash \texttt{let } x = e_1\ \texttt{in } e_2 : \tau_2 \dashv \mathcal{C}_1, \mathcal{C}_2}
+          \end{prooftree}
+          
         \end{center}
         
+        \vspace{1em}
+        \noindent 
+        This differs from the actual Hindley-Milner typing rules as our (let) is not polymorphic.\\
+        
+        \noindent
+        The (add) rule reads, given a fixed-context $\Gamma$, if we have integer addition of two expressions $e_1$ and $e_2$, we inspect their types left to right;
+        $e_1$ is of type $\tau_1$ under constraints $\mathcal{C}_1$. Such constraints may arise if $e_1$ is complex (e.g., it's another addition which returns its own constraints; Otherwise, if it is an monotype (base-case), the constraint is empty).
+        Then we do the same for $e_2$.Finally, me make the declaration that $\tau_1$ and $\tau_2$ must be of type \texttt{int} (i.e., $\tau_1 \doteq \texttt{int}$ and $\tau_2 \doteq \texttt{int}$), and then union any accumulated constraints from both expressions.\\
+
+        \noindent
+        The (var) case reads that for
+        any arbitrary number of quantifiers (typing-scheme, $\forall \alpha_1 \ldots \forall \alpha_k . \tau$), we substitute a fresh type variable $\beta_i$ for each $\alpha_i$.
+        Therefore for expressions such as, ``\texttt{if} $e_1$ \texttt{then} $e_2$ \texttt{else} $e_3$,'' our place-holder $\tau_1, \tau_2, \tau_3$ types do not conflict with each other.
 
 \end{Def}
         
     
-    
+\newpage 
