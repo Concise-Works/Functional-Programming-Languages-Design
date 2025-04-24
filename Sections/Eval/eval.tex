@@ -499,7 +499,8 @@ Now we define the semantics of substitution:
     \normalsize
     The middle condition avoids
     this by swapping in a \textbf{fresh variable} $z$ that does not have any
-    conflicts in the body. \textbf{E.g.,} $[v/x](\lambda y.x(\lambda z.y)) $, $y\in FV(v)$, ignoring freshness of $z$:
+    conflicts in the body. \textbf{E.g.,} $[v/x](\lambda y.x(\lambda z.y)) $, $y\in FV(v)$; Observe what happens when we 
+    swap out every $y$ for $z$ ignoring the freshness of $z$:
     
     \vspace{-1em}
     \LARGE
