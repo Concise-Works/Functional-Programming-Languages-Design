@@ -70,11 +70,11 @@ EBNF includes the following additional constructs:
     \item \texttt{(\ldots )} — grouping: used to group sequences or alternatives.
     \begin{itemize}
         \item \textbf{E.g.,} \snippet{<sum> ::= <number> {("+" | "-") <number>}}, matches:
-        \item [>] \texttt{"1 + 2 - 3"}, \texttt{"-1 + 2"}, \texttt{"5"}
+        \item [>] \texttt{"1 + 2 - 3"}, \texttt{"-1 + 2"}
         \end{itemize}
     \item \texttt{"\ldots"} — terminal strings may be written in quotes. This clears ambiguity between terminal and non-terminal symbols.
     \begin{itemize}
-        \item \textbf{E.g.,} in \snippet{<digit> ::= A | B | C}, it's clear that A, B, and C refer to non-terminal symbols. However, in the expression \snippet{<expr> ::= <expr> | "(" <expr> ")"}, the parenthesis are \textbf{crucial} in indicating that it is not grouping notation.
+        \item \textbf{E.g.,} in \snippet{<digit> ::= A | B | C}, it's clear that A, B, and C refer to terminal symbols. However, in the expression \snippet{<expr> ::= <expr> | "(" <expr> ")"}, the parenthesis are \textbf{crucial} in indicating that it is not grouping notation.
     \end{itemize}
 \end{itemize}
 \end{Def}

@@ -51,7 +51,8 @@ Here, we now introduce \textbf{Small-step semantics}:
     \]
     \normalsize
     \noindent
-    This rule states that if the $e_1$ position is reducible ($e_1\to e_1'$), reduce it first.
+    This rule states that if the $e_1$ position is reducible ($e_1\to e_1'$), reduce it first. \textbf{Additionally},
+    $\epsilon$ (epsilon), e.g., $\langle \varnothing, \epsilon\rangle$ is the empty program with an empty state.
 
 \end{Def}
 
@@ -498,7 +499,8 @@ Now we define the semantics of substitution:
     \normalsize
     The middle condition avoids
     this by swapping in a \textbf{fresh variable} $z$ that does not have any
-    conflicts in the body. \textbf{E.g.,} $[v/x](\lambda y.x(\lambda z.y)) $, $y\in FV(v)$, ignoring freshness of $z$:
+    conflicts in the body. \textbf{E.g.,} $[v/x](\lambda y.x(\lambda z.y)) $, $y\in FV(v)$; Observe what happens when we 
+    swap out every $y$ for $z$ ignoring the freshness of $z$:
     
     \vspace{-1em}
     \LARGE
