@@ -263,10 +263,14 @@ A proof of the previous lemma is as follows:
         
     \newpage 
 
+\begin{Note}
+\textbf{Note:} The following use of the word ``\textbf{inversion}'', refers to reversing/backtracking the typing rule to recover the original premises.
+\end{Note}
+
+\vspace{-.5em}
 \begin{Proof}[Progress \& Preservation]
 
-    We prove the progress and preservation theorem by induction on the structure of a well-formed expression $e$:
-
+    We prove progress and preservation via structural induction on a well-formed expression $e$:
     \begin{itemize}
         \item \textbf{Base cases:} $e = \bullet$, $e = x$ (well-scoped variable), or $e = \lambda x^{\tau}. e'$ are values by Definition(\ref{def:stlc-typing-rules}), so they satisfy progress and need not reduce.
 
@@ -279,10 +283,10 @@ A proof of the previous lemma is as follows:
             \item \emph{Preservation.} Suppose $\Gamma \vdash e_1\, e_2 : \tau$. Then by inversion, $\Gamma \vdash e_1 : \tau_1 \to \tau$ and $\Gamma \vdash e_2 : \tau_1$ for some $\tau_1$. Assume $e_1 = \lambda x^{\tau_1}. e'$. Then $e_1\, e_2 \rightarrow [e_2/x]e'$. By the typing rule for abstractions, we have $\Gamma, x : \tau_1 \vdash e' : \tau$. Then by the \emph{Substitution Lemma}:
 
             \begin{quote}
-                If $\Gamma \vdash e_2 : \tau_1$ and $\Gamma, x:\tau_1 \vdash e' : \tau$, then $\Gamma \vdash [e_2/x]e' : \tau$.
+                If $\Gamma \vdash e_2 : \tau_1$ and $\Gamma, x:\tau_1 \vdash e' : \tau$, then $\Gamma \vdash [e_2/x]e' : \tau$
             \end{quote}
 
-            Therefore, $\Gamma \vdash [e_2/x]e' : \tau$, which proves preservation for this case.
+            We have, $\Gamma \vdash [e_2/x]e' : \tau$, which proves preservation for this case.
         \end{itemize}
     \end{itemize}
 
@@ -290,8 +294,7 @@ A proof of the previous lemma is as follows:
     Hence by induction, if $e$ is well-typed, then either $e$ is a value or there exists $e'$ such that $e \rightarrow e'$, and if $e \rightarrow e'$, then $e'$ is of the same type as $e$.
 \end{Proof}
 
-\noindent
-Now for some practice: 
+\vspace{-.5em}
 \begin{Example}[Determining Type of an Expression (Part-1)]
 
     We determine the smallest typing context $\Gamma$ for the expression $(\lambda x ^{(\top \to \top) \to \top} .\ x(\lambda z^{\top}.\ x(wz)))\ y$:
@@ -329,11 +332,11 @@ Now for some practice:
     
     \noindent
     1. We note the application of $f\ (x + 1)$. Therefore, $f$ must be an (\texttt{int}$\to$\texttt{?}), as addition returns an \texttt{int}. Subsequently,
-    the $x$ used in such addition and the function argument, must also be an \texttt{int}. The rest of the expression (\texttt{f (x + 1)}) is some arbitrary type \texttt{'a}. 
+    the $x$ used in such addition and the function argument, must also be an \texttt{int}. Instead of leaving (\texttt{f (x + 1)})'s type as ?, we give it some arbitrary type \texttt{'a}. 
     Hence:
     $$\Gamma := \{f: \texttt{int} \to \texttt{'a}, x: \texttt{int}\}$$
     \noindent
-    With a final type of \texttt{(int -> 'a) -> int -> 'a} for the entire expression.\\
+    With a final type of \texttt{(int -> 'a) -> int -> 'a} for the entire expression. As we pass the type of $f$, then $x$, and our body returns the $\texttt{'a}$.\\
 
     \noindent
     2. Again, we note the application of $f\ (x + 1)$. Therefore, $f$ must be an (\texttt{int}$\to$\texttt{?}). This function is enclosed
@@ -388,7 +391,7 @@ An example of a parametric polymorphic function in OCaml is the identity functio
     Polymorphism and type inference are distinct concepts: \textbf{polymorphism} allows a function to work uniformly over many types, while \textbf{type inference} is the compiler's ability to deduce types automatically. Polymorphism does not require inference, and \textbf{inference does not imply polymorphism}.\\
 
     \noindent
-    Additionally, Parametric Polymorphism \textbf{cannot be used for dispatch} (inspecting types at runtime). 
+    Additionally, Parametric Polymorphism \textbf{cannot be used for dispatch} (inspecting types at runtime) as it is statically typed (types don't change at run-time).
     \end{Def}
     
     \noindent
@@ -693,13 +696,13 @@ Next, to introduce Hindley-Milner syntax:
 
 \begin{Example}[OCaml Quantification]
 
-    OCaml is a Hindley-Milner type system, and it allows for polymorphic types. For example, the identity function can be expressed as:
+    OCaml utilizes the Hindley-Milner type system, enabling polymorphic types. For example, the identity function can be expressed as:
     \begin{lstlisting}[language=OCaml, numbers=none]
         let id : 'a . 'a -> 'a = fun x -> x
     \end{lstlisting}
     
     \noindent
-    When placed in utop it returns:
+    When placed in utop it returns (the quantifier is implicit):
     \begin{lstlisting}[language=OCaml, numbers=none]
         val id : 'a -> 'a = <fun>
     \end{lstlisting}
@@ -780,16 +783,84 @@ For now we introduce a reduced form of the Hindley-Milner typing rules:
         \noindent
         The (add) rule reads, given a fixed-context $\Gamma$, if we have integer addition of two expressions $e_1$ and $e_2$, we inspect their types left to right;
         $e_1$ is of type $\tau_1$ under constraints $\mathcal{C}_1$. Such constraints may arise if $e_1$ is complex (e.g., it's another addition which returns its own constraints; Otherwise, if it is an monotype (base-case), the constraint is empty).
-        Then we do the same for $e_2$.Finally, we make the declaration that $\tau_1$ and $\tau_2$ must be of type \texttt{int} (i.e., $\tau_1 \doteq \texttt{int}$ and $\tau_2 \doteq \texttt{int}$), and then union any accumulated constraints from both expressions.\\
+        Then we do the same for $e_2$. Finally, we make the declaration that $\tau_1$ and $\tau_2$ must be of type \texttt{int} (i.e., $\tau_1 \doteq \texttt{int}$ and $\tau_2 \doteq \texttt{int}$), and then union any accumulated constraints from both expressions.\\
 
         \noindent
-        The (var) case reads that for
-        any arbitrary number of quantifiers (typing-scheme, $\forall \alpha_1 \ldots \forall \alpha_k . \tau$), we substitute a fresh type variable $\beta_i$ for each $\alpha_i$.
-        Therefore for expressions such as, ``\texttt{if} $e_1$ \texttt{then} $e_2$ \texttt{else} $e_3$,'' our place-holder $\tau_1, \tau_2, \tau_3$ types do not conflict with each other.
+        The (var) case reads that for any variable $x$ encountered, we look to our context $\Gamma$ to find its type. If it is polymorphic (quantified), we replace the quantifiers with fresh type variables.
+        If it is plainly monomorphic, we simply return its type.
 
 \end{Def}
         
+\newpage
+\noindent
+Finally to define this system's substitution behavior:
+\begin{Def}[Substitution on Monotypes]
+
+    Let \(\alpha\) be a type variable and \(\tau\) a monotype.  We define the result of substituting \(\tau\) for \(\alpha\) in any monotype \(\sigma\), written \([\tau/\alpha]\sigma\), by induction on the structure of \(\sigma\):
     
+    \[
+    \begin{array}{rcl}
+    [\tau/\alpha]\,\texttt{int}
+    &=& 
+    \texttt{int},
+    \\[6pt]
+    [\tau/\alpha]\,\texttt{bool}
+    &=& 
+    \texttt{bool},
+    \\[6pt]
+    [\tau/\alpha]\,\beta
+    &=&
+    \begin{cases}
+      \tau       & \text{if }\beta = \alpha,\\
+      \beta      & \text{otherwise},
+    \end{cases}
+    \\[12pt]
+    [\tau/\alpha](\sigma_1 \to \sigma_2)
+    &=&
+    \bigl([\tau/\alpha]\sigma_1\bigr)\;\to\;\bigl([\tau/\alpha]\sigma_2\bigr).
+    \end{array}
+    \]
+
+    \noindent
+    Since we are dealing with monotypes, we do not need to worry about quantification (needing a fresh variable).
+    Our rule (var) in Definition \ref{def:hml} handles this for us.
+    \end{Def}
+
+    \begin{Example}[Deriving Constraints]
+
+        Given the following expression $\texttt{(x + 1) + (2 + y)}$, we find its type and constraints:\\
+
+        \Large
+        \dirtree{%
+        .1 \ensuremath{\cdot \vdash (x + 1) + (2 + y) : \texttt{int} \dashv\ ?}.
+        .2 \ensuremath{\cdot \vdash (x + 1) :\texttt{int} \dashv\ \mathcal{C}_1:=\{\alpha\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
+        .3 \ensuremath{\cdot \vdash x : \alpha \dashv\ \varnothing}.
+        .3 \ensuremath{\cdot \vdash 1 : \texttt{int} \dashv\ \varnothing}.
+        }
+        \normalsize
+
+        \vspace{1em}
+        \noindent
+        We pause here in our derivation to show that we are unaware of the constraints (?) left side \texttt{(x + 1)}.
+        We continue:\\
+
+        \Large
+        \dirtree{%
+        .1 \ensuremath{\cdot \vdash (x + 1) + (2 + y) : \texttt{int} \dashv \mathcal{C}_3 :=\{\textcolor{red}{\texttt{int}}\doteq\texttt{int}, \textcolor{blue}{\texttt{int}}\doteq\texttt{int}\},\mathcal{C}_1, \mathcal{C}_2}.
+        .2 \ensuremath{\cdot \vdash (x + 1) :\textcolor{red}{\texttt{int}} \dashv\ \mathcal{C}_1:=\{\alpha\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
+        .3 \ensuremath{\cdot \vdash x : \alpha \dashv\ \varnothing}.
+        .3 \ensuremath{\cdot \vdash 1 : \texttt{int} \dashv\ \varnothing}.
+        .2 \ensuremath{\cdot \vdash (2 + y) :\textcolor{blue}{\texttt{int}} \dashv\ \mathcal{C}_2:=\{\beta\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
+        .3 \ensuremath{\cdot \vdash 2 : \texttt{int} \dashv\ \varnothing}.
+        .3 \ensuremath{\cdot \vdash y : \beta \dashv\ \varnothing}.
+        }
+        \normalsize
+
+        \vspace{1em}
+        \noindent
+        Once we finish both the left (red) and right (blue) branches they return a type of \texttt{int}. This yields a final type of \texttt{int} and constraints:
+        $\{\alpha\doteq\texttt{int}, \beta\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}$.
+    \end{Example}
 \newpage 
 \subsection{Unification \& The Principle Type}
 
@@ -819,9 +890,10 @@ Constraints provide a set of equations which we want to unify:
     \end{align*}
     \noindent
     In particular, \underline{\textbf{not all}} unification problems have a solution (e.g., \texttt{int }$\doteq$\texttt{ bool}). Moreover,\\
-    \textbf{The Most General Unifier (MGU)} is a unifier $\mathcal{S}$ such that all such other solutions $\mathcal{S}'$ are an extension of $\mathcal{S}$, such that,
+    \textbf{The Most General Unifier (MGU)} is a unifier $\mathcal{S}$, such that all such other solutions $\mathcal{S}'$ are an extension of $\mathcal{S}$, where
     $\mathcal{S}' = \mathcal{S} \cup \mathcal{S}''$.
-    Where $\mathcal{S}''$ is a substitution that does not change the type of any free variables in $\mathcal{S}$. Notably, the MGU is not unique. For example, $\{\alpha \mapsto \beta, \beta \mapsto \texttt{int}\}$ and $\{\alpha \mapsto \texttt{int}, \beta \mapsto \texttt{int}\}$ are both MGUs for $\alpha \doteq \beta$.\\
+    In particular, $\mathcal{S}''$ is a substitution that does not change the type of any free variables in $\mathcal{S}$. Notably, the MGU is not unique. For example, $\{\alpha \mapsto \beta, \beta \mapsto \texttt{int}\}$ and $\{\alpha \mapsto \texttt{int}, \beta \mapsto \texttt{int}\}$ 
+    are both MGUs for $\{\alpha \doteq \beta, \beta\doteq\texttt{int}\}$.\\
     
     \noindent
     \textbf{To solve} a unification problem $\mathcal{U}$, we may choose 
@@ -866,9 +938,9 @@ The next example swaps from lambda abstractions to arrows for clarity:
         \texttt{int} \to \texttt{int} \to \texttt{int} &\doteq \sigma \to \beta
     \end{align*}
     \noindent
-    We go from top to bottom, and assign from left to right, though order doesn't matter.
+    We go from top to bottom, and assign from left to right (though order doesn't matter):
     \begin{align*}
-    \mathcal{S} &:= \{\alpha \mapsto \delta \to \eta\}\\
+    \mathcal{S} &:= \{\alpha \mapsto (\delta \to \eta)\}\\
     \beta &\doteq \texttt{int} \to \delta\\
     \texttt{int} \to \texttt{int} \to \texttt{int} &\doteq \sigma \to \beta
     \end{align*}
@@ -876,30 +948,30 @@ The next example swaps from lambda abstractions to arrows for clarity:
     We collapsed the first two equations, the $\gamma$s add nothing to the unifier. We then add the $\alpha$ mapping to the unifier.
     We continue:
     \begin{align*} 
-        \mathcal{S} &:= \{\alpha \mapsto \delta \to \eta, \beta \mapsto \texttt{int} \to \delta\}\\
+        \mathcal{S} &:= \{\alpha \mapsto \delta \to \eta), \beta \mapsto (\texttt{int} \to \delta)\}\\
         \texttt{int} \to \texttt{int} \to \texttt{int} &\doteq \sigma \to (\texttt{int} \to \delta)
     \end{align*}
     \noindent
     Here, the $\beta$ mapping is added to the unifier and substituted into the rest of the equations. Continuing:
     \begin{align*}
-        \mathcal{S} &:= \{\alpha \mapsto \delta \to \eta, \beta \mapsto \texttt{int} \to \delta\}\\
+        \mathcal{S} &:= \{\alpha \mapsto \delta \to \eta), \beta \mapsto (\texttt{int} \to \delta)\}\\
         \texttt{int} &\doteq \sigma\\
-        \texttt{int} \to \texttt{int} &\doteq \texttt{int} \to \delta
+        \texttt{int} \to \texttt{int} &\doteq (\texttt{int} \to \delta)
     \end{align*}
     \noindent
-    Decomposing the abstractions, the rule of thumb is to match the first arguments with each other (e.g., $\alpha\to\gamma \doteq \beta\to\beta\to\beta$ is decomposed to $\alpha \doteq \beta$, $\gamma \doteq \beta\to\beta$). Continuing:
+    Decomposing the abstractions, the rule of thumb is to match the first arguments with each other (e.g., $\alpha\to\gamma \doteq \beta\to\beta\to\beta$) is decomposed to $\alpha \doteq \beta$, $\gamma \doteq \beta\to\beta$). Continuing:
     \begin{align*}
-        \mathcal{S} := \{\alpha \mapsto \delta \to \eta, \beta \mapsto &\texttt{int} \to \delta, \sigma \mapsto \texttt{int}\}\\
+        \mathcal{S} := \{\alpha \mapsto \delta \to \eta), \beta \mapsto &(\texttt{int} \to \delta), \sigma \mapsto \texttt{int}\}\\
         \texttt{int} &\doteq \texttt{int}\\
         \texttt{int} &\doteq \delta
     \end{align*}
     \noindent
-    We have added the $\sigma$ mapping to the unifier, nothing to substitute. Finally:
+    We have added the $\sigma$ mapping to the unifier, nothing to substitute, and decomposed the bottom abstraction. Finally:
     \begin{align*}
-        \mathcal{S} := \{\alpha \mapsto \delta \to \eta, \beta \mapsto &\texttt{int} \to \delta, \sigma \mapsto \texttt{int},\delta \mapsto \texttt{int}\}
+        \mathcal{S} := \{\alpha \mapsto \delta \to \eta), \beta \mapsto &(\texttt{int} \to \delta), \sigma \mapsto \texttt{int},\delta \mapsto \texttt{int}\}
     \end{align*}
     \noindent
-    We discarded the trivial $\texttt{int}$ equality, and left with the above unifier.
+    We discarded the trivial $\texttt{int}$ equality, and are left with the above unifier.
 \end{Example}
 
 \newpage 
@@ -950,15 +1022,15 @@ Now to actually use our unifier to derive a type:
 \begin{Def} [The Principle Type (Generalization)]
 
     Under some expression $e$, we first make a constraint-based type inference, determining $\tau$ and $\mathcal{C}$ such that:
-    $\Gamma \vdash e : \tau \dashv \mathcal{C}$
+    $\Gamma \vdash e : \tau \dashv \mathcal{C}$.
 
     
-    Though we still don't know the type of $e$, only its place-holder type $\tau$. Hence, we solve the unification problem $\mathcal{C}$ to find a unifier $\mathcal{S}$. If 
+    We must first check $\tau$ against its constraints. Hence, we solve the unification problem $\mathcal{C}$ to find a unifier $\mathcal{S}$. If 
     we fail to find a unifier, then there must be a type error in the expression $e$. Otherwise, we may proceed with \textbf{generalization}:
     \[\forall \alpha_1, \ldots, \alpha_k . \mathcal{S}\tau \text{ where } FV(\mathcal{S}\tau) = \{\alpha_1, \ldots, \alpha_k\}\]
     \noindent
     I.e., we take all such free type variables in $\mathcal{S\tau}$ and quantify over them. The final result is the \textbf{principal type} $\mathcal{P}$ of $e$. The 
-    quantifiers indicate that $e$ is polymorphic, ready to receive a type as an argument to propagate. It may also be the case that $e$ is monomorphic.\\
+    quantifiers indicate that $e$ is polymorphic (ready to receive a type as an argument to propagate). It may also be the case that $e$ is monomorphic.\\
     \noindent
     Finally, we then add $\mathcal{P}$ back to our context $\Gamma$ as a new variable $x : \mathcal{P}$. In short: 
     \begin{enumerate}
@@ -1001,8 +1073,8 @@ Let's try this out on an example:
     
     \Large
     \dirtree{%
-    .1 \ensuremath{\{f:\alpha, x: \beta \} \vdash \texttt{fun f -> fun x -> f(x+1)}:\alpha\to(\beta\to\gamma) \dashv \mathcal{C}_1,\mathcal{C}_2}.
-    .2 \ensuremath{\{f:\alpha, x: \beta \} \vdash \texttt{fun x -> f(x+1)}:\beta\to\gamma \dashv \mathcal{C}_1,\mathcal{C}_2}.
+    .1 \ensuremath{\cdot \vdash \texttt{fun f -> fun x -> f(x+1)}:\alpha\to(\beta\to\gamma) \dashv \mathcal{C}_1,\mathcal{C}_2}.
+    .2 \ensuremath{\{f:\alpha,\} \vdash \texttt{fun x -> f(x+1)}:\beta\to\gamma \dashv \mathcal{C}_1,\mathcal{C}_2}.
     .3 \ensuremath{\{f:\alpha, x: \beta \} \vdash \texttt{f(x+1)}: \gamma \dashv \mathcal{C}_2:=\{\alpha\doteq\textcolor{red}{\texttt{int}}\to\gamma\},\mathcal{C}_1}.
     .4 \ensuremath{\{f:\alpha, x: \beta \} \vdash f : \alpha \dashv \varnothing}.
     .4 \ensuremath{\{f:\alpha, x: \beta \} \vdash \texttt{(x+1)}: \textcolor{red}{\texttt{int}} \dashv \mathcal{C}_1:=\{\beta\doteq \texttt{int}, \texttt{int} \doteq \texttt{int} \}}.
@@ -1086,7 +1158,7 @@ For emphasis, order matters in the applying a unifier:
     $$
 
     \noindent
-    If we mix the order, we get a completely different result:
+    If we mix the order, we get a completely different result (wrong):
     $$
         [\alpha/\beta][\texttt{bool}/\alpha]\beta\quad\to\quad [\alpha/\beta]\beta\quad\to\quad\alpha
     $$
@@ -1100,7 +1172,7 @@ Before we mentioned that the let binding in HM$^-$ is not polymorphic:
 
 \label{ex:let-not-poly}
     
-Given the expression, \texttt{let f = $\lambda$x.x in f (f\ 2 = 2)}. We can see that the let binding is not have a principal type:
+Given the expression, \texttt{let f = $\lambda$x.x in f (f\ 2 = 2)}. We can see that the let binding does not have a principal type:
 
 \vspace{1em}
 \Large
@@ -1159,7 +1231,7 @@ As first we use it for $\texttt{f 2: int}$, and then we try to use it for $\text
     \end{center}
 
     \noindent
-    Upon calling $x$ from the context, we instantiate its typing scheme $\sigma$ to a monotype $\tau$.
+    Upon calling $x$ from the context, we instantiate its typing scheme $\sigma$ with fresh variable types:
     \begin{center}
     \begin{prooftree}
         \hypo{(x : \forall \alpha_1\ldots\forall \alpha_k.\,\tau) \in \Gamma}
@@ -1177,18 +1249,18 @@ Now lets try Example (\ref{ex:let-not-poly}) again with the new polymorphic let 
 \begin{Example}[Polymorphic Let Binding]
 
     \noindent
-    Given the expression, \texttt{let f = $\lambda$x.x in f (f\ 2 = 2)}.
+    We find the principal type of the expression \texttt{let f = $\lambda$x.x in f (f\ 2 = 2)}:
 
     \vspace{1em}
 \Large
 \dirtree{%
 .1 \ensuremath{\cdot \vdash \texttt{let f = $\lambda$x.x in f (f\ 2 = 2)}:\gamma \dashv \mathcal{C}_1,\mathcal{C}_2,\mathcal{C}_3}.
 .2 \ensuremath{\cdot \vdash \texttt{$\lambda$x.x} : \alpha\to\alpha \dashv \varnothing}.
-.2 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f\,(f\ 2 = 2): \gamma \dashv \mathcal{C}_3:=\{\;\tau_2\to\tau_2 \doteq \texttt{bool}\to\gamma\},\mathcal{C}_1,\mathcal{C}_2}.
-.3 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f : \tau_2\to\tau_2 \dashv \varnothing}.
+.2 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f\,(f\ 2 = 2): \gamma \dashv \mathcal{C}_3:=\{\;\textcolor{blue}{\tau_1\to\tau_1} \doteq \texttt{bool}\to\gamma\},\mathcal{C}_1,\mathcal{C}_2}.
+.3 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f : \textcolor{blue}{\tau_1\to\tau_1} \dashv \varnothing}.
 .3 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f\ 2 = 2 : \texttt{bool} \dashv \mathcal{C}_2:=\{\beta\doteq\texttt{int}\;\},\mathcal{C}_1}.
-.4 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f\ 2 : \beta \dashv \mathcal{C}_1:=\{\;\tau_1\to\tau_1 \doteq \texttt{int}\to\beta\;\}}.
-.5 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f : \tau_1\to\tau_1 \dashv \varnothing}.
+.4 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f\ 2 : \beta \dashv \mathcal{C}_1:=\{\;\textcolor{red}{\tau_2\to\tau_2} \doteq \texttt{int}\to\beta\;\}}.
+.5 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash f : \textcolor{red}{\tau_2\to\tau_2} \dashv \varnothing}.
 .5 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash 2 : \texttt{int} \dashv \varnothing}.
 .4 \ensuremath{\{f:\forall\alpha.\alpha\to\alpha\}\vdash 2 : \texttt{int} \dashv \varnothing}.
 }
@@ -1199,29 +1271,82 @@ Now lets try Example (\ref{ex:let-not-poly}) again with the new polymorphic let 
 \noindent
 Now onto the unification problem:
 \begin{align*}
-    \tau_1\to\tau_1 &\doteq \texttt{int}\to\beta\\
+    \tau_2\to\tau_2 &\doteq \texttt{int}\to\beta\\
     \beta &\doteq \texttt{int}\\
-    \tau_2\to\tau_2 &\doteq \texttt{bool}\to\gamma
+    \tau_1\to\tau_1 &\doteq \texttt{bool}\to\gamma
 \end{align*}
 
 \noindent
 After decomposition, we have:
 \begin{align*}
-    \tau_1&\doteq\texttt{int}\\
-    \tau_1 &\doteq \beta\\
+    \tau_2&\doteq\texttt{int}\\
+    \tau_2 &\doteq \beta\\
     \beta &\doteq \texttt{int}\\
-    \tau_2&\doteq\texttt{bool}\\
-    \tau_2 &\doteq \gamma
+    \tau_1&\doteq\texttt{bool}\\
+    \tau_1 &\doteq \gamma
 \end{align*}
 
 \noindent
-Which gives us a unifier $\mathcal{S}:=\{\tau_1\mapsto\texttt{int},\beta\mapsto\texttt{int},\tau_2\mapsto\texttt{bool},\gamma\mapsto\texttt{bool}\}$. We can now find the principal type:
+Which gives us a unifier $\mathcal{S}:=\{\tau_2\mapsto\texttt{int},\beta\mapsto\texttt{int},\tau_1\mapsto\texttt{bool},\gamma\mapsto\texttt{bool}\}$. We can now find the principal type:
 
 \[
-[\texttt{bool}/\gamma][\texttt{bool}/\tau_2][\texttt{int}/\beta][\texttt{int}/\tau_1]\gamma
+[\texttt{bool}/\gamma][\texttt{bool}/\tau_1][\texttt{int}/\beta][\texttt{int}/\tau_2]\gamma
 \]
 
 \noindent
 Hence, the principal type is ($\texttt{bool}$) after all other substitutions are ignored before the final matching substitution
 $[\texttt{bool}/\gamma]\gamma$.
 \end{Example}
+
+\newpage 
+\noindent
+One last example showing what happens when there are existing type variables in the context:
+\begin{Example}[Monomorphic \texttt{let}-binding due to context variable]
+    
+    Let $\Gamma = \{g: \gamma \to \texttt{int}\}$, and an expression $e:=$\texttt{let h = fun x -> g x in h (42)}. Then,\\
+
+    \Large
+    \dirtree{%
+    .1 \ensuremath{\{g: \gamma \to \texttt{int}\} \vdash \texttt{let h = fun x -> g x in h (42)}:\ ? \dashv\ ?}.
+    .2 \ensuremath{\{g: \gamma \to \texttt{int}\} \vdash \texttt{fun x -> g x}: \alpha\to\beta \dashv \mathcal{C}_1}.
+    .3 \ensuremath{\{g: \gamma \to \texttt{int}, x: \alpha\} \vdash \texttt{g x}: \beta \dashv \mathcal{C}_1:=\{\gamma \to \texttt{int}\doteq \alpha\to\beta\}}. 
+    .4 \ensuremath{\{g: \gamma \to \texttt{int}, x: \alpha\} \vdash \texttt{g}: \gamma \to \texttt{int} \dashv \varnothing}. 
+    .4 \ensuremath{\{g: \gamma \to \texttt{int}, x: \alpha\} \vdash \texttt{x}: \alpha \dashv \varnothing}. 
+    }
+
+    \normalsize
+    \vspace{1em}
+    \noindent
+    We solve the unification problem $\{\gamma \to \texttt{int} \doteq \alpha\to\beta\}$ which yields $\mathcal{S}:=\{\alpha\mapsto\gamma, \beta\mapsto\texttt{int}\}$. Then 
+    $$S(\alpha\to\beta):=[\texttt{int}/\beta][\gamma/\alpha](\alpha\to\beta)=(\gamma\to\texttt{int})$$
+
+    \noindent
+    We can now find the free type variables $FV((\gamma\to\texttt{int}))\setminus FV(\Gamma)=\{\}$.
+    This generalizes the binding to $(\gamma\to\texttt{int})$. We add it to the context and continue:\\
+        
+    \Large
+    \dirtree{%
+    .1 \ensuremath{\{g: \gamma \to \texttt{int}\} \vdash \texttt{let h = fun x -> g x in h (42)}: \sigma \dashv \mathcal{C}_2}.
+    .2 \textcolor{gray}{\ensuremath{\{g: \gamma \to \texttt{int}\} \vdash \texttt{fun x -> g x}: \alpha\to\beta \dashv \mathcal{C}_1}}.
+    .3 \textcolor{gray}{\ensuremath{\{g: \gamma \to \texttt{int}, x: \alpha\} \vdash \texttt{g x}: \beta \dashv \mathcal{C}_1:=\{\gamma \to \texttt{int}\doteq \alpha\}}}. 
+    .4 \textcolor{gray}{\ensuremath{\{g: \gamma \to \texttt{int}, x: \alpha\} \vdash \texttt{g}: \gamma \to \texttt{int} \dashv \varnothing}}. 
+    .4 \textcolor{gray}{\ensuremath{\{g: \gamma \to \texttt{int}, x: \alpha\} \vdash \texttt{x}: \alpha \dashv \varnothing}}. 
+    .2 \ensuremath{\{g: (\dots), h :(\gamma\to\texttt{int})\} \vdash \texttt{h (42)}: \sigma \dashv \mathcal{C}_2:=\{(\gamma\to\texttt{int})\doteq \texttt{int}\to\sigma\}}.
+    .3 \ensuremath{\{g: (\dots), h :(\gamma\to\texttt{int})\} \vdash \texttt{h}: (\gamma\to\texttt{int}) \dashv \varnothing}.
+    .3 \ensuremath{\{g: (\dots), h :(\gamma\to\texttt{int})\} \vdash \texttt{(42)}: \texttt{int} \dashv \varnothing}.
+    }
+    \normalsize
+
+    \vspace{1em}
+    \noindent
+    We solve the unification problem $\{(\gamma\to\texttt{int})\doteq (\texttt{int}\to\sigma)\}$ which yields\\
+    $$\mathcal{S}:=\{\gamma\mapsto\texttt{int},\sigma\mapsto\texttt{int}\}$$
+    
+    \noindent
+    Then, 
+    $$S(\sigma):=[\texttt{int}/\sigma][\texttt{int}/\gamma](\sigma)=\texttt{int}$$
+    
+    \noindent
+    Hence, (\texttt{int}) is the principal type of $e$. 
+  \end{Example}
+  
