@@ -295,7 +295,7 @@ A proof of the previous lemma is as follows:
 \end{Proof}
 
 \vspace{-.5em}
-\begin{Example}[Determining Type of an Expression (Part-1)]
+\begin{Example}[Determining Type of an Expression]
 
     We determine the smallest typing context $\Gamma$ for the expression $(\lambda x ^{(\top \to \top) \to \top} .\ x(\lambda z^{\top}.\ x(wz)))\ y$:
     \begin{align*}
@@ -828,14 +828,14 @@ Finally to define this system's substitution behavior:
 
     \begin{Example}[Deriving Constraints]
 
-        Given the following expression $\texttt{(x + 1) + (2 + y)}$, we find its type and constraints:\\
+        Given the following expression $\texttt{(x + 1) + (2 + y)}$, and context $\{x:\alpha, y: \beta\}$, we find its type and constraints:\\
 
         \Large
         \dirtree{%
-        .1 \ensuremath{\cdot \vdash (x + 1) + (2 + y) : \texttt{int} \dashv\ ?}.
-        .2 \ensuremath{\cdot \vdash (x + 1) :\texttt{int} \dashv\ \mathcal{C}_1:=\{\alpha\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
-        .3 \ensuremath{\cdot \vdash x : \alpha \dashv\ \varnothing}.
-        .3 \ensuremath{\cdot \vdash 1 : \texttt{int} \dashv\ \varnothing}.
+        .1 \ensuremath{\{x:\alpha, y: \beta\} \vdash (x + 1) + (2 + y) : \texttt{int} \dashv\ ?}.
+        .2 \ensuremath{\{x:\alpha, y: \beta\} \vdash (x + 1) :\texttt{int} \dashv\ \mathcal{C}_1:=\{\alpha\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
+        .3 \ensuremath{\{x:\alpha, y: \beta\} \vdash x : \alpha \dashv\ \varnothing}.
+        .3 \ensuremath{\{x:\alpha, y: \beta\} \vdash 1 : \texttt{int} \dashv\ \varnothing}.
         }
         \normalsize
 
@@ -846,13 +846,13 @@ Finally to define this system's substitution behavior:
 
         \Large
         \dirtree{%
-        .1 \ensuremath{\cdot \vdash (x + 1) + (2 + y) : \texttt{int} \dashv \mathcal{C}_3 :=\{\textcolor{red}{\texttt{int}}\doteq\texttt{int}, \textcolor{blue}{\texttt{int}}\doteq\texttt{int}\},\mathcal{C}_1, \mathcal{C}_2}.
-        .2 \ensuremath{\cdot \vdash (x + 1) :\textcolor{red}{\texttt{int}} \dashv\ \mathcal{C}_1:=\{\alpha\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
-        .3 \ensuremath{\cdot \vdash x : \alpha \dashv\ \varnothing}.
-        .3 \ensuremath{\cdot \vdash 1 : \texttt{int} \dashv\ \varnothing}.
-        .2 \ensuremath{\cdot \vdash (2 + y) :\textcolor{blue}{\texttt{int}} \dashv\ \mathcal{C}_2:=\{\beta\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
-        .3 \ensuremath{\cdot \vdash 2 : \texttt{int} \dashv\ \varnothing}.
-        .3 \ensuremath{\cdot \vdash y : \beta \dashv\ \varnothing}.
+        .1 \ensuremath{\{x:\alpha, y: \beta\} \vdash (x + 1) + (2 + y) : \texttt{int} \dashv \mathcal{C}_3 :=\{\textcolor{red}{\texttt{int}}\doteq\texttt{int}, \textcolor{blue}{\texttt{int}}\doteq\texttt{int}\},\mathcal{C}_1, \mathcal{C}_2}.
+        .2 \ensuremath{\{x:\alpha, y: \beta\} \vdash (x + 1) :\textcolor{red}{\texttt{int}} \dashv\ \mathcal{C}_1:=\{\alpha\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
+        .3 \ensuremath{\{x:\alpha, y: \beta\} \vdash x : \alpha \dashv\ \varnothing}.
+        .3 \ensuremath{\{x:\alpha, y: \beta\} \vdash 1 : \texttt{int} \dashv\ \varnothing}.
+        .2 \ensuremath{\{x:\alpha, y: \beta\} \vdash (2 + y) :\textcolor{blue}{\texttt{int}} \dashv\ \mathcal{C}_2:=\{\beta\doteq\texttt{int}, \texttt{int}\doteq\texttt{int}\}}.
+        .3 \ensuremath{\{x:\alpha, y: \beta\} \vdash 2 : \texttt{int} \dashv\ \varnothing}.
+        .3 \ensuremath{\{x:\alpha, y: \beta\} \vdash y : \beta \dashv\ \varnothing}.
         }
         \normalsize
 
