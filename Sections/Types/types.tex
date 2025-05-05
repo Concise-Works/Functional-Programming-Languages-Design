@@ -1300,7 +1300,7 @@ $[\texttt{bool}/\gamma]\gamma$.
 
 \newpage 
 \noindent
-One last example showing what happens when there are existing type variables in the context:
+We now show what happens when there are existing type variables in the context:
 \begin{Example}[Monomorphic \texttt{let}-binding due to context variable]
     
     Let $\Gamma = \{g: \gamma \to \texttt{int}\}$, and an expression $e:=$\texttt{let h = fun x -> g x in h (42)}. Then,\\
@@ -1350,3 +1350,37 @@ One last example showing what happens when there are existing type variables in 
     Hence, (\texttt{int}) is the principal type of $e$. 
   \end{Example}
   
+  \newpage 
+
+\noindent
+Our last definition, wrapping this all together:
+
+\begin{Def}[Top-Level Let-Expressions \& Program Typing]
+  
+    A program is defined as a sequence of top-level \texttt{let [rec]} expressions:
+\begin{align*}
+    \texttt{let [rec] } x_1 &= e_1;\\
+    \texttt{let [rec] } x_2 &= e_2;\\
+    &\vdots\\
+    \texttt{let [rec] } x_k &= e_k
+\end{align*}
+Each binding introduces a new variable $x_i$ into the context with its principal type $\sigma_i$ inferred 
+from expression $e_i$. These bindings form a \textbf{recursive scope chain}, where each new binding is typed with respect to all previously defined bindings.\\
+
+\noindent
+Formally, the program is well-typed if:
+\begin{itemize}
+    \item $e_1$ is well-typed with type scheme $\tau_1$ in the empty context $\emptyset$
+    \item $e_2$ is well-typed with type scheme $\tau_2$ in context $\{x_1 : \tau_1\}$
+    \item $e_3$ is well-typed with type scheme $\tau_3$ in context $\{x_1 : \tau_1, x_2 : \tau_2\}$
+    \item $\dots$
+    \item $e_k$ is well-typed with type scheme $\tau_k$ in context $\{x_1 : \tau_1, \dots, x_{k-1} : \tau_{k-1}\}$
+\end{itemize}
+
+\noindent
+This sequential typing enforces \textbf{definition-before-use}: each binding must be defined before it can be used in the expressions of subsequent bindings. This reflects a scoped, stack-like structure of environments, 
+where each new definition pushes a new type onto the typing context $\Gamma$.\\
+
+\noindent
+\textbf{Note:} Some languages differ in scope handling. In languages with global definitions (e.g., JavaScript), the order of function declarations does not affect typing---bindings are read as if all are simultaneously in scope, making them agnostic to placement within the file.
+\end{Def}
